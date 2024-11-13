@@ -1,0 +1,26 @@
+{
+  "name": "toolbox-gateway",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/toolbox-gateway/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "toolbox-gateway:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "toolbox-gateway:build:development"
+        },
+        "production": {
+          "buildTarget": "toolbox-gateway:build:production"
+        }
+      }
+    }
+  }
+}

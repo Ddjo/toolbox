@@ -1,0 +1,1 @@
+export const USER_EMAIL_ALREADY_EXISTS = 'user-email-already-exists';

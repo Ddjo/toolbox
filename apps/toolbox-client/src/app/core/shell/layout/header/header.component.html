@@ -1,0 +1,12 @@
+<p-menubar [model]="items" >
+    <ng-template pTemplate="end">
+        <div class="flex-row align-items-center">
+           <span>Mock data from google API</span> 
+           <div>
+               <p-inputSwitch 
+               [ngModel]="mockResponses$ | async" 
+               (onChange)="mockResponses$.next($event.checked)" />
+           </div>
+        </div>
+    </ng-template>
+</p-menubar>

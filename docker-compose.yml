@@ -1,0 +1,19 @@
+
+services:
+
+  books:
+    build:
+      dockerfile: ./apps/books/Dockerfile
+      target: development
+      context: .
+    command: npm run serve:books
+    expose:
+      - 3333
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  mongo:
+    image: mongo
