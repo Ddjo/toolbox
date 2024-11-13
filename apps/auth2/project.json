@@ -1,7 +1,7 @@
 {
-  "name": "auth",
+  "name": "auth2",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/auth/src",
+  "sourceRoot": "apps/auth2/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -10,15 +10,15 @@
       "defaultConfiguration": "development",
       "dependsOn": ["build"],
       "options": {
-        "buildTarget": "auth:build",
+        "buildTarget": "auth2:build",
         "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "auth:build:development"
+          "buildTarget": "auth2:build:development"
         },
         "production": {
-          "buildTarget": "auth:build:production"
+          "buildTarget": "auth2:build:production"
         }
       }
     }

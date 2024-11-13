@@ -8,11 +8,11 @@
 import { Controller, Post, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { AuthService } from "./auth.service";
-import { CurrentUser } from "../../../libs/common/src/decorators/current-user.decorator";
 import { LocalAuthGuard } from "./guards/local.auth-guard";
 import { UserDocument } from "./users/models/user.schema";
 import { JwtAuthGuard } from "./guards/jwt-auth-guard";
 import { MessagePattern, Payload } from "@nestjs/microservices";
+import { CurrentUser } from "./current-user.decorator";
 
 @Controller('auth')
 export class AuthController {  

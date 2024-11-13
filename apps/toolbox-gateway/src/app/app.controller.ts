@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 import { AppService } from './app.service';
-import { SignInDto } from './dto/sign-in.dto';
+// import { SignInDto } from './dto/sign-in.dto';
 
 @Controller()
 export class AppController {
@@ -12,10 +12,10 @@ export class AppController {
     return this.appService.getData();
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  signIn(@Body() payload : SignInDto) {
-    console.log('sign in post ', payload) 
-    // return this.authService.signIn(signInDto.userName, signInDto.password);
-  }
+  // @HttpCode(HttpStatus.OK)
+  // @Post('login')
+  // signIn(@Body() payload : SignInDto) {
+  //   console.log('sign in post ', payload) 
+  //   // return this.authService.signIn(signInDto.userName, signInDto.password);
+  // }
 }

@@ -3,7 +3,6 @@ import { UsersService } from "./users.service";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { JwtAuthGuard } from "../guards/jwt-auth-guard";
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { CurrentUser } from "../../../../libs/common/src/decorators/current-user.decorator";
 import { UserDocument } from "./models/user.schema";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 

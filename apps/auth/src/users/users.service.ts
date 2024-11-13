@@ -3,7 +3,7 @@ import { UserRepository } from './users.repository';
 import { CreateUserDTO } from './dto/create-user.dto';
 import * as bcryptjs from 'bcryptjs';
 import { GetUserDto } from './dto/get-user.dto';
-import { USER_EMAIL_ALREADY_EXISTS } from '@libs/common';
+import { USER_EMAIL_ALREADY_EXISTS } from '@constants';
 
 // This should be a real class/interface representing a user entity
 export type User = {
