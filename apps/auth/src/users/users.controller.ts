@@ -1,27 +1,13 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { CreateUserDTO } from "./dto/create-user.dto";
-import { JwtAuthGuard } from "../guards/jwt-auth-guard";
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { UserDocument } from "./models/user.schema";
-import { MessagePattern, Payload } from "@nestjs/microservices";
+import { Body, Controller, Post } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDTO } from './dto/create-user.dto';
 
 @Controller('users')
 export class UsersController {
-    constructor(private usersService : UsersService) {}
+  constructor(private readonly userService: UsersService) {}
 
-    // @Post()
-    // async createUser(@Body() createUserDto: CreateUserDTO) {
-    //     return this.usersService.create(createUserDto);
-    // }
-
-    @MessagePattern('create-user')
-    async createUser(@Payload() data: CreateUserDTO) {
-        return this.usersService.create(data);
-    }
-
-    @Get()
-    async getUsers() {
-        return this.usersService.find();
-    }
+  @Post()
+  async createUser(@Body() createUserDto: CreateUserDTO) {
+    return this.userService.create(createUserDto);
+  }
 }
