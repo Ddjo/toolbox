@@ -22,4 +22,15 @@ export class AuthService  {
     return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/login', user);
   }
 
+  isUserAuthenticated(): boolean {
+    return false;
+  }
+
+  setToken(access_token: {token: string, expires: string}) {
+    localStorage.setItem('access_token', JSON.stringify(access_token));
+  }
+
+  getToken() {
+
+  }
 }

@@ -25,9 +25,15 @@ export class AuthService {
 
     const token = this.jwtService.sign(tokenPayload);
 
+    response.header('Access-Control-Allow-Credentials', 'true');
+    // response.header('Access-Control-Allow-Origin', 'http://localhost:4200');
+    response.header('Access-Control-Allow-Headers', 'true');
     response.cookie('Authentication', token, {
       expires: expires,
-      httpOnly: true,
+      httpOnly: false,
     });
+
+    return {token: token, expires: expires};
+    
   }
 }

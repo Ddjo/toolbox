@@ -43,11 +43,18 @@ export class RegisterComponent {
                 this.emailExists.set(true);
         }),
         filter(res => !res.error),
-        switchMap(res => this.authService.login(this.createAccountForm.getRawValue() as {email: string, password: string}) )
-      ).subscribe((res) => {debugger});
+        // switchMap(res => this.authService.login(this.createAccountForm.getRawValue() as {email: string, password: string}) )
+      ).subscribe();
     }
   }
 
+  login() {
+    this.authService.login(this.createAccountForm.getRawValue() as {email: string, password: string}).subscribe();
+  }
+
+  getUser() {
+    this.usersService.getUser().subscribe(console.log)
+  }
 
 }
  
