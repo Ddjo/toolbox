@@ -13,9 +13,10 @@ export class AuthService  {
   constructor(private http: HttpClient, private globalService: GlobalService ) {
   }
 
-  createUser(user: {email: string, password: string}){
-    return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/create-user', user);
-  }
+  // createUser(user: {email: string, password: string}){
+  //   // return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/create-user', user);
+  //   return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/create-user', user);
+  // }
 
   login(user: {email: string, password: string}) {
     return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/login', user);

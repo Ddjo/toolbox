@@ -11,6 +11,7 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  app.enableCors();
   app.useLogger(app.get(Logger));
   const configService = app.get(ConfigService);
   await app.listen(configService.get('PORT'));
