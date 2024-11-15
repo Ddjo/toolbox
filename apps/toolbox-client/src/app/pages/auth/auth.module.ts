@@ -7,7 +7,6 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
 import { LoginSuccessComponent } from './login-success/login-success.component';
 
 
@@ -16,7 +15,6 @@ import { LoginSuccessComponent } from './login-success/login-success.component';
     AuthComponent,
     LoginComponent,
     LoginSuccessComponent,
-    RegisterComponent 
   ],
   imports: [
     CommonModule,

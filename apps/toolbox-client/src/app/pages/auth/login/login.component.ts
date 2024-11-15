@@ -14,6 +14,7 @@ import { UsersService } from '../../../core/services/users.service';
 })
 export class LoginComponent {
   
+  submitionType = signal<'login' | 'create-account'>('login');
   errorMsg = signal<string>('');
 
   loginForm = new FormGroup({
@@ -33,15 +34,38 @@ export class LoginComponent {
     private router: Router
   ) {}
   
-  login() {
+
+  submit() {
     if (this.loginForm.valid){
-      this.authService.login(this.loginForm.getRawValue() as {email: string, password: string})
-      .subscribe({
+      const formValue = this.loginForm.getRawValue() as {email: string, password: string};
+      const apiCall = this.submitionType() === 'login' ? this.authService.login(formValue) :  this.usersService.createUser(formValue);
+
+      apiCall.subscribe({
         error: err => this.errorMsg.set(err?.error?.message),
-        // complete: () => this.router.navigate(['login-success'])
       });
     }
   }
+
+
+  // login() {
+  //   if (this.loginForm.valid){
+  //     this.authService.login(this.loginForm.getRawValue() as {email: string, password: string})
+  //     .subscribe({
+  //       error: err => this.errorMsg.set(err?.error?.message),
+  //       // complete: () => this.router.navigate(['login-success'])
+  //     });
+  //   }
+  // }
+
+  // createAccount() {
+  //   if (this.loginForm.valid){
+  //     this.usersService.createUser(this.loginForm.getRawValue() as {email: string, password: string})
+  //     .subscribe({
+  //       error: err => this.errorMsg.set(err?.error?.message),
+  //       // complete: () => this.router.navigate(['auth'])
+  //     });
+  //   }
+  // }
 
   getUser() {
     this.usersService.getUser().subscribe(console.log)

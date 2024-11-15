@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GlobalService } from './global.service';
 import { environment } from '../../../environments/environments';
-import { map, Observable } from 'rxjs';
-import { ServerResponse } from 'http';
+import { GlobalService } from './global.service';
+import { UserInterface } from '../models/types/user';
 
 export const url = environment.gatewayApiUrl + '/users';
 @Injectable({
@@ -16,7 +15,7 @@ export class UsersService  {
 
   createUser(user: {email: string, password: string}){
     // return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/create-user', user);
-    return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url, user);
+    return this.http.post<UserInterface>(url, user);
   }
 
   // login(user: {email: string, password: string}) {
@@ -24,14 +23,6 @@ export class UsersService  {
   // }
 
   getUser() {
-    return this.http.get<Partial<{_id: string, email: string, password: string, error: string}>>(url)  
-    .pipe(
-      map(response => {
-        console.log('response from backend service', response);
-        const result= <ServerResponse>response; 
-        console.log('result is ' + result)
-        return result;
-      })
-    )
+    return this.http.get<Partial<{_id: string, email: string, password: string, error: string}>>(url);
   }
 }

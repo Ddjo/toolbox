@@ -1,6 +1,5 @@
-import { AccessTokenInterface } from "./access-token";
 
 export interface UserInterface {
+    _id: string;
     email: string;
-    token: string;
 }
