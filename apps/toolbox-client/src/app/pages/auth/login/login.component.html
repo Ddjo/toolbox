@@ -1,17 +1,27 @@
 <h3>Login</h3>
-<div class="flex flex-column gap-2">
+<form class="flex flex-column gap-2" [formGroup]="loginForm">
     <label for="email">Mail</label>
     <input 
         id="email"
+        type="email"
+        formControlName="email"
         pInputText 
-    />
+    />    
+    
+    <small >
+        {{errorMsg()}}
+    </small>
 
     <label for="password">Password</label>
     <input 
         id="password"
+        type="password"
+        formControlName="password"
         pInputText 
     />
 
-    <p-button label="Submit" />
+    <p-button label="Submit" (onClick)="login()" />
     <p-button label="Create an account" [routerLink]="'register'" />
-</div>
+    <p-button label="Get user" (onClick)="getUser()"></p-button>
+
+</form>

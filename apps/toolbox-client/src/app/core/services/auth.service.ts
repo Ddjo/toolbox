@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { GlobalService } from './global.service';
+import { Injectable, signal } from '@angular/core';
+import { filter, tap } from 'rxjs';
 import { environment } from '../../../../src/environments/environments';
-import { Observable } from 'rxjs';
+import { UserInterface } from '../models/types/user';
+import { GlobalService } from './global.service';
 
 export const url = environment.gatewayApiUrl + '/auth';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService  {
+
+  currentUserSig = signal<UserInterface |undefined | null>(undefined);
 
   constructor(private http: HttpClient, private globalService: GlobalService ) {
   }
@@ -19,18 +22,17 @@ export class AuthService  {
   // }
 
   login(user: {email: string, password: string}) {
-    return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/login', user);
+    return this.http.post<UserInterface>(url + '/login', user)
+    .pipe(
+      filter(user => !!user.token),
+      tap(user => this.setToken(user.token)));
   }
 
   isUserAuthenticated(): boolean {
     return false;
   }
 
-  setToken(access_token: {token: string, expires: string}) {
-    localStorage.setItem('access_token', JSON.stringify(access_token));
-  }
-
-  getToken() {
-
+  setToken(token : string) {
+      localStorage.setItem('access_token', token);
   }
 }

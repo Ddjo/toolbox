@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { USER_EMAIL_ALREADY_EXISTS } from '@constants';
-import { filter, switchMap, tap } from "rxjs";
-import { AuthService } from "../../../core/services/auth.service";
+import { Router } from "@angular/router";
 import { UsersService } from "../../../core/services/users.service";
 
 
@@ -16,11 +14,11 @@ import { UsersService } from "../../../core/services/users.service";
 })
 export class RegisterComponent {
 
-  emailExists = signal<boolean>(false);
+  errorMsg = signal<string>('');
 
   constructor(
-    private authService: AuthService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private router: Router
   ) {}
 
   createAccountForm = new FormGroup({
@@ -37,24 +35,11 @@ export class RegisterComponent {
   createAccount() {
     if (this.createAccountForm.valid){
       this.usersService.createUser(this.createAccountForm.getRawValue() as {email: string, password: string})
-      .pipe(
-        tap( res => {
-          if (res.error === USER_EMAIL_ALREADY_EXISTS) 
-                this.emailExists.set(true);
-        }),
-        filter(res => !res.error),
-        // switchMap(res => this.authService.login(this.createAccountForm.getRawValue() as {email: string, password: string}) )
-      ).subscribe();
+      .subscribe({
+        error: err => this.errorMsg.set(err?.error?.message),
+        complete: () => this.router.navigate(['auth'])
+      });
     }
   }
-
-  login() {
-    this.authService.login(this.createAccountForm.getRawValue() as {email: string, password: string}).subscribe();
-  }
-
-  getUser() {
-    this.usersService.getUser().subscribe(console.log)
-  }
-
 }
  

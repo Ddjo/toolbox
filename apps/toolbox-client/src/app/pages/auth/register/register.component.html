@@ -1,5 +1,5 @@
 <h3>Create new account</h3>
-<div class="flex flex-column gap-2" [formGroup]="createAccountForm">
+<form class="flex flex-column gap-2" [formGroup]="createAccountForm">
     <label for="email">Mail</label>
     <input 
         id="email"
@@ -8,11 +8,9 @@
         pInputText 
     />    
     
-    @if (emailExists()) {
-        <small id="email-exists">
-            Email already exists
-        </small>
-    }
+    <small >
+        {{errorMsg()}}
+    </small>
 
     <label for="password">Password</label>
     <input 
@@ -23,7 +21,7 @@
     />
 
     <p-button label="Create account" (onClick)="createAccount()" />
-    <p-button label="Login" (onClick)="login()"></p-button>
-    <p-button label="Get user" (onClick)="getUser()"></p-button>
-    <!-- <p-button label="Already an account ? Login" [routerLink]="''"></p-button> -->
-</div>
+    <!-- <p-button label="Login" (onClick)="login()"></p-button>
+    <p-button label="Get user" (onClick)="getUser()"></p-button> -->
+    <p-button label="Already an account ? Login" [routerLink]="'/auth'"></p-button>
+</form>

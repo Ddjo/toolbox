@@ -61,6 +61,9 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "proxyConfig": "apps/toolbox-client/src/proxy.conf.json"
+      },
       "configurations": {
         "production": {
           "buildTarget": "toolbox-client:build:production"
