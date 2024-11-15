@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home.component';
 import { HomeRoutingModule } from './home-routing.module';
+import { HeaderModule } from '../../core/shell/layout/header/header.module';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { HomeRoutingModule } from './home-routing.module';
   imports: [
     CommonModule,
     FormsModule,
-    HomeRoutingModule
+    HomeRoutingModule,
+    HeaderModule
   ],
   exports : [
     HomeComponent

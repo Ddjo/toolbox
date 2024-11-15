@@ -23,6 +23,6 @@ export class UsersService  {
   // }
 
   getUser() {
-    return this.http.get<Partial<{_id: string, email: string, password: string, error: string}>>(url);
+    return this.http.get<UserInterface>(url);
   }
 }

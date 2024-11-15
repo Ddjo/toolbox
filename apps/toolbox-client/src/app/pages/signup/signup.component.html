@@ -1,0 +1,31 @@
+<h3>{{submitionType() === 'login' ? 'Login' : 'Create an account'}}</h3>
+<form class="flex flex-column gap-2" [formGroup]="loginForm">
+    <label for="email">Mail</label>
+    <input 
+        id="email"
+        type="email"
+        autocomplete="email"
+        formControlName="email"
+        pInputText 
+    />    
+    
+    <small >
+        {{errorMsg()}}
+    </small>
+
+    <label for="password">Password</label>
+    <input 
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        formControlName="password"
+        pInputText 
+    />
+
+    <div class="flex gap-3">
+        <p-button label="Create an account" />
+        <p-button label="Back to login" />
+
+    </div>
+    
+</form>

@@ -1,13 +1,17 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
-import { UsersService } from '../../../core/services/users.service';
+import { AuthService } from '../../core/services/auth.service';
+import { UsersService } from '../../core/services/users.service';
+import { CommonModule } from '@angular/common';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+
 
 @Component({
   selector: 'app-login',
-  // standalone: true,
-  // imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,27 +39,27 @@ export class LoginComponent {
   ) {}
   
 
-  submit() {
-    if (this.loginForm.valid){
-      const formValue = this.loginForm.getRawValue() as {email: string, password: string};
-      const apiCall = this.submitionType() === 'login' ? this.authService.login(formValue) :  this.usersService.createUser(formValue);
-
-      apiCall.subscribe({
-        error: err => this.errorMsg.set(err?.error?.message),
-      });
-    }
-  }
-
-
-  // login() {
+  // submit() {
   //   if (this.loginForm.valid){
-  //     this.authService.login(this.loginForm.getRawValue() as {email: string, password: string})
-  //     .subscribe({
+  //     const formValue = this.loginForm.getRawValue() as {email: string, password: string};
+  //     const apiCall = this.submitionType() === 'login' ? this.authService.login(formValue) :  this.usersService.createUser(formValue);
+
+  //     apiCall.subscribe({
   //       error: err => this.errorMsg.set(err?.error?.message),
-  //       // complete: () => this.router.navigate(['login-success'])
   //     });
   //   }
   // }
+
+
+  login() {
+    if (this.loginForm.valid){
+      this.authService.login(this.loginForm.getRawValue() as {email: string, password: string})
+      .subscribe({
+        error: err => this.errorMsg.set(err?.error?.message),
+        complete: () => this.router.navigate(['home'])
+      });
+    }
+  }
 
   // createAccount() {
   //   if (this.loginForm.valid){

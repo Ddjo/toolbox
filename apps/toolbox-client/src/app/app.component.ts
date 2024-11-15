@@ -1,15 +1,10 @@
 import {
   Component,
-  HostListener
+  OnInit
 } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from './core/shell/layout/header/header.component';
-// import { HeaderComponent } from '@core/shell/layout/header/header.component';
-// import { RouterOutlet, Router, NavigationStart, NavigationEnd, RouteReuseStrategy } from '@angular/router';
-// import { ContentService } from './shared/content/content.service';
-// import { NotificationModalComponent } from './shared/modals/notification-modal/notification-modal.component';
-// import { ContactModalComponent } from './shared/modals/contact-modal/contact-modal.component';
-
+import { Router, RouterOutlet } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
+import { UsersService } from './core/services/users.service';
 
 @Component({
   selector: 'app-root',
@@ -18,57 +13,22 @@ import { HeaderComponent } from './core/shell/layout/header/header.component';
   standalone: true,
   imports: [
     RouterOutlet,
-    HeaderComponent
   ]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
+  constructor(
+    private userService: UsersService, 
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  codeInvocationPequenioAnimal = [1, 1, 2, 2];
-  codeTry: number[] = [];
-  lateralMenuHidden = true;
-  displayContentOverlay = false;
-  pequenioAnimalInvocationCount = 0;
-  pequenioAnimalInvoqued = false;
-  pequenioAnimalleaving = false;
-
-  invoquePequenioAnimal(number: number) {
-
-    if (!this.pequenioAnimalInvoqued) {
-      if (this.codeInvocationPequenioAnimal[this.codeTry.length] === number) {
-        this.codeTry.push(number);
-      } else {
-        this.codeTry = [];
-      }
-
-      if (JSON.stringify(this.codeTry) === JSON.stringify(this.codeInvocationPequenioAnimal)) {
-          this.pequenioAnimalleaving = false;
-          this.pequenioAnimalInvoqued = true;
-          this.codeTry = [];
-      }
-    } else {
-      this.removePequenioAnimal();
-    }
+  ngOnInit(): void {
+    // this.userService.getUser().pipe(
+    //   tap((userMail) => this.authService.currentUserSig.set(userMail))
+    // ).subscribe({
+    //   complete: () => { this.router.navigate(['/home']) },
+    // });    
   }
 
-  isContent() {
-    // return this.contentService.isContent();
-  }
-
-  @HostListener('document:click', ['$event'])
-  clickout(event: any) {
-    if (this.pequenioAnimalInvoqued) {
-      if (!event.target.closest('.pequenio-animal') && !event.target.closest('.brand' )) {
-        this.removePequenioAnimal();
-      }
-    }
-  }
-
-  removePequenioAnimal() {
-    this.pequenioAnimalleaving = true;
-
-    setTimeout(() => {
-      this.pequenioAnimalInvoqued = false;
-    }, 2700);
-  }
 }

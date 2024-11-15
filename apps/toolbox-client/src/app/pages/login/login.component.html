@@ -23,10 +23,10 @@
     />
 
     <div class="flex gap-3">
-        <p-button label="Submit" (onClick)="submit()" />
-        <p-button label="Create an account" *ngIf="submitionType() === 'login'" (onClick)="submitionType.set('create-account'); errorMsg.set('')"/>
+        <p-button label="Login" (onClick)="login()" />
+        <!-- <p-button label="Create an account" *ngIf="submitionType() === 'login'" (onClick)="submitionType.set('create-account'); errorMsg.set('')"/>
         <p-button label="Login" *ngIf="submitionType() === 'create-account'" (onClick)="submitionType.set('login'); errorMsg.set('')"/>
-        <p-button label="Get user" (onClick)="getUser()"></p-button>
+        <p-button label="Get user" (onClick)="getUser()"></p-button> -->
     </div>
     
 </form>
