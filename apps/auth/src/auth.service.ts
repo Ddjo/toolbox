@@ -29,5 +29,12 @@ export class AuthService {
       expires: expires,
       httpOnly: true,
     });
+
+    return {token: token, expires: expires};
+    
+  }
+
+  async logout(response: Response) {
+    response.clearCookie('Authentication');
   }
 }
