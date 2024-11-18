@@ -18,7 +18,7 @@ import { LoggerModule } from '@libs/common';
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION: Joi.string().required(),
-        PORT: Joi.number().required(), //we wil setup this env later
+        HTTP_PORT: Joi.number().required(), //we wil setup this env later
       }),
     }),
     JwtModule.registerAsync({
