@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
+import { LocalStorageVars } from '@constants';
+import { tap } from 'rxjs';
 import { environment } from '../../../../src/environments/environments';
 import { UserInterface } from '../models/types/user';
-import { GlobalService } from './global.service';
-import { tap } from 'rxjs';
+import { LocalStorageService } from './local-storage.service';
 
 export const url = environment.gatewayApiUrl + '/auth';
 @Injectable({
@@ -13,17 +14,37 @@ export class AuthService  {
 
   currentUserSig = signal<UserInterface |undefined>(undefined);
 
-  constructor(private http: HttpClient, private globalService: GlobalService ) {
+  constructor(
+    private http: HttpClient, 
+    private localStorageService: LocalStorageService) {
   }
 
   login(user: {email: string, password: string}) {
     return this.http.post(url + '/login', user).pipe(
-      tap(() => this.currentUserSig.set({email: user.email}))
+      tap(() => this.currentUserSig.set({email: user.email})),
+      tap(console.log),
+      tap((res) => this.localStorageService.setItem(LocalStorageVars.accessToken,res.token))
     );
   }
 
-  isUserAuthenticated(): boolean {
-    return this.currentUserSig() !== undefined;
+  logout() {
+    return this.http.post(url + '/logout', {}).pipe(
+      tap(() => this.currentUserSig.set(undefined)),
+      tap(() => this.localStorageService.removeItem(LocalStorageVars.accessToken))
+    );
   }
+
+    /**
+   * Get user information for authentication. The data comes from local storage.
+   * @returns user information needed for authentication and authorization. Returns null if no information is found.
+   */
+    public getAccessInfo(): string | null {
+      const user = this.localStorageService.getItem<string>(LocalStorageVars.accessToken);
+      if (user) {
+        return user.getValue();
+      }
+      return null;
+    }
+
 
 }

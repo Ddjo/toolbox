@@ -1,9 +1,11 @@
 
 <p-menubar [model]="items" >
     <ng-template pTemplate="end">
-        <div class="flex-row align-items-center">
+        <div class="flex flex-row gap-2 align-items-center">
             @if (currentUser()) {
+                <i class="pi pi-user"></i>
                 Logged as {{currentUser()?.email}}
+                <p-button (click)="logout()" size="small">Logout</p-button>
             }
             <!-- <div>
                 <span>Mock data from google API</span> 

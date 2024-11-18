@@ -4,6 +4,7 @@ import { LocalAuthGuard } from './guards/local.auth-guard';
 import { CurrentUser } from './current-user.decorator';
 import { UserDocument } from './users/models/user.schema';
 import { Response } from 'express';
+import { JwtAuthGuard } from './guards/jwt-auth-guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +25,16 @@ export class AuthController {
     }
 
     response.send(res);
+  }
+
+  
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(
+    @CurrentUser() user: UserDocument,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.logout(response);
   }
   
 }

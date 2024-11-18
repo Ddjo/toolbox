@@ -3,7 +3,10 @@ import {
   OnInit
 } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { LocalStorageVars } from '@constants';
+import { catchError, of, tap } from 'rxjs';
 import { AuthService } from './core/services/auth.service';
+import { LocalStorageService } from './core/services/local-storage.service';
 import { UsersService } from './core/services/users.service';
 
 @Component({
@@ -18,17 +21,24 @@ import { UsersService } from './core/services/users.service';
 export class AppComponent implements OnInit {
 
   constructor(
-    private userService: UsersService, 
+    private localStorageService: LocalStorageService,
+    private usersService: UsersService, 
     private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // this.userService.getUser().pipe(
-    //   tap((userMail) => this.authService.currentUserSig.set(userMail))
-    // ).subscribe({
-    //   complete: () => { this.router.navigate(['/home']) },
-    // });    
+    const isUserToken = this.localStorageService.getItem(LocalStorageVars.accessToken)?.value != null;
+
+    if (isUserToken) {
+      this.usersService.getUser().pipe(
+        tap((userMail) => {
+            this.authService.currentUserSig.set(userMail);
+        }),
+        catchError(() => of())
+      ).subscribe();
+    }
+
   }
 
 }

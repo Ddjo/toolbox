@@ -1,18 +1,14 @@
-import { importProvidersFrom } from '@angular/core';
 import { Routes } from '@angular/router';
-import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
+import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { SignupComponent } from './pages/signup/signup.component';
 
 export const routes: Routes = [
   { 
     path: 'home',
-    loadChildren: () => import('./pages/home/home.module').then(x => x.HomeModule),
-    canMatch: [AuthGuard],
-    // resolve: [
-    //   AuthResolve,
-    // ]
+    loadComponent: () => import('./pages/home/home.component').then(x => x.HomeComponent),
+    canActivate: [AuthGuard],
   },
   { 
     path: 'login', 
@@ -24,18 +20,18 @@ export const routes: Routes = [
   },
   { 
     path: 'sandbox',
-    loadChildren: () => import('./pages/sandbox/sandbox.module').then(x => x.SandboxModule),
-    canMatch: [AuthGuard],
+    loadComponent: () => import('./pages/sandbox/sandbox.component').then(x => x.SandboxComponent),
+    canActivate: [AuthGuard],
   },
   { 
     path: 'chat',
-    loadChildren: () => import('./pages/chat/chat.module').then(x => x.ChatModule),
-    canMatch: [AuthGuard],
+    loadComponent: () => import('./pages/chat/chat.component').then(x => x.ChatComponent),
+    canActivate: [AuthGuard],
   },
   { 
     path: 'books-crud',
-    loadChildren: () => import('./pages/books-crud/books-crud.module').then(x => x.BooksCrudModule),
-    canMatch: [AuthGuard],
+    loadComponent: () => import('./pages/books-crud/books-crud.component').then(x => x.BooksCrudComponent),
+    canActivate: [AuthGuard],
   },
   { 
     path: 'page-not-found',

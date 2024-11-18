@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { HeaderComponent } from '../../core/shell/layout/header/header.component';
 
 const SystemMessage = {
     id: 1,
@@ -11,6 +12,10 @@ const SystemMessage = {
     templateUrl: './chat.component.html',
     styleUrl: './chat.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+      HeaderComponent
+    ]
 })
 export class ChatComponent  {
     // socket = io('http://localhost:3000', { autoConnect: false });
