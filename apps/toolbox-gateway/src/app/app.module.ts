@@ -6,7 +6,9 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AUTH_SERVICE } from '@constants';
+import { AUTH_SERVICE, BOOKS_SERVICE } from '@constants';
+import { BooksController } from './books/books.controller';
+import { BooksService } from './books/books.service';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { AUTH_SERVICE } from '@constants';
       isGlobal: true,
       validationSchema: Joi.object({
         MONGODB_URI: Joi.string().required(),
-        PORT: Joi.number().required(), //we wil setup this env later
+        PORT: Joi.number().required(), 
       }),
     }),
     ClientsModule.registerAsync([
@@ -29,10 +31,20 @@ import { AUTH_SERVICE } from '@constants';
           },
         }),
         inject: [ConfigService],
-      },
+      }, {
+        name: BOOKS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            // host: configService.get('AUTH_HOST'),
+            port: configService.get('BOOKS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      }, 
     ]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, BooksController],
+  providers: [AppService, BooksService],
 })
 export class AppModule {}

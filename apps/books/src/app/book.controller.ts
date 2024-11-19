@@ -3,6 +3,7 @@ import { BookService } from './book.service';
 import { AddBookToLibraryDto } from './dto/add-book-to-library.dto';
 import { UpdateBookInLibraryDto } from './dto/update-book-in-library.dto';
 import { CurrentUser, JwtAuthGuard, UserDTO } from '@libs/common';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('books')
 export class BookController {
@@ -39,5 +40,11 @@ export class BookController {
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.bookService.remove(+id);
+  }
+
+  @MessagePattern('test-books')
+  async testBooks() {
+    console.log('test-books received');
+    return [];
   }
 }
