@@ -19,8 +19,6 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
 
-    console.log('auth2 AuthController - login recieved - user : ', user)
-
     const token = await this.authService.login(user, response);
 
     const res = {
