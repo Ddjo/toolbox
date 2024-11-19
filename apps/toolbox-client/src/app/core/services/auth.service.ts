@@ -6,7 +6,7 @@ import { environment } from '../../../../src/environments/environments';
 import { UserInterface } from '../models/types/user';
 import { LocalStorageService } from './local-storage.service';
 
-export const url = environment.gatewayApiUrl + '/auth';
+export const url = environment.authApiUrl + '/auth';
 @Injectable({
   providedIn: 'root',
 })

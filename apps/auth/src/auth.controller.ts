@@ -13,8 +13,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
-  @MessagePattern({ cmd: 'login' })
-  // @Post('login')
+  @Post('login')
   async login(
     @CurrentUser() user: UserDocument,
     @Res({ passthrough: true }) response: Response,
@@ -46,6 +45,11 @@ export class AuthController {
   @MessagePattern('authenticate')
   async authenticate(@Payload() data: any) {
     return data.user;
+  }
+
+  @MessagePattern('test-auth')
+  async testAuth() {
+    console.log('test-auth received');
   }
 
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
 import { AppService } from './app.service';
 // import { SignInDto } from './dto/sign-in.dto';
@@ -12,10 +12,8 @@ export class AppController {
     return this.appService.getData();
   }
 
-  // @HttpCode(HttpStatus.OK)
-  // @Post('login')
-  // signIn(@Body() payload : SignInDto) {
-  //   console.log('sign in post ', payload) 
-  //   // return this.authService.signIn(signInDto.userName, signInDto.password);
-  // }
+  @Get('test-auth')
+  testAuth() {
+    return this.appService.testAuth();
+  }
 }

@@ -1,4 +1,5 @@
 export const environment = {
     production: false,
-    gatewayApiUrl: '/api'
+    gatewayApiUrl: '/api',
+    authApiUrl: '/auth-api'
   };
