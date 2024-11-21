@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "toolbox-client:dev:docker": "nx serve toolbox-client --host=0.0.0.0 --poll 5000",
+    "toolbox-client:dev:docker": "nx serve-docker toolbox-client --host=0.0.0.0 --poll=500",
     "toolbox-gateway:dev:docker": "nx serve toolbox-gateway --host=0.0.0.0",
-    "auth:dev:docker": "nx serve auth --host=0.0.0.0",
+    "auth:dev:docker": "nx serve auth --host=0.0.0.0 --watch",
     "build:books": "nx build books",
     "serve:books": "nx serve books"
   },

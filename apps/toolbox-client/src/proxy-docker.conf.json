@@ -1,0 +1,10 @@
+{
+    "/auth-api": {
+      "target": "http://auth:3002",
+      "secure": false,
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/auth-api": ""
+      }
+    }
+  }

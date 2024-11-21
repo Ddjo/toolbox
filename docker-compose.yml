@@ -2,30 +2,36 @@
 services:
 
   # Toolbox client App
-  # toolbox-client:
-  #   env_file:
-  #     - path: ./.env
-  #       required: true # default
-  #   extends:
-  #     file: docker-compose.base.yml
-  #     service: nx-app-base
-  #   command: npm run toolbox-client:dev:docker
-  #   ports:
-  #     - ${CLIENT_PORT}:${CLIENT_PORT}
+  toolbox-client:
+    env_file:
+      - path: ./docker.env
+        required: true # default
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npm run toolbox-client:dev:docker
+    ports:
+      - ${CLIENT_PORT}:${CLIENT_PORT}
 
-    # Auth App
-  # auth:
-  #   extends:
-  #     file: docker-compose.base.yml
-  #     service: nx-app-base
-  #   command: npm run auth:dev:docker
-  #   depends_on:
-  #     - mongo
-  #   ports:
-  #     -  ${AUTH_HTTP_PORT}:${AUTH_HTTP_PORT} # API Entry port
-  #     # - 4311:4311 # Server Debugging port
+  # Auth App
+  auth:
+    env_file:
+    - path: ./docker.env
+      required: true # default
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npm run auth:dev:docker
+    depends_on:
+      - mongo
+    ports:
+      -  ${AUTH_HTTP_PORT}:${AUTH_HTTP_PORT} # API Entry port
+      # - 4311:4311 # Server Debugging port
 
   toolbox-gateway:
+    env_file:
+    - path: ./docker.env
+      required: true # default
     extends:
       file: docker-compose.base.yml
       service: nx-app-base

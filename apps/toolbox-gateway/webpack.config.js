@@ -15,6 +15,9 @@ module.exports = {
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
+      ignored: /node_modules/,
+      aggregateTimeout: 300,
+      poll: 500
     }),
   ],
 };

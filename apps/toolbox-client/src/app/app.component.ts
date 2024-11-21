@@ -15,8 +15,8 @@ import { UsersService } from './core/services/users.service';
   styleUrls: ['./app.component.scss'],
   standalone: true,
   imports: [
-    RouterOutlet,
-  ]
+    RouterOutlet
+  ] 
 })
 export class AppComponent implements OnInit {
 

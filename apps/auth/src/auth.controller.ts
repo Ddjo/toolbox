@@ -20,9 +20,9 @@ export class AuthController {
   ) {
 
     const token = await this.authService.login(user, response);
-
+ 
     const res = {
-      email: user.email,
+      email: user.email ,
       token: token.token
     }
 
@@ -36,7 +36,7 @@ export class AuthController {
     @CurrentUser() user: UserDocument,
     @Res({ passthrough: true }) response: Response,
   ) {
-    await this.authService.logout(response);
+    await this.authService.logout(response);  
   }
   
   @UseGuards(JwtAuthGuard)

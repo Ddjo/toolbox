@@ -3,15 +3,30 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/toolbox-gateway/src",
   "projectType": "application",
-  "tags": [],
   "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/toolbox-gateway",
+        "main": "apps/toolbox-gateway/src/main.ts",
+        "tsConfig": "apps/toolbox-gateway/tsconfig.app.json",
+        "assets": ["apps/toolbox-gateway/src/assets"],
+        "webpackConfig": "apps/toolbox-gateway/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
       "options": {
-        "buildTarget": "toolbox-gateway:build",
-        "runBuildTargetDependencies": false
+        "buildTarget": "toolbox-gateway:build"
       },
       "configurations": {
         "development": {
@@ -21,6 +36,28 @@
           "buildTarget": "toolbox-gateway:build:production"
         }
       }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/toolbox-gateway/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/toolbox-gateway/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
     }
-  }
+  },
+  "tags": []
 }
