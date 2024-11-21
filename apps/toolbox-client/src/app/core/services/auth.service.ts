@@ -16,8 +16,8 @@ export class AuthService  {
 
   constructor(
     private http: HttpClient, 
-    private localStorageService: LocalStorageService) {
-  }
+    private localStorageService: LocalStorageService
+  ) {}
 
   login(user: {email: string, password: string}) {
     return this.http.post(url + '/login', user).pipe(
@@ -29,9 +29,13 @@ export class AuthService  {
 
   logout() {
     return this.http.post(url + '/logout', {}).pipe(
-      tap(() => this.currentUserSig.set(undefined)),
-      tap(() => this.localStorageService.removeItem(LocalStorageVars.accessToken))
+      tap(() => this.removeSavedUserInfos()),
     );
+  }
+
+  removeSavedUserInfos() {
+    this.currentUserSig.set(undefined);
+    this.localStorageService.removeItem(LocalStorageVars.accessToken);
   }
 
     /**

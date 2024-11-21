@@ -13,7 +13,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
-      port: configService.get('TCP_PORT'),
+      port: configService.get('AUTH_TCP_PORT'),
     },
   });
   app.use(cookieParser());
@@ -24,8 +24,12 @@ async function bootstrap() {
   );
   app.useLogger(app.get(Logger));
 
-  await app.startAllMicroservices();
-  await app.listen(configService.get('HTTP_PORT'));
+  await app.startAllMicroservices().then(() => {
+    console.log('auth microservices launch on port ', configService.get('AUTH_TCP_PORT'));
+  });
+  await app.listen(configService.get('AUTH_HTTP_PORT')).then(() => {
+    console.log('auth HTTP launch on port ', configService.get('AUTH_HTTP_PORT'));
+  });
 
 }
 bootstrap();

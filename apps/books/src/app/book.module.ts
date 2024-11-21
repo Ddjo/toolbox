@@ -24,7 +24,8 @@ import {
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        TCP_PORT: Joi.number().required(),      
+        BOOKS_TCP_PORT: Joi.number().required(),
+        BOOKS_HTTP_PORT: Joi.number().required(),      
       }),
     }),
     ClientsModule.registerAsync([

@@ -17,7 +17,7 @@ import { BooksService } from './books/books.service';
       isGlobal: true,
       validationSchema: Joi.object({
         MONGODB_URI: Joi.string().required(),
-        PORT: Joi.number().required(), 
+        GATEWAY_PORT: Joi.number().required(), 
       }),
     }),
     ClientsModule.registerAsync([
@@ -27,7 +27,7 @@ import { BooksService } from './books/books.service';
           transport: Transport.TCP,
           options: {
             // host: configService.get('AUTH_HOST'),
-            port: configService.get('AUTH_PORT'),
+            port: configService.get('AUTH_TCP_PORT'),
           },
         }),
         inject: [ConfigService],
@@ -37,7 +37,7 @@ import { BooksService } from './books/books.service';
           transport: Transport.TCP,
           options: {
             // host: configService.get('AUTH_HOST'),
-            port: configService.get('BOOKS_PORT'),
+            port: configService.get('BOOKS_TCP_PORT'),
           },
         }),
         inject: [ConfigService],

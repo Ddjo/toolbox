@@ -17,7 +17,7 @@
     "paths": {
       "@auth/*": ["apps/auth/*"],
       "@libs/common": ["libs/common/src/index.ts"],
-      "@toolbox-client": ["apps/toolbox-client"],
+      "@toolbox-client": ["apps/toolbox-client/*"],
       "@constants": ["libs/constants/index.ts"]
     }
   },

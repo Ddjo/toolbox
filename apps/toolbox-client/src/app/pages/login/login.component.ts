@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UsersService } from '../../core/services/users.service';
 import { CommonModule } from '@angular/common';
@@ -11,7 +11,7 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule],
+  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -5,6 +5,7 @@ import { UsersService } from '../../core/services/users.service';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
   standalone: true,
-  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule],
+  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignupComponent {
@@ -34,6 +35,7 @@ export class SignupComponent {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    private router: Router
   ) {}
   
 
@@ -48,26 +50,15 @@ export class SignupComponent {
     }
   }
 
-
-  // login() {
-  //   if (this.loginForm.valid){
-  //     this.authService.login(this.loginForm.getRawValue() as {email: string, password: string})
-  //     .subscribe({
-  //       error: err => this.errorMsg.set(err?.error?.message),
-  //       // complete: () => this.router.navigate(['login-success'])
-  //     });
-  //   }
-  // }
-
-  // createAccount() {
-  //   if (this.loginForm.valid){
-  //     this.usersService.createUser(this.loginForm.getRawValue() as {email: string, password: string})
-  //     .subscribe({
-  //       error: err => this.errorMsg.set(err?.error?.message),
-  //       // complete: () => this.router.navigate(['auth'])
-  //     });
-  //   }
-  // }
+  createAccount() {
+    if (this.loginForm.valid){
+      this.usersService.createUser(this.loginForm.getRawValue() as {email: string, password: string})
+      .subscribe({
+        error: err => this.errorMsg.set(err?.error?.message),
+        complete: () => this.router.navigate(['login'])
+      });
+    }
+  }
 
   getUser() {
     this.usersService.getUser().subscribe(console.log)

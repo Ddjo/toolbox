@@ -4,7 +4,7 @@ import { environment } from '../../../environments/environments';
 import { GlobalService } from './global.service';
 import { UserInterface } from '../models/types/user';
 
-export const url = environment.gatewayApiUrl + '/users';
+export const url = environment.authApiUrl + '/users';
 @Injectable({
   providedIn: 'root',
 })

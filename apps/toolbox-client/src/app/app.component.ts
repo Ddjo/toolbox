@@ -35,10 +35,13 @@ export class AppComponent implements OnInit {
         tap((userMail) => {
             this.authService.currentUserSig.set(userMail);
         }),
-        catchError(() => of())
+        catchError(() => {
+          this.authService.removeSavedUserInfos();
+          return of();
+        })
       ).subscribe();
     }
-
+ 
   }
 
 }

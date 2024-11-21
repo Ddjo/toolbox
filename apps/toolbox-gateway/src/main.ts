@@ -17,8 +17,8 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   app.enableCors();
   const configService = app.get(ConfigService);
-  await app.listen(configService.get('PORT'), () => {
-    console.log('Server toolbox-gateway listening on port ', configService.get('PORT'))
+  await app.listen(configService.get('GATEWAY_PORT'), () => {
+    console.log('Server toolbox-gateway listening on port ', configService.get('GATEWAY_PORT'))
   });
 }
 

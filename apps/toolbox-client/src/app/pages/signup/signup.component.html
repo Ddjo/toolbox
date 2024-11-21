@@ -22,10 +22,9 @@
         pInputText 
     />
 
-    <div class="flex gap-3">
-        <p-button label="Create an account" />
-        <p-button label="Back to login" />
-
+    <div class="flex gap-3 align-items-center">
+        <p-button label="Create an account" (onClick)="createAccount()" />
+        <p-button label="Back to login"  [size]="'small'" [routerLink]="'/login'" />
     </div>
     
 </form>
