@@ -1,0 +1,29 @@
+<div class="main">
+    <ng-container *ngIf="allBooksInLibrary$ | async as books" >
+        <p-table [value]="books" dataKey="id" [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name" style="width:25%">
+                        Name 
+                        <!-- <p-sortIcon field="name" /> -->
+                    </th>
+                    <th pSortableColumn="action" style="width:25%">
+                        <!-- <p-sortIcon field="price" /> -->
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-book let-editing="editing">
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <!-- <td>{{ book.price }}</td> -->
+                    <td><p-button (onClick)="removeBookFromLibrary(book.id)">Delete</p-button> </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5">No books in library</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-container>
+</div>

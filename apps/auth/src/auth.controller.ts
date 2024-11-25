@@ -45,9 +45,5 @@ export class AuthController {
     return data.user;
   }
 
-  @MessagePattern('test-auth')
-  async testAuth() {
-    console.log('test-auth received');
-  }
 
 }

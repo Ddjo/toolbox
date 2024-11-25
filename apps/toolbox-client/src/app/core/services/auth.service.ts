@@ -20,9 +20,9 @@ export class AuthService  {
   ) {}
 
   login(user: {email: string, password: string}) {
-    return this.http.post(url + '/login', user).pipe(
+    return this.http.post<{email: string, token: string}>(url + '/login', user).pipe(
       tap(() => this.currentUserSig.set({email: user.email})),
-      tap(console.log),
+      // tap(console.log),
       tap((res) => this.localStorageService.setItem(LocalStorageVars.accessToken,res.token))
     );
   }

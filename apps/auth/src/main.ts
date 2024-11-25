@@ -25,10 +25,10 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
 
   await app.startAllMicroservices().then(() => {
-    console.log('auth microservices launch on port ', configService.get('AUTH_TCP_PORT'));
+    console.log('auth microservices started on port ', configService.get('AUTH_TCP_PORT'));
   });
   await app.listen(configService.get('AUTH_HTTP_PORT')).then(() => {
-    console.log('auth HTTP launch on port ', configService.get('AUTH_HTTP_PORT'));
+    console.log('auth HTTP started on port ', configService.get('AUTH_HTTP_PORT'));
   });
 
 }

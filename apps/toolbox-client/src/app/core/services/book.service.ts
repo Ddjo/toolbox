@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { catchError, Observable, of } from 'rxjs';
 import { GlobalService } from './global.service';
 import { environment } from 'apps/toolbox-client/src/environments/environments';
+import { API_BOOK_TOKEN, booksMock } from '@site/shared-store';
+import { IBook } from '@libs/common';
 
-export const url = environment.gatewayApiUrl + '/books';
+// export const url = environment.gatewayApiUrl + '/books';
 @Injectable({
   providedIn: 'root',
 })
@@ -12,29 +14,33 @@ export const url = environment.gatewayApiUrl + '/books';
 export class BookService  {
 
 
-  constructor(private http: HttpClient, private globalService: GlobalService ) {
+  constructor(
+    private http: HttpClient, 
+    private globalService: GlobalService,
+    @Inject(API_BOOK_TOKEN) private readonly apiUrl: string,
+   ) {
   }
 
   searchBookOnGoogleApi(searchTerm: string){
     
-    // return 
-    // this.globalService.mockResponses.value ? 
-    //   of(booksMock) :
-    //   this.http.get(`https://www.googleapis.com/books/v1/volumes?q=${searchTerm}`);
+    return this.globalService.mockResponses.value ? 
+      of(booksMock) :
+      this.http.get(`https://www.googleapis.com/books/v1/volumes?q=${searchTerm}`);
   }
 
-  // getBooks() : Observable<Book[]> {
-  //   return this.http.get<Book[]>(url);
+  // getBooks() : Observable<IBook[]> {
+  //   return this.http.get<IBook[]>(url);
   // }
 
-  // addBookToLibrary(book: Book): Observable<Book[]> {
-  //   return this.http.post<Book[]>(url, book);
-  // }
-  // removeBookFromLibrary(id: string): Observable<Book[]> {
-  //   return this.http.delete<Book[]>(`${url}/${id}`);
+  addBookToLibrary(book: IBook): Observable<IBook[]> {
+    return this.http.post<IBook[]>(this.apiUrl, book);
+  }
+
+  // removeBookFromLibrary(id: string): Observable<IBook[]> {
+  //   return this.http.delete<IBook[]>(`${url}/${id}`);
   // }
 
   testBooks() {
-    return this.http.get(`${url}/test-books`);
+    return this.http.get(`${this.apiUrl}/test-books`);
   }
 }

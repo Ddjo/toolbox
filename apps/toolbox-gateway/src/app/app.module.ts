@@ -26,7 +26,7 @@ import { BooksService } from './books/books.service';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
-            // host: configService.get('AUTH_HOST'),
+            host: configService.get('AUTH_HOST'),
             port: configService.get('AUTH_TCP_PORT'),
           },
         }),
@@ -36,7 +36,7 @@ import { BooksService } from './books/books.service';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
-            // host: configService.get('AUTH_HOST'),
+            host: configService.get('BOOKS_HOST'),
             port: configService.get('BOOKS_TCP_PORT'),
           },
         }),

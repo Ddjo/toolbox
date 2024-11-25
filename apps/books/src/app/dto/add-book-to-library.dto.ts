@@ -1,18 +1,16 @@
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
-import {Type} from 'class-transformer';
+import { Type } from 'class-transformer';
+import { IsArray, IsDate, IsNotEmpty, IsString } from "class-validator";
 
 export class AddBookToLibraryDto {
     @IsString()
     @IsNotEmpty()
     title: string
 
-    @IsString()
+    @IsArray()
     @IsNotEmpty()
-    author: string;
-
-    rating: number;
+    authors: string[];
 
     @IsDate()
-    @Type(() => Date)
-    releaseDate: Date
+    @IsString()
+    publishedDate: string
 }

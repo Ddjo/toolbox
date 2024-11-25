@@ -9,7 +9,7 @@ export class BookService {
 
   constructor(private readonly bookRepository: BookRepository) {}
 
-  async addBookToLibrary(addBookToLibraryDto: AddBookToLibraryDto, userId) {
+  async create(addBookToLibraryDto: AddBookToLibraryDto, userId) {
     return this.bookRepository.create({
       ...addBookToLibraryDto,
       userId 

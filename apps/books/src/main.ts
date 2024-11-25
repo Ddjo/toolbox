@@ -26,10 +26,10 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
 
   await app.startAllMicroservices().then(() => {
-    console.log('book microservices launch on port ', configService.get('BOOKS_TCP_PORT'));
+    console.log('book microservices started on port ', configService.get('BOOKS_TCP_PORT'));
   });
   await app.listen(configService.get('BOOKS_HTTP_PORT')).then(() => {
-    console.log('book HTTP launch on port ', configService.get('BOOKS_HTTP_PORT'));
+    console.log('book HTTP started on port ', configService.get('BOOKS_HTTP_PORT'));
   });
 }
 bootstrap();

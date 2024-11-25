@@ -35,7 +35,9 @@ import { AUTH_SERVICE } from '@constants';
             context.switchToHttp().getRequest<Request & {user: any}>().user = res;
           }),
           map(() => true),
-          catchError(() => of(false)),
+          catchError((err) => {
+            console.log('common lib - JwtAuthGuard - err : ', err);
+            return of(false)}),
         );
     }
   }
