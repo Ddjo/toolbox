@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AddBookToLibraryDto } from './dto/add-book-to-library.dto';
 import { UpdateBookInLibraryDto } from './dto/update-book-in-library.dto';
-import { BookRepository } from './book.repository';
+import { BookRepository } from './books.repository';
 
 
 @Injectable()
-export class BookService {
+export class BooksService {
 
   constructor(private readonly bookRepository: BookRepository) {}
 

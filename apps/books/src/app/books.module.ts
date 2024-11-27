@@ -6,9 +6,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as Joi from 'joi';
-import { BookController } from './book.controller';
-import { BookRepository } from './book.repository';
-import { BookService } from './book.service';
+import { BookController } from './books.controller';
+import { BookRepository } from './books.repository';
+import { BooksService } from './books.service';
 import {
   BookDocument,
   BookSchema,
@@ -43,6 +43,6 @@ import {
     ]),
   ],
   controllers: [BookController],
-  providers: [BookService, BookRepository],
+  providers: [BooksService, BookRepository],
 })
 export class BooksModule {}

@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import { ConfigService } from '@nestjs/config';
-import { BooksModule } from './app/book.module';
+import { BooksModule } from './app/books.module';
 import  cookieParser from 'cookie-parser';
 import { Transport } from '@nestjs/microservices';
 
