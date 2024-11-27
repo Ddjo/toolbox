@@ -1,11 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { HeaderComponent } from '../../core/shell/layout/header/header.component';
-import { ButtonModule } from 'primeng/button';
-import { BookService } from '../../core/services/book.service';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { HeaderComponent } from '../../core/shell/layout/header/header.component';
 import { BookSearchComponent } from './book-search/book-search.component';
 import { LibraryComponent } from './library/library.component';
-import { LibraryStoreModule } from '@site/shared-store';
 
 
 @Component({
@@ -17,7 +15,6 @@ import { LibraryStoreModule } from '@site/shared-store';
   imports: [
     ButtonModule,
     CommonModule,
-    LibraryStoreModule,
     HeaderComponent,
     BookSearchComponent,
     LibraryComponent
@@ -25,10 +22,5 @@ import { LibraryStoreModule } from '@site/shared-store';
 })
 export class BooksCrudComponent  {
 
-  constructor(private booksService: BookService) {}
-
-  testBooks() {
-    this.booksService.testBooks().subscribe();
-  }
 
 }

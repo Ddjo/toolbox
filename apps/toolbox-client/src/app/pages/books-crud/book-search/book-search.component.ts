@@ -5,9 +5,9 @@ import { AutoCompleteModule } from "primeng/autocomplete";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { debounceTime, distinctUntilChanged, filter, of, shareReplay, switchMap, tap } from 'rxjs';
-import { BookService } from "../../../core/services/book.service";
-import { LibraryFacade } from "@site/shared-store";
+import { BooksService } from "../../../core/services/book.service";
 import { IBook } from "@libs/common";
+import { BooksStore } from "../../../../../src/app/core/store/book.store";
 
 export interface IGoogleBook  {
   volumeInfo : {
@@ -28,9 +28,6 @@ export interface IGoogleBook  {
         InputTextModule,
         ButtonModule
     ],
-    providers: [
-      LibraryFacade
-    ],
     templateUrl: './book-search.component.html',
     styleUrl: './book-search.component.scss',
     changeDetection: ChangeDetectionStrategy.Default,
@@ -44,10 +41,10 @@ export class BookSearchComponent {
       bookSearchInput: new FormControl<string>('')
   });
    
-  libraryFacade = inject(LibraryFacade);
+  booksStore = inject(BooksStore);
 
   constructor(
-    private bookService: BookService,
+    private bookService: BooksService,
     private cd: ChangeDetectorRef
   ) {
    
@@ -67,13 +64,14 @@ export class BookSearchComponent {
 
     if (this.selectedBook) {
 
-      const book: Omit<IBook, 'id'> = {
+      const book: Omit<IBook, '_id'> = {
         authors: this.selectedBook.volumeInfo.authors || [],
         publishedDate: this.selectedBook.volumeInfo.publishedDate,
         title: this.selectedBook.volumeInfo.title,
       }
 
-      this.libraryFacade.addBookToLibrary(book);
+      this.bookService.createBook(book).subscribe();
+
     }
 
   }

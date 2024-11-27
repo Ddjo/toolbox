@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IBook } from "@libs/common";
-import { LibraryFacade } from '@site/shared-store';
+import { BooksService } from '../../../../../src/app/core/services/book.service';
+import { BooksStore } from '../../../../../src/app/core/store/book.store';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-library',
@@ -18,27 +17,14 @@ import { Observable } from 'rxjs';
     TableModule,
     ButtonModule,
   ], 
-  providers : [
-    LibraryFacade
-  ]
 })
-export class LibraryComponent implements OnInit {
+export class LibraryComponent  {
 
-  libraryFacade = inject(LibraryFacade);
-  allBooksInLibrary$: Observable<IBook[]>;
+  readonly booksStore = inject(BooksStore);
+  readonly booksService = inject(BooksService);
 
-constructor() {
-    this.allBooksInLibrary$ = this.libraryFacade.allBooksInLibrary$;
-  }
-  
-  ngOnInit(): void {
-    this.libraryFacade.getBooksFromLibrary();
-
-    this.allBooksInLibrary$.subscribe(console.log)
-    }
-  
   removeBookFromLibrary(id: string) {
-    this.libraryFacade.removeBookFromLibrary(id);
+    this.booksService.removeBook(id).subscribe();
   }
 
 }

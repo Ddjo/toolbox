@@ -3,6 +3,7 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { SignupComponent } from './pages/signup/signup.component';
+import { BooksResolver } from './core/resolvers/books.resolver';
 
 export const routes: Routes = [
   { 
@@ -32,6 +33,7 @@ export const routes: Routes = [
     path: 'books-crud',
     loadComponent: () => import('./pages/books-crud/books-crud.component').then(x => x.BooksCrudComponent),
     canActivate: [AuthGuard],
+    resolve: [BooksResolver]
   },
   { 
     path: 'page-not-found',

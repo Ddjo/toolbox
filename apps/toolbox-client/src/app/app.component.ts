@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
         }),
         catchError(() => {
           this.authService.removeSavedUserInfos();
+          this.router.navigate(['login']);
           return of();
         })
       ).subscribe();
