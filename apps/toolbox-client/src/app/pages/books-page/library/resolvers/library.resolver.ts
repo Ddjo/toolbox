@@ -1,15 +1,14 @@
 import { inject, Injectable } from "@angular/core";
 import { Resolve } from "@angular/router";
 import { catchError, map, Observable, of } from "rxjs";
-import { BooksService } from "../services/book.service";
-import { BooksStore } from "../store/book.store";
+import { BooksService } from "../../../../core/services/book.service";
+import { BooksStore } from "../../../../core/store/books/books.store";
 
 @Injectable({ providedIn: 'root' })
-export class BooksResolver implements Resolve<boolean> {
+export class LibraryResolver implements Resolve<boolean> {
 
     constructor(
         private booksService: BooksService,
-        // private booksStore: BooksStore
     ) { }
 
     readonly booksStore = inject(BooksStore);
@@ -19,7 +18,7 @@ export class BooksResolver implements Resolve<boolean> {
            return this.booksService.getBooks().pipe(
                map(() => true),
                catchError((err) => {
-                console.log('book resolver - get books - err : ', err);
+                console.log('library resolver - get books - err : ', err);
                 return of(false)}),
             );
         } else {

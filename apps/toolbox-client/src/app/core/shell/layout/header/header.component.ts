@@ -33,7 +33,7 @@ export class HeaderComponent {
   items: MenuItem[] = [
     {
       label: "Books crud",
-      routerLink : ['/books-crud']
+      routerLink : ['/books']
     }, {
     label: "Chat",
     routerLink : '/chat'

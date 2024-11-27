@@ -6,5 +6,5 @@ export class UpdateBookDto extends PartialType(AddBookDto) {
 
     @IsString()
     @IsMongoId()
-    id: string;
+    _id: string;
 }

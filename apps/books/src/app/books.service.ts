@@ -3,6 +3,7 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { BookRepository } from './books.repository';
 import { RemoveBookDto } from './dto/remove-book.dto';
 import { AddBookDto } from './dto/add-book.dto';
+import { GetBookDto } from './dto/get-book.dto';
 
 
 @Injectable()
@@ -22,15 +23,16 @@ export class BooksService {
     return this.bookRepository.find({});
   }
 
-  async findOne(_id: string) {
-    return this.bookRepository.findOne({_id });
+  async findOne(getBookDto: GetBookDto) {
+    return this.bookRepository.findOne({_id: getBookDto._id });
   }
 
   async update(_id: string, updateBookDto: UpdateBookDto) {
-    return this.bookRepository.findOneAndUpdate({ _id}, {$set: updateBookDto});
+    console.log('to update { _id: updateBookDto._id}', { _id: updateBookDto._id})
+    return this.bookRepository.findOneAndUpdate({ _id: updateBookDto._id}, {$set: updateBookDto});
   }
 
   async remove(removeBookDto: RemoveBookDto) {
-    return this.bookRepository.findOneAndDelete({ _id: removeBookDto.id});
+    return this.bookRepository.findOneAndDelete({ _id: removeBookDto._id});
   }
 }

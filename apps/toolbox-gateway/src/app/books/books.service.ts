@@ -19,19 +19,19 @@ constructor( @Inject(BOOKS_SERVICE) private readonly booksClient: ClientProxy,
     return this.booksClient.send('create-book', createBookDto)
   }
 
-  findOne(id: string) {
+  findOne(_id: string) {
     console.log('send get-book from gateway')
-    return this.booksClient.send('get-book', {id})
+    return this.booksClient.send('get-book', {_id})
   }
 
-  update(id: string, updateBookDto: UpdateBookDto) {
+  update(_id: string, updateBookDto: UpdateBookDto) {
     console.log('send update-books from gateway')
-    return this.booksClient.send('update-book', {id: id, book: updateBookDto})
+    return this.booksClient.send('update-book', updateBookDto)
   }
 
-  remove(id: string) {
-    console.log('send remove-books from gateway', id)
-    return this.booksClient.send('remove-book', {id})
+  remove(_id: string) {
+    console.log('send remove-books from gateway', _id)
+    return this.booksClient.send('remove-book', {_id})
   }
 
   testBooks() {

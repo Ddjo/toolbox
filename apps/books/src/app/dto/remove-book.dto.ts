@@ -4,5 +4,5 @@ export class RemoveBookDto {
 
     @IsString()
     @IsMongoId()
-    id: string;
+    _id: string;
 }

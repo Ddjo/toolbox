@@ -5,6 +5,7 @@ import { BooksService } from './books.service';
 import { AddBookDto } from './dto/add-book.dto';
 import { RemoveBookDto } from './dto/remove-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { GetBookDto } from './dto/get-book.dto';
 
 @Controller('books')
 export class BookController {
@@ -30,15 +31,15 @@ export class BookController {
   }
 
   @MessagePattern('get-book')
-  async findOne(@Payload() id: string) {
-    console.log('get-book received', id);
-    return this.booksService.findOne(id);
+  async findOne(@Payload() getBookDto: GetBookDto) {
+    console.log('get-book received', getBookDto);
+    return this.booksService.findOne(getBookDto);
   }
 
   @MessagePattern('update-book')
   async update(@Payload() updateBookDto : UpdateBookDto) {
     console.log('update-book received', updateBookDto);
-    return this.booksService.update(updateBookDto.id, updateBookDto);  
+    return this.booksService.update(updateBookDto._id, updateBookDto);  
   }
 
   @MessagePattern('remove-book')

@@ -1,9 +1,13 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+
 import { LoginComponent } from './pages/login/login.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { SignupComponent } from './pages/signup/signup.component';
-import { BooksResolver } from './core/resolvers/books.resolver';
+import { LibraryComponent } from './pages/books-page/library/library.component';
+import { LibraryResolver } from './pages/books-page/library/resolvers/library.resolver';
+import { BookComponent } from './pages/books-page/book/book.component';
+import { BookResolver } from './pages/books-page/book/resolvers/book.resolver';
 
 export const routes: Routes = [
   { 
@@ -30,10 +34,27 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   { 
-    path: 'books-crud',
-    loadComponent: () => import('./pages/books-crud/books-crud.component').then(x => x.BooksCrudComponent),
+    path: 'books',
+    loadComponent: () => import('./pages/books-page/books-page.component').then(x => x.BooksPageComponent),
     canActivate: [AuthGuard],
-    resolve: [BooksResolver]
+    children: [
+      {
+        path: '',
+        component: LibraryComponent,
+        resolve: [LibraryResolver],
+      },
+      {
+        path: 'create',
+        component: BookComponent
+      },
+      {
+        path: 'update/:id',
+        component: BookComponent,
+        resolve: [
+          BookResolver
+        ]
+      },
+    ]
   },
   { 
     path: 'page-not-found',

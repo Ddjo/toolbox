@@ -5,6 +5,7 @@ import {
   entityConfig,
   removeEntity,
   setAllEntities,
+  setEntity,
   updateEntity,
   withEntities
 } from '@ngrx/signals/entities';
@@ -25,8 +26,12 @@ export const BooksStore = signalStore(
   withEntities(booksConfig),
   withState(booksState),
   withMethods((store, ) => ({
+    setBook(book: IBook) : void {
+      patchState(store, setEntity(book, booksConfig))
+    },
     setBooks(books: IBook[]) : void {
       patchState(store, setAllEntities(books, booksConfig))
+      patchState(store, {error:'', loaded: true})
     },
     addBook(book: IBook): void {
       patchState(store, addEntity(book, booksConfig));

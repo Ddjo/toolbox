@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BooksService } from '../../../../../src/app/core/services/book.service';
-import { BooksStore } from '../../../../../src/app/core/store/book.store';
+import { BooksStore } from '../../../core/store/books/books.store';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-library',
@@ -16,6 +17,7 @@ import { TableModule } from 'primeng/table';
     FormsModule,
     TableModule,
     ButtonModule,
+    RouterModule
   ], 
 })
 export class LibraryComponent  {

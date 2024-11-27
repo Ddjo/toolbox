@@ -1,4 +1,5 @@
 import { IsArray, IsDate, IsNotEmpty, IsString } from "class-validator";
+import { Type } from 'class-transformer';
 
 export class AddBookDto {
     @IsString()
@@ -10,6 +11,6 @@ export class AddBookDto {
     authors: string[];
 
     @IsDate()
-    @IsString()
+    @Type(() => Date) 
     publishedDate: string
 }
