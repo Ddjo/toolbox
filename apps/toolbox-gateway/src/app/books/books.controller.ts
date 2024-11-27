@@ -4,8 +4,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { BooksService } from "./books.service";
 import { JwtAuthGuard } from "@libs/common";
-import { AddBookToLibraryDto } from "../dto/books/add-book-to-library.dto";
-import { UpdateBookInLibraryDto } from "../dto/books/update-book-in-library.dto";
+import { AddBookDto } from "../dto/books/add-book.dto";
+import { UpdateBookDto } from "../dto/books/update-book.dto";
+
 
 @Controller('books')
 export class BooksController {
@@ -26,26 +27,26 @@ export class BooksController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createBookDto: AddBookToLibraryDto) {
+  create(@Body() createBookDto: AddBookDto) {
     console.log('create book')
     return this.booksService.create(createBookDto);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: string) {
     return this.booksService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: number, @Body() updateBookDto: UpdateBookInLibraryDto) {
+  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
     return this.booksService.update(id, updateBookDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: number) {
+  remove(@Param('id') id: string) {
     return this.booksService.remove(id);
   }
 }

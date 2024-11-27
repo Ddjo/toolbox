@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AddBookToLibraryDto } from './dto/add-book-to-library.dto';
-import { UpdateBookInLibraryDto } from './dto/update-book-in-library.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 import { BookRepository } from './books.repository';
+import { RemoveBookDto } from './dto/remove-book.dto';
+import { AddBookDto } from './dto/add-book.dto';
 
 
 @Injectable()
@@ -9,9 +10,9 @@ export class BooksService {
 
   constructor(private readonly bookRepository: BookRepository) {}
 
-  async create(addBookToLibraryDto: AddBookToLibraryDto, userId) {
+  async create(addBookDto: AddBookDto, userId) {
     return this.bookRepository.create({
-      ...addBookToLibraryDto,
+      ...addBookDto,
       userId 
     })
   }
@@ -21,15 +22,15 @@ export class BooksService {
     return this.bookRepository.find({});
   }
 
-  async findOne(_id: number) {
+  async findOne(_id: string) {
     return this.bookRepository.findOne({_id });
   }
 
-  async update(_id: number, updateBookInLibraryDto: UpdateBookInLibraryDto) {
-    return this.bookRepository.findOneAndUpdate({ _id}, {$set: updateBookInLibraryDto});
+  async update(_id: string, updateBookDto: UpdateBookDto) {
+    return this.bookRepository.findOneAndUpdate({ _id}, {$set: updateBookDto});
   }
 
-  async remove(_id: number) {
-    return this.bookRepository.findOneAndDelete({ _id});
+  async remove(removeBookDto: RemoveBookDto) {
+    return this.bookRepository.findOneAndDelete({ _id: removeBookDto.id});
   }
 }

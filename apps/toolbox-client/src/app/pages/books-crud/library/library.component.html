@@ -14,7 +14,7 @@
             <ng-template pTemplate="body" let-book let-editing="editing">
                 <tr>
                     <td>{{ book.title }}</td>
-                    <td><p-button (onClick)="removeBookFromLibrary(book.id)">Delete</p-button> </td>
+                    <td><p-button (onClick)="removeBookFromLibrary(book._id)">Delete</p-button> </td>
                 </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">

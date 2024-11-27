@@ -1,7 +1,6 @@
-import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsString } from "class-validator";
 
-export class AddBookToLibraryDto {
+export class AddBookDto {
     @IsString()
     @IsNotEmpty()
     title: string

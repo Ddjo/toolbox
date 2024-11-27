@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { booksMock, IBook } from '@libs/common';
-import { Observable, of, tap } from 'rxjs';
+import { IBook } from '@libs/common';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../../../src/environments/environments';
 import { BooksStore } from '../store/book.store';
 // import { GlobalService } from './global.service';

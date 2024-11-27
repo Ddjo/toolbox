@@ -16,7 +16,8 @@ async function bootstrap() {
       host: '0.0.0.0',
       port: configService.get('BOOKS_TCP_PORT'),
     },
-  });
+  },
+  { inheritAppConfig: true },);
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
