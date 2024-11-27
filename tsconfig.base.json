@@ -19,7 +19,6 @@
       "@toolbox-client/*": ["apps/toolbox-client/*"],
       "@libs/common": ["libs/common/src/index.ts"],
       "@constants": ["libs/constants/index.ts"],
-      "@site/shared-store": ["libs/shared-store/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
