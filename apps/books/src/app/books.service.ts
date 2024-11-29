@@ -28,7 +28,6 @@ export class BooksService {
   }
 
   async update(_id: string, updateBookDto: UpdateBookDto) {
-    console.log('to update { _id: updateBookDto._id}', { _id: updateBookDto._id})
     return this.bookRepository.findOneAndUpdate({ _id: updateBookDto._id}, {$set: updateBookDto});
   }
 
