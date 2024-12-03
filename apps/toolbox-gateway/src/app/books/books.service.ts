@@ -1,8 +1,8 @@
 import { BOOKS_SERVICE } from '@constants';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { UpdateBookDto } from '../dto/books/update-book.dto';
 import { AddBookDto } from '../dto/books/add-book.dto';
+import { IUser } from '@libs/common';
 
 @Injectable()
 export class BooksService {
@@ -14,9 +14,8 @@ constructor( @Inject(BOOKS_SERVICE) private readonly booksClient: ClientProxy,
     return this.booksClient.send('get-all-books', {})
   }
 
-  create(createBookDto: AddBookDto) {
-    console.log('send create-books from gateway', createBookDto)
-    return this.booksClient.send('create-book', createBookDto)
+  create(createBookDto: AddBookDto,  user: IUser) {
+    return this.booksClient.send('create-book', {...createBookDto, createdByUserId :  user._id})
   }
 
   findOne(_id: string) {
@@ -24,9 +23,9 @@ constructor( @Inject(BOOKS_SERVICE) private readonly booksClient: ClientProxy,
     return this.booksClient.send('get-book', {_id})
   }
 
-  update(_id: string, updateBookDto: UpdateBookDto) {
+  update(_id: string, createBookDto: AddBookDto,  user: IUser) {
     console.log('send update-books from gateway')
-    return this.booksClient.send('update-book', updateBookDto)
+    return this.booksClient.send('update-book', {_id, ...createBookDto, updatedByUserId :  user._id})
   }
 
   remove(_id: string) {

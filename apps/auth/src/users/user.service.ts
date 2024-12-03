@@ -21,7 +21,7 @@ export class UsersService {
 
   private async validateCreateUserDto(createUserDto: CreateUserDTO) {
     try {
-      await this.userRepository.findOne({ email: createUserDto.email });
+      await this.userRepository.findOne({ email: createUserDto.email }, {});
     } catch (error) {
       return;
     }
@@ -29,7 +29,7 @@ export class UsersService {
   }
 
   async verifyUser(email: string, password: string) {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.userRepository.findOne({ email }, {});
     const passwordIsValid = await bcryptjs.compare(password, user.password);
     if (!passwordIsValid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -38,6 +38,6 @@ export class UsersService {
   }
 
   async getUser(getUserDto: GetUserDto) {
-    return this.userRepository.findOne(getUserDto);
+    return this.userRepository.findOne(getUserDto, {});
   }
 }

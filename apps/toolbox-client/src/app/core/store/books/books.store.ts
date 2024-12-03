@@ -27,17 +27,17 @@ export const BooksStore = signalStore(
   withState(booksState),
   withMethods((store, ) => ({
     setBook(book: IBook) : void {
-      patchState(store, setEntity(book, booksConfig))
+      patchState(store, setEntity({...book, publishedDate: new Date(book.publishedDate)}, booksConfig))
     },
     setBooks(books: IBook[]) : void {
-      patchState(store, setAllEntities(books, booksConfig))
+      patchState(store, setAllEntities(books.map(book => {return {...book, publishedDate: new Date(book.publishedDate)}}), booksConfig))
       patchState(store, {error:'', loaded: true})
     },
     addBook(book: IBook): void {
-      patchState(store, addEntity(book, booksConfig));
+      patchState(store, addEntity({...book, publishedDate: new Date(book.publishedDate)}, booksConfig));
     },
     updateBook(book: IBook): void {
-      patchState(store, updateEntity({id: book._id, changes: (book)}, booksConfig));
+      patchState(store, updateEntity({id: book._id, changes: {...book, publishedDate: new Date(book.publishedDate)}}, booksConfig));
     },
     removeBook(book: IBook): void {
       patchState(store, removeEntity(book._id, booksConfig));

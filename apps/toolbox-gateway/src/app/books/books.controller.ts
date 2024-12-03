@@ -3,10 +3,9 @@
 
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { BooksService } from "./books.service";
-import { JwtAuthGuard } from "@libs/common";
+import { CurrentUser, IUser, JwtAuthGuard } from "@libs/common";
 import { AddBookDto } from "../dto/books/add-book.dto";
-import { UpdateBookDto } from "../dto/books/update-book.dto";
-
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('books')
 export class BooksController {
@@ -27,25 +26,28 @@ export class BooksController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createBookDto: AddBookDto) {
-    console.log('create book')
-    return this.booksService.create(createBookDto);
+  @ApiBearerAuth()
+  create(@Body() createBookDto: AddBookDto, @CurrentUser() user: IUser) {
+    return this.booksService.create(createBookDto, user);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   findOne(@Param('id') id: string) {
     return this.booksService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-    return this.booksService.update(id, updateBookDto);
+  @ApiBearerAuth()
+  update(@Param('id') id: string, @Body() createBookDto: AddBookDto, @CurrentUser() user: IUser) {
+    return this.booksService.update(id, createBookDto, user);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.booksService.remove(id);
   }

@@ -1,7 +1,6 @@
 import { Logger, NotFoundException } from '@nestjs/common';
-import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, ProjectionType, Types, UpdateQuery } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
-import { CreateIndexesOptions } from 'mongodb';
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   protected abstract readonly logger: Logger;
@@ -13,11 +12,11 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       ...document,
       _id: new Types.ObjectId(),
     });
-    return (await createdDocument.save()).toJSON() as unknown as TDocument;
+    return createdDocument.save();
   }
 
-  async findOne(filterQuery: FilterQuery<TDocument>) {
-    const document = await this.model.findOne(filterQuery, {}, { lean: true });
+  async findOne(filterQuery: FilterQuery<TDocument>, projection : ProjectionType<TDocument>) {
+    const document = await this.model.findOne(filterQuery, projection, {lean: true});
 
     if (!document) {
       this.logger.warn('Document not found with filterQuery', filterQuery);
@@ -30,10 +29,12 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async findOneAndUpdate(
     filterQuery: FilterQuery<TDocument>,
     update: UpdateQuery<TDocument>,
+    projection : ProjectionType<TDocument>
   ) {
     const document = await this.model.findOneAndUpdate(filterQuery, update, {
       lean: true,
       new: true,
+      projection: projection
     });
 
     if (!document) {
@@ -44,15 +45,12 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     return document;
   }
 
-  async find(filterQuery: FilterQuery<TDocument>) {
-    return this.model.find(filterQuery, {}, { lean: true });
+  async find(filterQuery: FilterQuery<TDocument>, projection : ProjectionType<TDocument>) {
+    return this.model.find(filterQuery, projection, { lean: true });
   }
 
   async findOneAndDelete(filterQuery: FilterQuery<TDocument>) {
     return this.model.findOneAndDelete(filterQuery, { lean: true });
   }
 
-  async createIndex(options: CreateIndexesOptions) {
-    return this.model.createIndexes(options as any);
-  }
 }

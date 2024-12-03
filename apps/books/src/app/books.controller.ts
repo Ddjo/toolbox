@@ -1,11 +1,10 @@
-import { CurrentUser, UserDTO } from '@libs/common';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BooksService } from './books.service';
 import { AddBookDto } from './dto/add-book.dto';
+import { GetBookDto } from './dto/get-book.dto';
 import { RemoveBookDto } from './dto/remove-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { GetBookDto } from './dto/get-book.dto';
 
 @Controller('books')
 export class BookController {
@@ -25,14 +24,12 @@ export class BookController {
   }
 
   @MessagePattern('create-book')
-  async create(@Payload() addBookDto: AddBookDto, @CurrentUser() user: UserDTO) {
-    console.log('create-book received', addBookDto);
-    return this.booksService.create(addBookDto, user);
+  async create(@Payload() addBookDto: AddBookDto) {
+    return this.booksService.create(addBookDto);
   }
 
   @MessagePattern('get-book')
   async findOne(@Payload() getBookDto: GetBookDto) {
-    console.log('get-book received', getBookDto);
     return this.booksService.findOne(getBookDto);
   }
 

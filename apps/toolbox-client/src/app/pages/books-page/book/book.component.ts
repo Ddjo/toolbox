@@ -106,9 +106,9 @@ export class BookComponent {
   setupBookFromGoogle(googleBook: IGoogleBook) {
     this.bookForm.setValue({
       _id: this.bookForm.controls._id.value,
-      authors: googleBook.volumeInfo.authors || [],
+      authors: googleBook.volumeInfo.authors || [''],
       publishedDate: googleBook.volumeInfo.publishedDate ? new Date(googleBook.volumeInfo.publishedDate) : undefined,
-      title: googleBook.volumeInfo.title
+      title: googleBook.volumeInfo.title || undefined
     })
   }
 
