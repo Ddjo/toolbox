@@ -6,13 +6,18 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AUTH_SERVICE, BOOKS_SERVICE } from '@constants';
+import { AUTH_SERVICE, BOOKS_SERVICE, CHAT_SERVICE } from '@constants';
 import { BooksController } from './books/books.controller';
 import { BooksService } from './books/books.service';
+import { BooksModule } from './books/books.module';
+import { ChatModule } from './chat/chat.module';
+// import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
     LoggerModule,
+    ChatModule,
+    BooksModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
@@ -31,20 +36,10 @@ import { BooksService } from './books/books.service';
           },
         }),
         inject: [ConfigService],
-      }, {
-        name: BOOKS_SERVICE,
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.TCP,
-          options: {
-            host: configService.get('BOOKS_HOST'),
-            port: configService.get('BOOKS_TCP_PORT'),
-          },
-        }),
-        inject: [ConfigService],
-      }, 
+      }
     ]),
   ],
-  controllers: [AppController, BooksController],
-  providers: [AppService, BooksService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

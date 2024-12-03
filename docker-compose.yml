@@ -39,6 +39,18 @@ services:
     depends_on:
       - mongo
 
+  # Books ms
+  chat:
+    env_file: 
+      - path: ./docker.env
+        required: true # default
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npm run chat:dev:docker
+    depends_on:
+      - mongo
+
   toolbox-gateway:
     env_file: 
       - path: ./docker.env

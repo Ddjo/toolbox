@@ -14,5 +14,11 @@
       "pathRewrite": {
         "^/auth-api": ""
       }
-    }
+    },
+    "/socket.io": {  
+      "target": "ws://toolbox-gateway:3000",
+      "secure": false,
+      "loglevel": "debug",
+      "ws": true
+      }
   }

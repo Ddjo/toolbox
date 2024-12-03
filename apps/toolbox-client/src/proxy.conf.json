@@ -1,16 +1,22 @@
 {
-    "/api": {
-      "target": "http://localhost:3000",
-      "secure": false,
-      "pathRewrite": {
-              "^/api": ""
-          }
-    },
-    "/auth-api": {
-      "target": "http://localhost:3002",
-      "secure": false,
-      "pathRewrite": {
-              "^/auth-api": ""
-          }
+  "/api": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/auth-api": {
+    "target": "http://localhost:3002",
+    "secure": false,
+    "pathRewrite": {
+      "^/auth-api": ""
+    }
+  },
+  "/socket.io/": {  
+    "target": "ws://localhost:3000/",
+    "secure": false,
+    "loglevel": "debug",
+    "ws": true
     }
   }
