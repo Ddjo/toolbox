@@ -1,8 +1,9 @@
-import { UserDTO } from "@libs/common";
+import { UserDto } from "@libs/common";
 import { Type } from "class-transformer";
 import { IsArray, IsDate, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 
 export class AddBookDto {
+    
     @IsString()
     @IsNotEmpty()
     title: string
@@ -15,8 +16,8 @@ export class AddBookDto {
     @Type(() => Date)
     publishedDate: Date
 
-    @Type(() => UserDTO)
+    @Type(() => UserDto)
     @ValidateNested()
-    readonly createdByUser: UserDTO
+    readonly createdByUser: UserDto
 }
 

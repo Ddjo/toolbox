@@ -1,1 +1,1 @@
-export * from './models/user.schema'
+export * from './entities/user.entity'

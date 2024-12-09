@@ -4,14 +4,14 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import * as bcryptjs from 'bcryptjs';
-import { CreateUserDTO } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { UserRepository } from './user.repository';
 @Injectable()
 export class UsersService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async create(createUserDto: CreateUserDTO) {
+  async create(createUserDto: CreateUserDto) {
     await this.validateCreateUserDto(createUserDto);
     return this.userRepository.create({
       ...createUserDto,
@@ -19,7 +19,7 @@ export class UsersService {
     });
   }
 
-  private async validateCreateUserDto(createUserDto: CreateUserDTO) {
+  private async validateCreateUserDto(createUserDto: CreateUserDto) {
     try {
       await this.userRepository.findOne({ email: createUserDto.email }, {});
     } catch (error) {

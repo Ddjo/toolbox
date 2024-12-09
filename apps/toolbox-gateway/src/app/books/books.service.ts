@@ -1,5 +1,5 @@
 import { BOOKS_SERVICE } from '@constants';
-import { UserDTO } from '@libs/common';
+import { UserDto } from '@libs/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AddBookDto } from './dto/add-book.dto';
@@ -14,7 +14,7 @@ constructor( @Inject(BOOKS_SERVICE) private readonly booksClient: ClientProxy,
     return this.booksClient.send('get-all-books', {})
   }
 
-  create(createBookDto: AddBookDto,  user: UserDTO) {
+  create(createBookDto: AddBookDto,  user: UserDto) {
     // console.log('send create : ', {...createBookDto, createdByUser :  user})
     return this.booksClient.send('create-book', {...createBookDto, createdByUser :  user})
   }
@@ -24,7 +24,7 @@ constructor( @Inject(BOOKS_SERVICE) private readonly booksClient: ClientProxy,
     return this.booksClient.send('get-book', {_id})
   }
 
-  update(_id: string, createBookDto: AddBookDto,  user: UserDTO) {
+  update(_id: string, createBookDto: AddBookDto,  user: UserDto) {
     // console.log('send update-books from gateway', {...createBookDto, createdByUser :  user})
     return this.booksClient.send('update-book', {_id, ...createBookDto, updatedByUser :  user})
   }

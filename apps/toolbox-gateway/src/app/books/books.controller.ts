@@ -1,7 +1,7 @@
 
 // import { SignInDto } from './dto/sign-in.dto';
 
-import { CurrentUser, JwtAuthGuard, UserDTO } from "@libs/common";
+import { CurrentUser, JwtAuthGuard, UserDto } from "@libs/common";
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { BooksService } from "./books.service";
@@ -27,7 +27,7 @@ export class BooksController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  create(@Body() createBookDto: AddBookDto, @CurrentUser() user: UserDTO) {
+  create(@Body() createBookDto: AddBookDto, @CurrentUser() user: UserDto) {
     return this.booksService.create(createBookDto, user);
   }
 
@@ -41,7 +41,7 @@ export class BooksController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() createBookDto: AddBookDto, @CurrentUser() user: UserDTO) {
+  update(@Param('id') id: string, @Body() createBookDto: AddBookDto, @CurrentUser() user: UserDto) {
     return this.booksService.update(id, createBookDto, user);
   }
 
