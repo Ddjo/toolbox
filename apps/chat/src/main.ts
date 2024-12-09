@@ -24,13 +24,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  app.useLogger(app.get(Logger));
+  app.useLogger(app.get(Logger)); 
 
   await app.startAllMicroservices().then(() => {
     console.log('chat microservices started on port ', configService.get('CHAT_TCP_PORT'));
-  });
-  await app.listen(configService.get('CHAT_HTTP_PORT')).then(() => {
-    console.log('chat HTTP started on port ', configService.get('CHAT_HTTP_PORT'));
   });
 }
 bootstrap();

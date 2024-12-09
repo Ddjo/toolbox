@@ -14,8 +14,8 @@ export class ChatService extends Socket {
     });
   }
 
-  sendMessage(message: string): void {
-    this.emit('send-message', message); 
+  sendMessage(roomId: string, message: string): void {
+    this.emit('send-message', {room_id: roomId, content: message}); 
   }
 
   getNewMessage(): Observable<string> {

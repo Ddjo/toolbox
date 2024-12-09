@@ -9,6 +9,8 @@ import * as Joi from 'joi';
 import { ChatController } from './chat.controller';
 // import { ChatRepository } from './chat.repository';
 import { ChatService } from './chat.service';
+import { MessagesModule } from './message/message.module';
+import { RoomsModule } from './rooms/rooms.module';
 // import {
 //   ChatDocument,
 //   ChatSchema,
@@ -41,6 +43,8 @@ import { ChatService } from './chat.service';
       inject: [ConfigService],
       },
     ]),
+    MessagesModule,
+    RoomsModule
   ],
   controllers: [ChatController],
   providers: [ChatService],

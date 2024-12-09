@@ -3,7 +3,17 @@
         dd
     </p-card>
     <p-footer>
-        <input pInputText placeholder="Type your message...">
+        <input pInputText             [formControl]="messageContent"
+        placeholder="Type your message...">
+        <p-button 
+            icon="pi pi-send"
+            [rounded]="true" 
+            size="small" 
+            [outlined]="true" 
+            [disabled]="!messageContent.value"
+            (click)="sendMessage()"
+        />
+        messageContent.value: {{messageContent.value}}
     </p-footer>
     <p-button (onClick)="testChat()">test chat</p-button>
 </p-card>
