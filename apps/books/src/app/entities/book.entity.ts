@@ -18,13 +18,13 @@ export class BookDocument extends AbstractDocument {
     createdByUser: UserDocument;
 
     @Prop({ type: Date, required: true })
-    creationDate: Date;
+    creationAt: Date;
   
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
     updatedByUser:UserDocument;
 
     @Prop({ type: Date, required: true })
-    updateDate: Date;
+    updatedAt: Date;
 }
 
 export const BookSchema = SchemaFactory.createForClass(BookDocument);
