@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth-guard';
 import { UserDocument } from './entities/user.entity';
 import { UsersService } from './user.service';
-import { CurrentUser } from '@libs/common';
+import { CurrentUser, usersMocks } from '@libs/common';
 
 @Controller('users')
 export class UsersController {
@@ -15,9 +15,18 @@ export class UsersController {
     return this.userService.create(createUserDto);
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@CurrentUser() user: UserDocument) {
+
+    return {_id : user._id, email: user.email};
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
-  getCurrentUser(@CurrentUser() user: UserDocument) {
-    return user;
+  async getAllUsers(@CurrentUser() user: UserDocument) {
+    // to remove
+    return [...usersMocks.map(user => {return {_id : user._id, email: user.email}}), {_id : user._id, email: user.email}]
   }
+
 }
