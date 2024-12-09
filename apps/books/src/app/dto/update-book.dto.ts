@@ -1,7 +1,8 @@
+import { UserDTO } from '@libs/common';
 import { PartialType } from '@nestjs/mapped-types';
-import { IsArray, IsDate, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsDate, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { AddBookDto, } from './add-book.dto';
-import { ObjectId } from 'mongoose';
 
 export class UpdateBookDto extends PartialType(AddBookDto) {
 
@@ -18,10 +19,11 @@ export class UpdateBookDto extends PartialType(AddBookDto) {
     authors: string[];
     
     @IsDate()
-    @IsString()
+    @Type(() => Date)
     publishedDate: Date
 
-    @IsString()
-    @IsMongoId()
-    updatedByUserId: ObjectId;
+    @Type(() => UserDTO)
+    @ValidateNested()
+    readonly updatedByUser: UserDTO
+
 }

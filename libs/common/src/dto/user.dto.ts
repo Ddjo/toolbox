@@ -1,6 +1,16 @@
+import { IsEmail, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { ObjectId } from 'mongoose';
 
-export interface UserDTO {
-    _id: string;
-    email: string;
-    password: string;
+export class UserDTO {
+
+    @IsMongoId()
+    @IsNotEmpty()
+    _id!: ObjectId;
+
+    @IsEmail()
+    email!: string;
+ 
+    @IsString()
+    @IsNotEmpty()     
+    password!: string;
 }

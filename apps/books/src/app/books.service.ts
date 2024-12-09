@@ -15,7 +15,7 @@ export class BooksService {
     const createdBook = await this.bookRepository.create({
       ...addBookDto,
       creationDate: new Date(),
-      updatedByUserId: addBookDto.createdByUserId,
+      updatedByUser: addBookDto.createdByUser,
       updateDate: new Date()
     });
 
@@ -40,7 +40,7 @@ export class BooksService {
     return this.bookRepository.findOneAndUpdate({ _id: updateBookDto._id}, 
       {$set: {...updateBookDto,
         updateDate: new Date(),
-        updatedByUserId: updateBookDto.updatedByUserId,
+        updatedByUser: updateBookDto.updatedByUser,
       }}, 
       { _id: 1, title: 1, authors: 1, publishedDate: 1 });
   }

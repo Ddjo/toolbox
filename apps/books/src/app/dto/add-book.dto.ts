@@ -1,5 +1,6 @@
-import { IsArray, IsDate, IsNotEmpty, IsString } from "class-validator";
-import { ObjectId } from "mongoose";
+import { UserDTO } from "@libs/common";
+import { Type } from "class-transformer";
+import { IsArray, IsDate, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 
 export class AddBookDto {
     @IsString()
@@ -11,12 +12,11 @@ export class AddBookDto {
     authors: string[];
     
     @IsDate()
-    @IsString()
+    @Type(() => Date)
     publishedDate: Date
 
-    @IsString()
-    @IsNotEmpty()
-    createdByUserId: ObjectId;
-
-
+    @Type(() => UserDTO)
+    @ValidateNested()
+    readonly createdByUser: UserDTO
 }
+

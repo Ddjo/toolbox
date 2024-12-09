@@ -1,6 +1,6 @@
-import { AbstractDocument } from '@libs/common';
+import { AbstractDocument, UserDocument } from '@libs/common';
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Schema as MongooseSchema, ObjectId, SchemaTypes } from 'mongoose';
+import mongoose, { Schema as MongooseSchema } from 'mongoose';
 
 @Schema({versionKey : false})
 export class BookDocument extends AbstractDocument {
@@ -14,16 +14,16 @@ export class BookDocument extends AbstractDocument {
     @Prop({type: Date, required: true})
     publishedDate: Date
 
-    @Prop({ type: SchemaTypes.ObjectId })
-    createdByUserId: ObjectId;    
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+    createdByUser: UserDocument;
 
-    @Prop()
+    @Prop({ type: Date, required: true })
     creationDate: Date;
-
-    @Prop({ type: SchemaTypes.ObjectId })
-    updatedByUserId: ObjectId;
   
-    @Prop()
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+    updatedByUser:UserDocument;
+
+    @Prop({ type: Date, required: true })
     updateDate: Date;
 }
 

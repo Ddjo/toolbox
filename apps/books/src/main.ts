@@ -5,7 +5,7 @@ import { Logger } from 'nestjs-pino';
 import { ConfigService } from '@nestjs/config';
 import { BooksModule } from './app/books.module';
 import  cookieParser from 'cookie-parser';
-import { Transport } from '@nestjs/microservices';
+import { RpcException, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(BooksModule);
@@ -19,11 +19,21 @@ async function bootstrap() {
   },
   { inheritAppConfig: true },);
   app.use(cookieParser());
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  );
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //   }),
+  // );
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    forbidUnknownValues: true,
+    disableErrorMessages: true,
+    exceptionFactory: (errors) => {
+       return new RpcException(errors);
+    }
+}));
   app.useLogger(app.get(Logger));
 
   await app.startAllMicroservices().then(() => {
