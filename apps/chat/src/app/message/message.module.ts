@@ -1,10 +1,9 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageService } from './message.service';
-import { MessageDocument, MessageSchema } from './entities/message.schemas';
-import { MessageController } from './message.controller';
 import { DatabaseModule } from '@libs/common';
+import { Module } from '@nestjs/common';
+import { MessageDocument, MessageSchema } from './entities/message.entity';
+import { MessageController } from './message.controller';
 import { MessageRepository } from './message.repository';
+import { MessageService } from './message.service';
 
 @Module({
   imports: [
@@ -12,7 +11,6 @@ import { MessageRepository } from './message.repository';
     DatabaseModule.forFeature([
       { name: MessageDocument.name, schema: MessageSchema },
     ]),
-    // MongooseModule.forFeature([{ name: Message.name, schema: MessageSchema }]),
   ],
   providers: [
     MessageService,

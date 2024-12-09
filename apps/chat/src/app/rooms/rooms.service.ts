@@ -1,24 +1,39 @@
+import { UserDto } from '@libs/common';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Room } from './schemas/room.schemas';
-import { CreateRoomDto } from './dto/create-room.dto';
+import { RemoveRoomDto } from './dto/remove-room.dto';
+import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
+import { RoomRepository } from './rooms.repository';
 
 @Injectable()
 export class RoomsService {
 
     constructor(
-        @InjectModel(Room.name) private roomModel: Model<Room>,
+        private readonly roomRepository: RoomRepository
     ) { }
 
-    async create(userId: string, createRoomDto: CreateRoomDto) {
-        createRoomDto.members.push(userId);
+    async create(user: UserDto) {
 
-        const createdRoom = new this.roomModel(createRoomDto);
-        return await createdRoom.save();
+        return await await this.roomRepository.create({
+            members: [user],
+            name: ''
+          });;
+
     }
 
-    async getByRequest(userId: string) {
-        return await this.roomModel.find({ members: userId }).exec();
+    async findAllForUser(user: UserDto) {
+        return  this.roomRepository.find({ members: user }, {});
+    }
+
+    async remove(removeRoomDto: RemoveRoomDto) {
+        return this.roomRepository.findOneAndDelete({ _id: removeRoomDto._id});
+    }
+
+    async update(updateChatRoomDto: UpdateChatRoomDto) {
+
+        return await this.roomRepository.findOneAndUpdate(
+            { _id: updateChatRoomDto._id}, 
+            {$set: updateChatRoomDto},
+            {_id: 1, name: 1, members: 1}
+        );
     }
 }

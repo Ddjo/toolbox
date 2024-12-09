@@ -1,0 +1,23 @@
+:host::ng-deep {
+  display: block;
+  .p-card-content {
+    min-height: 8rem;
+    border-radius: 1rem 1rem 0 0;
+    background-color: var(--surface-800);
+  }
+
+  .p-card-footer {
+    padding: 0;
+  }
+
+  .user{
+    font-size: x-small;
+  }
+
+  .user-infos{ 
+    .p-button {
+      height: 0rem;
+      width: 0rem; 
+    }
+  }
+}

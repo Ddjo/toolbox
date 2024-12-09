@@ -1,14 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environments';
 import { GlobalService } from './global.service';
 import { UserInterface } from '../models/types/user';
+import { tap } from 'rxjs';
+import { UsersStore } from '../store/users/users.store';
+import { IUser } from '@libs/common';
 
 export const url = environment.authApiUrl + '/users';
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService  {
+  readonly usersStore = inject(UsersStore);
 
   constructor(private http: HttpClient, private globalService: GlobalService ) {
   }
@@ -23,6 +27,12 @@ export class UsersService  {
   // }
 
   getUser() {
-    return this.http.get<UserInterface>(url);
+    return this.http.get<IUser>(`${url}/me`);
+  }
+
+  getAllUsers() {
+    return this.http.get<IUser[]>(`${url}`).pipe(
+      tap(users =>this.usersStore.setUsers(users)),
+    );;
   }
 }

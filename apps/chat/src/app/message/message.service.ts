@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { MessageDocument } from './entities/message.schemas';
+import { MessageDocument } from './entities/message.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { GetMessageDto } from './dto/get-message.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageRepository } from './message.repository';
+import { RoomDto } from './dto/room.dto';
 
 
 @Injectable()
@@ -24,8 +25,13 @@ export class MessageService {
 
     // console.log('message service creating ', createdMessage)
     // return createdMessage.save();
+
+    // const room: RoomDto ={
+    //   _id : 'id-test',
+    //   members: [{_id: ''}]
+    // }
     
-    return await this.messageRepository.create({...createMessageDto});
+    return await this.messageRepository.create(createMessageDto);
     
   }
   

@@ -1,16 +1,19 @@
+import { DatabaseModule } from '@libs/common';
 import { Module } from '@nestjs/common';
-import { RoomsService } from './rooms.service';
+import { RoomDocument, RoomSchema } from './entities/room.entity';
 import { RoomsController } from './rooms.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Room, RoomDocument, RoomSchema } from './schemas/room.schemas';
+import { RoomRepository } from './rooms.repository';
+import { RoomsService } from './rooms.service';
 // import { ChatsModule } from 'src/chats/chats.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Room.name, schema: RoomSchema }]),
-    // ChatsModule,
-  ],
+    DatabaseModule,
+    DatabaseModule.forFeature([
+      { name: RoomDocument.name, schema: RoomSchema },
+    ]),
+    ],
   controllers: [RoomsController],
-  providers: [RoomsService],
+  providers: [RoomsService, RoomRepository],
 })
 export class RoomsModule { }

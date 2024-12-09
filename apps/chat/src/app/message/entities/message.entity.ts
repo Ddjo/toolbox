@@ -1,10 +1,7 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { AbstractDocument, UserDocument } from "@libs/common";
-import mongoose, { HydratedDocument, Types } from "mongoose";
-// import { Room } from "../../rooms/schemas/room.schemas";
-
-
-// export type MessageDocument = HydratedDocument<Message>;
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose from "mongoose";
+import { RoomDocument } from "../../rooms/entities/room.entity";
 
 @Schema({
     timestamps: true,
@@ -16,10 +13,10 @@ export class MessageDocument extends AbstractDocument {
     content: string;
 
     @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: UserDocument.name, autopopulate: true })
-    sender_id: UserDocument;
+    sender: UserDocument;
 
-    // @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: Room.name })
-    // room_id: string;
+    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: RoomDocument.name })
+    room_id: RoomDocument;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(MessageDocument);

@@ -45,5 +45,3 @@ export const BooksStore = signalStore(
   }))
 );
 
-// export type BooksStore = InstanceType<typeof BooksStore>;
-

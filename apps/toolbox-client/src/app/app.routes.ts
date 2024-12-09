@@ -8,6 +8,7 @@ import { LibraryComponent } from './pages/books-page/library/library.component';
 import { LibraryResolver } from './pages/books-page/library/resolvers/library.resolver';
 import { BookComponent } from './pages/books-page/book/book.component';
 import { BookResolver } from './pages/books-page/book/resolvers/book.resolver';
+import { ChatPageResolver } from './pages/chat-page/resolvers/chat-page.resolver';
 
 export const routes: Routes = [
   { 
@@ -32,6 +33,7 @@ export const routes: Routes = [
     path: 'chat',
     loadComponent: () => import('./pages/chat-page/chat-page.component').then(x => x.ChatPageComponent),
     canActivate: [AuthGuard],
+    resolve: [ChatPageResolver],
   },
   { 
     path: 'books',

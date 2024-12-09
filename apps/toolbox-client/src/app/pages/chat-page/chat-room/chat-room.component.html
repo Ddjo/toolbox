@@ -1,0 +1,18 @@
+<p-card class="flex flex-column	min-w-full">
+    <p-header>
+        <p-button 
+        icon="pi pi-trash " 
+        [rounded]="true" 
+        [text]="true"
+        size="small" 
+        (onClick)="removeChatRoom()"
+        />
+    </p-header>
+    <div class="flex flex-wrap gap-4 m-3 min-h-full">
+        <app-chat *ngFor="let memberId of chatRoom().members" [memberId]="memberId" [chatRoom]="chatRoom()"/>
+    
+        <div class=" gap-3 align-items-center">
+            <p-button (onClick)="addMemberToChat()">Add a member to the conversation</p-button>
+        </div>
+    </div>
+</p-card>

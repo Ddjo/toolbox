@@ -1,31 +1,35 @@
-import { Body, Controller, Get, Post, Request } from '@nestjs/common';
-import { CreateRoomDto } from './dto/create-room.dto';
+import { UserDto } from '@libs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { RemoveRoomDto } from './dto/remove-room.dto';
 import { RoomsService } from './rooms.service';
-
+import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 
 @Controller('rooms')
 export class RoomsController {
 
   constructor(
     private readonly roomsService: RoomsService,
-    // private readonly messageService: MessageService,
   ) { }
 
-  @Post()
-  create(@Request() req, @Body() createRoomDto: CreateRoomDto) {
-    return this.roomsService.create(req.user._id.toString(), createRoomDto);
+  @MessagePattern('get-all-chat-rooms-for-user')
+  async findAllForUser(@Payload() user: UserDto) {
+    return this.roomsService.findAllForUser(user);
   }
 
-  @Get()
-  getByRequest(@Request() req) {
-    return this.roomsService.getByRequest(req.user._id.toString());
+  @MessagePattern('create-chat-room')
+  async create(@Payload() user: UserDto) {
+    return this.roomsService.create(user);
   }
 
-  // @Get(':id/chats')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
-  // @ApiParam({ name: 'id', required: true })
-  // getChats(@Param('id') id, @Query() dto: GetChatDto) {
-  //   return this.messageService.findAll(id, new getles(dto));
-  // }
+  @MessagePattern('remove-chat-room')
+  async remove(@Payload() removeRoomDto: RemoveRoomDto) {
+    return this.roomsService.remove(removeRoomDto);  
+  }
+
+  @MessagePattern('update-chat-room')
+  async addMemberToChatRoom(@Payload() updateChatRoomDto: UpdateChatRoomDto) {
+    return this.roomsService.update(updateChatRoomDto);  
+  }
+
 }

@@ -1,9 +1,8 @@
+import { AbstractDocument, UserDocument } from "@libs/common";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { HydratedDocument, Types } from "mongoose";
-import { RoomType } from "../enums/room-type.enum";
-import { UserDocument } from "@libs/common";
+import mongoose from "mongoose";
 
-export type RoomDocument = HydratedDocument<Room>;
+// export type RoomDocument = HydratedDocument<Room>;
 
 
 @Schema({
@@ -15,7 +14,7 @@ export type RoomDocument = HydratedDocument<Room>;
     //     },
     // })
 })
-export class Room {
+export class RoomDocument extends AbstractDocument {
 
     @Prop()
     name: string;
@@ -27,7 +26,7 @@ export class Room {
     members: UserDocument[];
 }
 
-export const RoomSchema = SchemaFactory.createForClass(Room);
+export const RoomSchema = SchemaFactory.createForClass(RoomDocument);
 
 // export class RoomDocument {
 //     _id: Types.ObjectId;

@@ -4,9 +4,11 @@ import { ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { ChatService } from "./chat.service";
 import { ChatGateway } from "./gateway/chat.gateway";
+import { ChatController } from "./chat.controller";
 
 @Module({
     providers: [ChatService, ChatGateway],
+    controllers: [ChatController],
     imports: [ ClientsModule.registerAsync([
         {
           name: AUTH_SERVICE,

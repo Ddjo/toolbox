@@ -1,9 +1,10 @@
-import { CurrentUser, UserDTO, WsJwtAuthGuard } from '@libs/common';
+import { CurrentUser, UserDto, WsJwtAuthGuard } from '@libs/common';
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from "socket.io";
 import { ChatService } from '../chat.service';
 import { CreateMessageDto } from '../dto/create-message.dto';
+import { Logger } from 'nestjs-pino';
 
 // @WebSocketGateway({cors: { origin :  ['http://localhost:4200']}})
 @WebSocketGateway()
@@ -32,16 +33,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @ConnectedSocket() client,
     //   @MessageBody(new ValidationPipe())  createChatDto: CreateMessageDto,
       @MessageBody()  createChatDto: CreateMessageDto,
-      @CurrentUser() user: UserDTO
+      @CurrentUser() user: UserDto
     ) {
       // const senderId = client.handshake.user._id.toString();
       // const chat = await this.chatService.createMessage(createChatDto, user);
-  
+
       try {
-        this.chatService.createMessage(createChatDto, user).subscribe(res => {
-  
-          this.server.emit('new-message', res);
-        })
+
+        this.chatService.createMessage(createChatDto, user).subscribe({
+          next(res) {
+            this.server.emit('new-message', res);
+          },
+          error(err) {
+            console.log('error chat gateway : ', err)   ;
+          },
+        });
+        // this.chatService.createMessage(createChatDto, user).subscribe({         
+        //   error: err =>  console.log('error chat gateway : ', err),
+        //  complete: res => this.server.emit('new-message', res)
+        // })
       } catch(err){
         console.log('error chat gateway : ', err);
       }
@@ -71,7 +81,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     handleMessage(
         @MessageBody() data: string,
         @ConnectedSocket() client: Socket,
-        @CurrentUser() user: UserDTO
+        @CurrentUser() user: UserDto
     ) : string {
 
         console.log('test-chat received')
