@@ -1,0 +1,15 @@
+export const USERS_CREATE_USER = 'create-user';
+export const USERS_GET_ALL_USERS = 'get-all-users';
+export const USERS_VERIFY_USER = 'verify-user';
+export const AUTH_LOGIN = 'login';
+export const AUTH_LOGOUT = 'logout';
+export const AUTH_AUTHENTICATE = 'authenticate';
+export const BOOKS_GET_ALL_BOOKS = 'get-all-books';
+export const BOOKS_CREATE_BOOK = 'create-book';
+export const BOOKS_GET_BOOK = 'get-book';
+export const BOOKS_UPDATE_BOOK = 'update-book';
+export const BOOKS_DELETE_BOOK = 'delete-book';
+export const CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER = 'get-all-chat-rooms-for-user';
+export const CHAT_ROOM_CREATE_CHAT_ROOM = 'create-chat-room';
+export const CHAT_ROOM_UPDATE_CHAT_ROOM = 'update-chat-room';
+export const CHAT_ROOM_DELETE_CHAT_ROOM = 'delete-chat-room';

@@ -7,6 +7,7 @@ import { Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth-guard';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CurrentUser } from '@libs/common';
+import { AUTH_AUTHENTICATE } from '@constants';
 
 @Controller('auth')
 export class AuthController {
@@ -40,7 +41,7 @@ export class AuthController {
   }
   
   @UseGuards(JwtAuthGuard)
-  @MessagePattern('authenticate')
+  @MessagePattern(AUTH_AUTHENTICATE)
   async authenticate(@Payload() data: any) {
     return data.user;
   }

@@ -11,13 +11,7 @@ import { AddBookDto } from "./dto/add-book.dto";
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
-  @Get('test-books')
-  @UseGuards(JwtAuthGuard)
-  testAuth() {
-    console.log('send test-books from gateway')
-    return this.booksService.testBooks();
-  }
-  
+
   @Get()
   @UseGuards(JwtAuthGuard)
   getBooks() { 

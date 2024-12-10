@@ -1,3 +1,4 @@
+import { BOOKS_CREATE_BOOK, BOOKS_DELETE_BOOK, BOOKS_GET_ALL_BOOKS, BOOKS_GET_BOOK, BOOKS_UPDATE_BOOK } from '@constants';
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BooksService } from './books.service';
@@ -11,37 +12,30 @@ import { UpdateBookDto } from './dto/update-book.dto';
 export class BookController {
   constructor(private readonly booksService: BooksService) {}
 
-
-  @MessagePattern('test-books')
-  async testBooks() {
-    // console.log('test-books received');
-    return [];
-  }
-
-  @MessagePattern('get-all-books')
+  @MessagePattern(BOOKS_GET_ALL_BOOKS)
   findAll() {
     // console.log('books ms - getting all books')
     return this.booksService.findAll();
   }
 
-  @MessagePattern('create-book')
+  @MessagePattern(BOOKS_CREATE_BOOK)
   async create(@Payload() addBookDto: AddBookDto) {
     return this.booksService.create(addBookDto);
   }
 
-  @MessagePattern('get-book')
+  @MessagePattern(BOOKS_GET_BOOK)
   async findOne(@Payload() getBookDto: GetBookDto) {
     return this.booksService.findOne(getBookDto);
   }
 
-  @MessagePattern('update-book')
+  @MessagePattern(BOOKS_UPDATE_BOOK)
   async update(@Payload() updateBookDto : UpdateBookDto) {
     // console.log('update-book received', updateBookDto);
     return this.booksService.update(updateBookDto._id, updateBookDto);  
   }
 
-  @MessagePattern('remove-book')
-  async remove(@Payload() removeBookDto: RemoveBookDto) {
+  @MessagePattern(BOOKS_DELETE_BOOK)
+  async delete(@Payload() removeBookDto: RemoveBookDto) {
     // console.log('remove-book received', removeBookDto);
     return this.booksService.remove(removeBookDto);  
   }
