@@ -1,20 +1,12 @@
 
 <p-menubar [model]="items" >
-    <ng-template pTemplate="end">
-        <div class="flex flex-row gap-2 align-items-center">
+    <ng-template #end>
+        <div class="flex items-center align-items-center gap-4">
             @if (currentUser()) {
                 <i class="pi pi-user"></i>
                 Logged as {{currentUser()?.email}}
                 <p-button (click)="logout()" size="small">Logout</p-button>
             }
-            <!-- <div>
-                <span>Mock data from google API</span> 
-                <div>
-                    <p-inputSwitch 
-                    [ngModel]="mockResponses$ | async" 
-                    (onChange)="mockResponses$.next($event.checked)" />
-                </div>
-            </div> -->
         </div>
     </ng-template>
 </p-menubar>

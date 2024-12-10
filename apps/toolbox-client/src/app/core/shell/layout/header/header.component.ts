@@ -1,15 +1,13 @@
 import { Component, inject } from '@angular/core';
 // import { GlobalService } from '@core/services/global.service';
-import { Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { BehaviorSubject } from 'rxjs';
-import { AuthService } from '../../../services/auth.service';
-import { GlobalService } from '../../../services/global.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MenubarModule } from 'primeng/menubar';
-import { InputSwitchModule } from 'primeng/inputswitch';
+import { Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { MenubarModule } from 'primeng/menubar';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -25,7 +23,6 @@ import { ButtonModule } from 'primeng/button';
   ]
 })
 export class HeaderComponent {
-  mockResponses$: BehaviorSubject<boolean>;
   
   authService = inject(AuthService);
   currentUser = this.authService.currentUserSig;
@@ -43,10 +40,9 @@ export class HeaderComponent {
   }];
 
   constructor(
-    private globalService : GlobalService,
     private router: Router
   ) {
-    this.mockResponses$ = this.globalService.mockResponses;
+    // this.mockResponses$ = this.globalService.mockResponses;
   }
 
   logout() {

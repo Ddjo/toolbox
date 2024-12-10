@@ -1,11 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environments';
-import { GlobalService } from './global.service';
-import { UserInterface } from '../models/types/user';
-import { tap } from 'rxjs';
-import { UsersStore } from '../store/users/users.store';
 import { IUser } from '@libs/common';
+import { tap } from 'rxjs';
+import { environment } from '../../../environments/environments';
+import { UsersStore } from '../store/users/users.store';
 
 export const url = environment.authApiUrl + '/users';
 @Injectable({
@@ -14,12 +12,12 @@ export const url = environment.authApiUrl + '/users';
 export class UsersService  {
   readonly usersStore = inject(UsersStore);
 
-  constructor(private http: HttpClient, private globalService: GlobalService ) {
+  constructor(private http: HttpClient ) {
   }
 
   createUser(user: {email: string, password: string}){
     // return this.http.post<Partial<{_id: string, email: string, password: string, error: string}>>(url + '/create-user', user);
-    return this.http.post<UserInterface>(url, user);
+    return this.http.post<IUser>(url, user);
   }
 
   // login(user: {email: string, password: string}) {

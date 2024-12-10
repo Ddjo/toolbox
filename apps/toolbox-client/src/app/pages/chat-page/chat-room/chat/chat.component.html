@@ -1,26 +1,35 @@
 <p-card>
-    <p-footer class="flex-row align-content-center">
+    <p-footer class="flex-row align-content-center gap-3">
         <input 
             pSize="small" 
+            class="mr-2"
             pInputText             
             [formControl]="messageContent"
             placeholder="Type your message...">
         <p-button 
             icon="pi pi-send"
             size="small" 
-            [outlined]="true" 
-            [rounded]="true" 
+            [loading]="isSendingMessage()"
+            [outlined]="false" 
+            [rounded]="false" 
             [text]="true"
             [disabled]="!messageContent.value"
             (click)="sendMessage()"
         />
         <!-- messageContent.value: {{messageContent.value}} -->
     </p-footer>
-    
+
     <!-- <p-button (onClick)="testChat()">test chat</p-button> -->
 </p-card>
 <div class="flex flex-row justify-content-between gap-6 mt-2 user-infos">
     <span class="user mt-2">connected as {{member()?.email}}</span>
-    <p-button *ngIf="currentUser()?.email !== member()?.email" icon="pi pi-sign-out" aria-label="Save" (click)="leaveChat()" size="small" />
+    <p-button 
+        *ngIf="currentUser()?.email !== member()?.email" 
+        icon="pi pi-sign-out" 
+        aria-label="Save" 
+        (click)="leaveChat()" 
+        [loading]="isLoading()"
+        size="small" 
+    />
 
 </div>

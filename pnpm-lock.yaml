@@ -237,6 +237,9 @@ importers:
       '@playwright/test':
         specifier: ^1.36.0
         version: 1.49.0
+      '@primeng/themes':
+        specifier: 18.0.0
+        version: 18.0.0
       '@schematics/angular':
         specifier: ~18.2.0
         version: 18.2.12(chokidar@3.6.0)
@@ -2905,6 +2908,9 @@ packages:
     resolution: {integrity: sha512-DMulbwQURa8rNIQrf94+jPJQ4FmOVdpE5ZppRNvWVjvhC+6sOeo28r8MgIpQRYouXRtt/FCCXU7zn20jnHR4Qw==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@primeng/themes@18.0.0':
+    resolution: {integrity: sha512-0S4o0dMhBYkXtt8mSW0XOiMtlkhmGDvFSkeToQ7IMqQiBGg30LcopvYKDEhnE1C2Ejku6jkl17vy7X2YgFZM9A==}
 
   '@primeuix/styled@0.3.2':
     resolution: {integrity: sha512-ColZes0+/WKqH4ob2x8DyNYf1NENpe5ZguOvx5yCLxaP8EIMVhLjWLO/3umJiDnQU4XXMLkn2mMHHw+fhTX/mw==}
@@ -12282,6 +12288,10 @@ snapshots:
   '@playwright/test@1.49.0':
     dependencies:
       playwright: 1.49.0
+
+  '@primeng/themes@18.0.0':
+    dependencies:
+      '@primeuix/styled': 0.3.2
 
   '@primeuix/styled@0.3.2':
     dependencies:

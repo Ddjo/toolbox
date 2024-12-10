@@ -4,6 +4,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
 
 // const socketConfig: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
 
@@ -13,6 +15,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withFetch()),
     provideAnimations(),
+    providePrimeNG({ 
+        theme: {
+            preset: Aura
+        }
+    })
     // importProvidersFrom(SocketIoModule.forRoot(socketConfig))
     // provideStore(),
     // provideEffects(),

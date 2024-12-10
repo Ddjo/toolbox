@@ -26,7 +26,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async getAllUsers(@CurrentUser() user: UserDocument) {
     // to remove
-    return [...usersMocks.map(user => {return {_id : user._id, email: user.email}}), {_id : user._id, email: user.email}]
+    // return [...usersMocks.map(user => {return {_id : user._id, email: user.email}}), {_id : user._id, email: user.email}]
+    return this.userService.getAll();
   }
 
 }

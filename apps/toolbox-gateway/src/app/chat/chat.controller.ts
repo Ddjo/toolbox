@@ -1,7 +1,7 @@
 
 // import { SignInDto } from './dto/sign-in.dto';
 
-import { CurrentUser, JwtAuthGuard, UserDto, usersMocks } from "@libs/common";
+import { CurrentUser, JwtAuthGuard, UserDto } from "@libs/common";
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ChatService } from "./chat.service";
@@ -39,16 +39,4 @@ export class ChatController {
     return this.chatService.remove(id);
   }
 
-  @Post('add-member-to-chat-room')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  addMemberToChatRoom(@Body() updateChatRoomDto: UpdateChatRoomDto) {
-
-    const randomUser = usersMocks
-    .filter(user => !updateChatRoomDto.members.includes(user._id) )[Math.floor(Math.random() * usersMocks.length)];
-
-    updateChatRoomDto.members.push(randomUser._id);
-
-    return this.chatService.update(updateChatRoomDto._id, updateChatRoomDto);
-  }
 }

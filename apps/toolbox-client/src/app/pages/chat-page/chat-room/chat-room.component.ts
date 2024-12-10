@@ -1,13 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IChatRoom } from '@libs/common';
-import { ChatService } from '../../../../../src/app/core/services/chat.service';
-import { CardModule } from 'primeng/card';
-import { ChatComponent } from "./chat/chat.component";
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { filter, switchMap } from 'rxjs';
+import { AuthService } from '../../../../../src/app/core/services/auth.service';
+import { ChatService } from '../../../../../src/app/core/services/chat.service';
+import { ChatRoomsStore } from '../../../../../src/app/core/store/chat/chat-room.store';
 import { UsersStore } from '../../../../../src/app/core/store/users/users.store';
+import { ChatComponent } from "./chat/chat.component";
 
 @Component({
     selector: 'app-chat-room',
@@ -23,22 +27,35 @@ import { UsersStore } from '../../../../../src/app/core/store/users/users.store'
     CardModule,
     InputTextModule,
     ChatComponent,
+    SelectModule
 ]
 })
-export class ChatRoomComponent  {
+export class ChatRoomComponent implements OnInit {
 
-  // @Input() chatRoom!: IChatRoom;
   chatRoom = input.required<IChatRoom>();
 
-
-  readonly chatService = inject(ChatService);
   readonly userStore = inject(UsersStore);
+  readonly chatRoomsStore = inject(ChatRoomsStore);
+  readonly chatService = inject(ChatService);
+  readonly authService = inject(AuthService);
 
+  currentUser = this.authService.currentUserSig;
+  addMemberControl = new FormControl();
 
-  addMemberToChat() {
-    this.chatService.addMemberToChatRoom(this.chatRoom()).subscribe();
+  availableUsersToAdd = computed(() => {
+    return this.userStore.usersEntities().filter(user => 
+      !this.chatRoom().members.includes(user._id)
+      && user._id !== this.currentUser()?._id
+    )
+  })
 
+  ngOnInit(): void {
+    this.addMemberControl.valueChanges.pipe(
+      filter(user => user),
+      switchMap(user => this.chatService.addMemberToChatRoom(this.chatRoom(), user))
+    ).subscribe(() => this.addMemberControl.setValue(undefined));
   }
+
 
   removeChatRoom() {
     this.chatService.removeChatRoom(this.chatRoom()._id).subscribe();

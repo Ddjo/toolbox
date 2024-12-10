@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { LocalStorageVars } from '@constants';
+import { IUser } from '@libs/common';
 import { tap } from 'rxjs';
 import { environment } from '../../../../src/environments/environments';
-import { UserInterface } from '../models/types/user';
 import { LocalStorageService } from './local-storage.service';
 
 export const url = environment.authApiUrl + '/auth';
@@ -12,7 +12,7 @@ export const url = environment.authApiUrl + '/auth';
 })
 export class AuthService  {
 
-  currentUserSig = signal<UserInterface |undefined>(undefined);
+  currentUserSig = signal<IUser |undefined>(undefined);
 
   constructor(
     private http: HttpClient, 
@@ -20,8 +20,8 @@ export class AuthService  {
   ) {}
 
   login(user: {email: string, password: string}) {
-    return this.http.post<{email: string, token: string}>(url + '/login', user).pipe(
-      tap(() => this.currentUserSig.set({email: user.email})),
+    return this.http.post<IUser>(url + '/login', user).pipe(
+      tap((user) => this.currentUserSig.set(user)),
       // tap(console.log),
       tap((res) => this.localStorageService.setItem(LocalStorageVars.accessToken,res.token))
     );

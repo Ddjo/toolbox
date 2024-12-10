@@ -3,7 +3,7 @@
   .p-card-content {
     min-height: 8rem;
     border-radius: 1rem 1rem 0 0;
-    background-color: var(--surface-800);
+    background-color: var(--p-inputtext-color);
   }
 
   .p-card-footer {
@@ -16,8 +16,8 @@
 
   .user-infos{ 
     .p-button {
-      height: 0rem;
-      width: 0rem; 
+      height: 1.5rem;
+      width: 2rem;
     }
   }
 }

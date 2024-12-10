@@ -4,7 +4,7 @@ import { Socket } from 'ngx-socket-io';
 import { Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ChatRoomsStore } from '../store/chat/chat-room.store';
-import { IChatRoom } from '@libs/common';
+import { IChatRoom, IUser } from '@libs/common';
 
 export const url = environment.gatewayApiUrl + '/chat';
 
@@ -31,39 +31,53 @@ export class ChatService extends Socket {
   }
 
   getChatRooms() {
+    this.chatRoomsStore.setLoading(true);
     return this.http.get<IChatRoom[]>(url).pipe(
       tap(chatRooms =>this.chatRoomsStore.setChatRooms(chatRooms)),
+      tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 
   createChatRoom(): Observable<IChatRoom> {
+    this.chatRoomsStore.setLoading(true);
     return this.http.post<IChatRoom>(url, {}).pipe(
       tap(chatRoom =>this.chatRoomsStore.addChatRoom(chatRoom)),
+      tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
   
   updateChatRoom(chatRoom: IChatRoom): Observable<IChatRoom> {
+    this.chatRoomsStore.setLoading(true);
     return this.http.patch<IChatRoom>(`${url}/${chatRoom._id}`, chatRoom).pipe(
       tap(chatRoom =>this.chatRoomsStore.setChatRoom(chatRoom)),
+      tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 
   removeChatRoom(id: string): Observable<IChatRoom> {
+    this.chatRoomsStore.setLoading(true);
     return this.http.delete<IChatRoom>(`${url}/${id}`).pipe(
       tap(chatRoom =>this.chatRoomsStore.removeChatRoom(chatRoom)),
+      tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 
-  addMemberToChatRoom(chatRoom: IChatRoom): Observable<IChatRoom> {
-    return this.http.post<IChatRoom>(`${url}/add-member-to-chat-room`, chatRoom).pipe(
-      tap(chatRoom =>this.chatRoomsStore.updateChatRoom(chatRoom)),
-    );
+  addMemberToChatRoom(chatRoom: IChatRoom, user: IUser): Observable<IChatRoom> {
+    
+    return this.updateChatRoom({
+      ...chatRoom,
+      members: [
+        ...chatRoom.members, 
+        user._id
+      ]
+    });
   }
 
   removeMemberFromChatRoom(chatRoom: IChatRoom, userId: string): Observable<IChatRoom> {
-    chatRoom.members = chatRoom.members.filter(member => member !== userId);
-
-    return this.updateChatRoom(chatRoom);
+    return this.updateChatRoom({
+      ...chatRoom, 
+      members : chatRoom.members.filter(member => member !== userId)
+    });
   }
 
 }

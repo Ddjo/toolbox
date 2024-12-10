@@ -18,6 +18,7 @@ const chatRoomsConfig = entityConfig({
 
 const chatRoomsState = signalState({
   loaded: false,
+  isLoading: false,
   error: ''
 });
 
@@ -28,20 +29,27 @@ export const ChatRoomsStore = signalStore(
   withMethods((store, ) => ({
     setChatRoom(chatRoom: IChatRoom) : void {
       patchState(store, setEntity(chatRoom, chatRoomsConfig))
+      patchState(store, {isLoading: false})
     },
     setChatRooms(chatRooms: IChatRoom[]) : void {
       patchState(store, setAllEntities(chatRooms, chatRoomsConfig))
-      patchState(store, {error:'', loaded: true})
+      patchState(store, {loaded: true, isLoading: false})
     },
     addChatRoom(chatRoom: IChatRoom): void {
       patchState(store, addEntity(chatRoom, chatRoomsConfig));
+      patchState(store, {isLoading: false})
     },
     updateChatRoom(chatRoom: IChatRoom): void {
-        patchState(store, updateEntity({id: chatRoom._id, changes:chatRoom}, chatRoomsConfig));
+      patchState(store, updateEntity({id: chatRoom._id, changes:chatRoom}, chatRoomsConfig));
+      patchState(store, {isLoading: false})
     },
     removeChatRoom(chatRoom: IChatRoom): void {
       patchState(store, removeEntity(chatRoom._id, chatRoomsConfig));
+      patchState(store, {isLoading: false})
     },
+    setLoading(value: boolean): void {
+      patchState(store, {isLoading: value})
+    }
   }))
 );
 
