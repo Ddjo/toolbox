@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnDestroy, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnDestroy, output, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IChatRoom } from '@libs/common';
+import { IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -31,13 +31,14 @@ export class ChatComponent implements OnDestroy {
   readonly chatRoomsStore = inject(ChatRoomsStore);
 
   authService = inject(AuthService);
-  memberId = input.required<string>();
-  chatRoom = input.required<IChatRoom>();
+  member = input.required<IUser>();
+
+  memberLeavesChat = output<IUser>();
+  sendMessage = output<string | null>();
   
   currentUser = this.authService.currentUserSig;
-  messageContent = new FormControl<string | undefined>(undefined);
+  messageContent = new FormControl<string | null>(null);
 
-  member = computed(() => this.userStore.usersEntities().find(user => user._id === this.memberId()) );
   isLoading = signal(false);
   isSendingMessage = signal(false);
 
@@ -50,15 +51,5 @@ export class ChatComponent implements OnDestroy {
   testChat() {
     this.chatService.emit('test-chat')
   }
-  
-  sendMessage() {
-    this.isSendingMessage.set(true);
-    this.chatService.sendMessage('id-test', this.messageContent.getRawValue() as string);
-  }
 
-  leaveChat() {
-    this.isLoading.set(true)
-    this.chatService.removeMemberFromChatRoom(this.chatRoom(), this.memberId())
-      .subscribe(() => this.isLoading.set(false));
-  }
  }

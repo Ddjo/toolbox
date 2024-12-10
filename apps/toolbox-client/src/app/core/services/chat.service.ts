@@ -22,8 +22,8 @@ export class ChatService extends Socket {
     });
   }
 
-  sendMessage(roomId: string, message: string): void {
-    this.emit('send-message', {room_id: roomId, content: message}); 
+  sendMessage(chatRoom: IChatRoom, sender: IUser, message: string): void {
+    this.emit('send-message', {chatRoom, sender, message}); 
   }
 
   getNewMessage(): Observable<string> {
@@ -68,15 +68,15 @@ export class ChatService extends Socket {
       ...chatRoom,
       members: [
         ...chatRoom.members, 
-        user._id
+        user
       ]
     });
   }
 
-  removeMemberFromChatRoom(chatRoom: IChatRoom, userId: string): Observable<IChatRoom> {
+  removeMemberFromChatRoom(chatRoom: IChatRoom, user: IUser): Observable<IChatRoom> {
     return this.updateChatRoom({
       ...chatRoom, 
-      members : chatRoom.members.filter(member => member !== userId)
+      members : chatRoom.members.filter(member => member._id !== user._id)
     });
   }
 

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IChatRoom } from '@libs/common';
+import { IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -44,7 +44,7 @@ export class ChatRoomComponent implements OnInit {
 
   availableUsersToAdd = computed(() => {
     return this.userStore.usersEntities().filter(user => 
-      !this.chatRoom().members.includes(user._id)
+      !this.chatRoom().members.map(member => member._id).includes(user._id)
       && user._id !== this.currentUser()?._id
     )
   })
@@ -59,5 +59,15 @@ export class ChatRoomComponent implements OnInit {
 
   removeChatRoom() {
     this.chatService.removeChatRoom(this.chatRoom()._id).subscribe();
+  }
+
+  sendMessage(message: string | null, member: IUser) {
+    console.log('message ' + message + ' sent by ' + member.email)
+    this.chatService.sendMessage(this.chatRoom(), member, message as string);
+  }
+
+  memberLeavesChat(member: IUser) {
+    this.chatService.removeMemberFromChatRoom(this.chatRoom(), member)
+      .subscribe();
   }
  }

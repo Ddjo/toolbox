@@ -13,15 +13,17 @@ export class RoomsService {
 
     async create(user: UserDto) {
 
-        return await await this.roomRepository.create({
-            members: [user],
-            name: ''
-          });;
+        return await this.roomRepository.create(
+            {
+                members: [user],
+                name: ''
+            }, 
+            {path: 'members', select: '_id, email'});
 
     }
 
     async findAllForUser(user: UserDto) {
-        return  this.roomRepository.find({ members: user }, {});
+        return this.roomRepository.find({ members: user }, {}, {path: 'members', select: '_id, email'});
     }
 
     async remove(removeRoomDto: RemoveRoomDto) {
@@ -33,7 +35,8 @@ export class RoomsService {
         return await this.roomRepository.findOneAndUpdate(
             { _id: updateChatRoomDto._id}, 
             {$set: updateChatRoomDto},
-            {_id: 1, name: 1, members: 1}
+            {_id: 1, name: 1, members: 1}, 
+            {path: 'members', select: '_id, email'}
         );
     }
 }

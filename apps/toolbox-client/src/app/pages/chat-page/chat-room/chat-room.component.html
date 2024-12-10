@@ -9,7 +9,11 @@
         />
     </p-header>
     <div class="flex flex-wrap gap-4 m-3 min-h-full">
-        <app-chat *ngFor="let memberId of chatRoom().members" [memberId]="memberId" [chatRoom]="chatRoom()"/>
+        <app-chat *ngFor="let member of chatRoom().members" 
+        [member]="member" 
+        (sendMessage)="sendMessage($event, member)"
+        (memberLeavesChat)="memberLeavesChat(member)"
+        />
     
         <div class=" gap-3 align-items-center">
             @if (availableUsersToAdd().length) {

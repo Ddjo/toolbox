@@ -14,7 +14,7 @@
             [rounded]="false" 
             [text]="true"
             [disabled]="!messageContent.value"
-            (click)="sendMessage()"
+            (click)="sendMessage.emit(messageContent.value)"
         />
         <!-- messageContent.value: {{messageContent.value}} -->
     </p-footer>
@@ -22,14 +22,13 @@
     <!-- <p-button (onClick)="testChat()">test chat</p-button> -->
 </p-card>
 <div class="flex flex-row justify-content-between gap-6 mt-2 user-infos">
-    <span class="user mt-2">connected as {{member()?.email}}</span>
+    <span class="user mt-2">connected as {{member().email}}</span>
     <p-button 
         *ngIf="currentUser()?.email !== member()?.email" 
         icon="pi pi-sign-out" 
         aria-label="Save" 
-        (click)="leaveChat()" 
+        (click)="memberLeavesChat.emit(this.member())" 
         [loading]="isLoading()"
         size="small" 
     />
-
 </div>

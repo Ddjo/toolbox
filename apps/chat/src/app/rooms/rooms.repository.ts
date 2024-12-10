@@ -10,7 +10,9 @@ export class RoomRepository extends AbstractRepository<RoomDocument> {
 
     constructor(
         @InjectModel(RoomDocument.name)
-        protected readonly roomModel: Model<RoomDocument>
+        protected readonly roomModel: Model<RoomDocument>,
+        // @InjectModel(UserDocument.name) private readonly users: Model<UserDocument>
+
     ) {
         super(roomModel);
     }

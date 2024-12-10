@@ -1,11 +1,11 @@
 import { IsEmail, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
-import { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 export class UserDto {
 
     @IsMongoId()
     @IsNotEmpty()
-    _id!: ObjectId;
+    _id!: mongoose.Schema.Types.ObjectId;
 
     @IsEmail()
     email!: string;

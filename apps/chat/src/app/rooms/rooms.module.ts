@@ -1,4 +1,4 @@
-import { DatabaseModule } from '@libs/common';
+import { DatabaseModule, UserDocument, UserSchema } from '@libs/common';
 import { Module } from '@nestjs/common';
 import { RoomDocument, RoomSchema } from './entities/room.entity';
 import { RoomsController } from './rooms.controller';
@@ -11,6 +11,7 @@ import { RoomsService } from './rooms.service';
     DatabaseModule,
     DatabaseModule.forFeature([
       { name: RoomDocument.name, schema: RoomSchema },
+      { name: UserDocument.name, schema: UserSchema },
     ]),
     ],
   controllers: [RoomsController],

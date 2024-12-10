@@ -31,7 +31,7 @@ export class MessageService {
     //   members: [{_id: ''}]
     // }
     
-    return await this.messageRepository.create(createMessageDto);
+    // return await this.messageRepository.create(createMessageDto);
     
   }
   

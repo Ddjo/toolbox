@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsMongoId, IsNotEmpty, IsString } from "class-validator";
-import { ObjectId } from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 
 export class UpdateChatRoomDto {
 
@@ -16,6 +16,6 @@ export class UpdateChatRoomDto {
     @ApiProperty()
     @IsArray()
     @IsNotEmpty()
-    members: string[];
+    members: mongoose.Schema.Types.ObjectId[];
 
 }
