@@ -13,3 +13,4 @@ export const CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER = 'get-all-chat-rooms-for-use
 export const CHAT_ROOM_CREATE_CHAT_ROOM = 'create-chat-room';
 export const CHAT_ROOM_UPDATE_CHAT_ROOM = 'update-chat-room';
 export const CHAT_ROOM_DELETE_CHAT_ROOM = 'delete-chat-room';
+export const CHAT_MESSAGE_CREATE_MESSAGE = 'create-message';

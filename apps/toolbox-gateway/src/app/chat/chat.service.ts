@@ -1,10 +1,11 @@
 
 
-import { CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_UPDATE_CHAT_ROOM, CHAT_SERVICE } from '@constants';
+import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_UPDATE_CHAT_ROOM, CHAT_SERVICE } from '@constants';
 import { UserDto } from '@libs/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { lastValueFrom } from 'rxjs';
+import { SendMessageDto } from './dto/send-message.dto';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 
 @Injectable()
@@ -16,8 +17,13 @@ constructor( @Inject(CHAT_SERVICE) private readonly chatClient: ClientProxy,
     return this.chatClient.send('test-chat', {}); 
   }
 
-  createMessage(createMessageDto: CreateMessageDto,  user: UserDto) {
-    return this.chatClient.send('create-message', {...createMessageDto, user: user}); 
+  async createMessage(sendMessageDto: SendMessageDto,  user: UserDto) {
+    try {
+      return await lastValueFrom(this.chatClient.send(CHAT_MESSAGE_CREATE_MESSAGE, {...sendMessageDto, user: user}));
+    } catch (err) {
+      console.log('error toolbox-gateway - ChatService - createMessage : ', err)
+    }
+
   }
 
   getAll() {

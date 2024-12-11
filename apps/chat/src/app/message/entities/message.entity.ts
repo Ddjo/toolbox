@@ -12,11 +12,11 @@ export class MessageDocument extends AbstractDocument {
     @Prop({ required: true })
     content: string;
 
-    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: UserDocument.name, autopopulate: true })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: UserDocument.name })
     sender: UserDocument;
-
-    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: RoomDocument.name })
-    room_id: RoomDocument;
+    
+    @Prop({type: mongoose.Schema.Types.ObjectId, ref: RoomDocument.name })
+    chatRoom: RoomDocument;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(MessageDocument);

@@ -8,7 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { filter, switchMap } from 'rxjs';
 import { AuthService } from '../../../../../src/app/core/services/auth.service';
-import { ChatService } from '../../../../../src/app/core/services/chat.service';
+import { ChatService } from '../../../core/services/chat.service';
 import { ChatRoomsStore } from '../../../../../src/app/core/store/chat/chat-room.store';
 import { UsersStore } from '../../../../../src/app/core/store/users/users.store';
 import { ChatComponent } from "./chat/chat.component";
@@ -54,6 +54,8 @@ export class ChatRoomComponent implements OnInit {
       filter(user => user),
       switchMap(user => this.chatService.addMemberToChatRoom(this.chatRoom(), user))
     ).subscribe(() => this.addMemberControl.setValue(undefined));
+
+    this.chatService.getNewMessage(this.chatRoom()).subscribe(message => console.log('new message for chatroom' + this.chatRoom()._id + ' : ', message))
   }
 
 
@@ -62,7 +64,6 @@ export class ChatRoomComponent implements OnInit {
   }
 
   sendMessage(message: string | null, member: IUser) {
-    console.log('message ' + message + ' sent by ' + member.email)
     this.chatService.sendMessage(this.chatRoom(), member, message as string);
   }
 

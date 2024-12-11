@@ -18,9 +18,9 @@ export class RoomDocument extends AbstractDocument {
 
     @Prop()
     name: string;
-
-    // @Prop({ enum: RoomType, default: RoomType.PERSONAL })
-    // type: RoomType;
+    
+        // @Prop({ enum: RoomType, default: RoomType.PERSONAL })
+        // type: RoomType;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: UserDocument.name }], auto: true  })
     members: UserDocument[];

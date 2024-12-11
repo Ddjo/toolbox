@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { Resolve } from "@angular/router";
-import { ChatService } from "../../../../../src/app/core/services/chat.service";
+import { ChatService } from "../../../core/services/chat.service";
 import { ChatRoomsStore } from "../../../../../src/app/core/store/chat/chat-room.store";
 import { catchError, forkJoin, map, Observable, of } from "rxjs";
 import { UsersService } from "../../../../../src/app/core/services/users.service";

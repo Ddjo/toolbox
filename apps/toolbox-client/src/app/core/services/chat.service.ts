@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../../src/environments/environments';
+import { environment } from '../../../environments/environments';
 import { Socket } from 'ngx-socket-io';
 import { Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ChatRoomsStore } from '../store/chat/chat-room.store';
 import { IChatRoom, IUser } from '@libs/common';
+import { CHAT_MESSAGE_SEND_MESSAGE } from '@constants';
 
 export const url = environment.gatewayApiUrl + '/chat';
 
@@ -20,14 +21,6 @@ export class ChatService extends Socket {
       url: environment.chatWsUrl,
       options: {},
     });
-  }
-
-  sendMessage(chatRoom: IChatRoom, sender: IUser, message: string): void {
-    this.emit('send-message', {chatRoom, sender, message}); 
-  }
-
-  getNewMessage(): Observable<string> {
-    return this.fromEvent<string>('new-message');
   }
 
   getChatRooms() {
@@ -79,5 +72,20 @@ export class ChatService extends Socket {
       members : chatRoom.members.filter(member => member._id !== user._id)
     });
   }
+
+  sendTypingSignal(isTyping: boolean) {
+    console.log('send typing signal')
+    this.emit('typing-message');
+    // this.socket$.next({ event: 'typing', data: { isTyping } });
+  }
+
+  sendMessage(chatRoom: IChatRoom, sender: IUser, content: string): void {
+    this.emit(CHAT_MESSAGE_SEND_MESSAGE, { chatRoom, sender, content}); 
+  }
+
+  getNewMessage(chatRoom: IChatRoom): Observable<string> {
+    return this.fromEvent<string>(`${chatRoom._id}/new-message`);
+  }
+
 
 }

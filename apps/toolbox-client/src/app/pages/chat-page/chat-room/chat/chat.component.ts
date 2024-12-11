@@ -9,6 +9,7 @@ import { AuthService } from '../../../../../../src/app/core/services/auth.servic
 import { ChatRoomsStore } from '../../../../../../src/app/core/store/chat/chat-room.store';
 import { UsersStore } from '../../../../../../src/app/core/store/users/users.store';
 import { ChatService } from '../../../../core/services/chat.service';
+import { debounceTime, distinctUntilChanged, exhaustMap, mergeMap, of, Subject, switchMap, tap } from 'rxjs';
 
 @Component({
     selector: 'app-chat',
@@ -41,13 +42,41 @@ export class ChatComponent implements OnDestroy {
 
   isLoading = signal(false);
   isSendingMessage = signal(false);
+  private typingSubject = new Subject<boolean>();
+  private typingTimeout?: NodeJS.Timeout;
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService) {
+    this.messageContent.valueChanges.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+    ).subscribe(() => {
+      console.log('user typing')
+    }
+    );
+
+    // Émettre les états de "saisie" aux autres utilisateurs
+    this.typingSubject.subscribe(isTyping => {
+      this.chatService.sendTypingSignal(isTyping);
+    });
+  }
   
   ngOnDestroy(): void {
     this.chatService.disconnect();
   }
   
+  userIsTyping() {
+    // Émettre "en train de taper"
+    this.typingSubject.next(true);
+
+    // Réinitialiser le timeout pour arrêter l'état "en train de taper"
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+    }
+    this.typingTimeout = setTimeout(() => {
+      this.typingSubject.next(false);
+    }, 2000); // 2 secondes d'inactivité
+  }
+
   testChat() {
     this.chatService.emit('test-chat')
   }

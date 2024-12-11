@@ -1,9 +1,9 @@
 import { UserDto } from '@libs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayNotEmpty, IsArray, IsMongoId, IsNotEmpty } from 'class-validator';
-import mongoose, { ObjectId } from 'mongoose';
+import { ArrayNotEmpty, IsArray, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { ObjectId } from 'mongoose';
 
-export class RoomDto {
+export class ChatRoomDto {
 
     @ApiProperty()
     @IsMongoId()
@@ -11,14 +11,15 @@ export class RoomDto {
     _id!: ObjectId;
 
     @ApiProperty()
-    @IsNotEmpty()
+    @IsString()
+    // @IsNotEmpty()
     // @ValidateIf(o => o.type != RoomType.PERSONAL)
     name: string;
 
     @ApiProperty({ required: true })
     @IsArray()
     @ArrayNotEmpty()
-    members: mongoose.Schema.Types.ObjectId[];
+    members: UserDto[];
 
     // @ApiProperty({ required: true, default: RoomType.PERSONAL })
     // @IsEnum(RoomType)

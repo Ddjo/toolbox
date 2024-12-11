@@ -1,14 +1,22 @@
 import { CurrentUser, UserDto, WsJwtAuthGuard } from '@libs/common';
-import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ArgumentsHost, BadRequestException, Catch, UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BaseWsExceptionFilter, ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Server, Socket } from "socket.io";
 import { ChatService } from '../chat.service';
-import { CreateMessageDto } from '../dto/create-message.dto';
-import { Logger } from 'nestjs-pino';
+import { SendMessageDto } from '../dto/send-message.dto';
+import { CHAT_MESSAGE_SEND_MESSAGE } from '@constants';
+
+@Catch(BadRequestException)
+export class BadRequestTransformationFilter extends BaseWsExceptionFilter {
+  catch(exception: BadRequestException, host: ArgumentsHost) {
+    const properException = new WsException(exception.getResponse());
+    super.catch(properException, host);
+  }
+}
 
 // @WebSocketGateway({cors: { origin :  ['http://localhost:4200']}})
 @WebSocketGateway()
-// @UseFilters(BadRequestExceptionsFilter)
+@UseFilters(BadRequestTransformationFilter)
 @UsePipes(new ValidationPipe())
 @UseGuards(WsJwtAuthGuard)
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -28,30 +36,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     
-    @SubscribeMessage('send-message')
+    @SubscribeMessage(CHAT_MESSAGE_SEND_MESSAGE)
     async create(
       @ConnectedSocket() client,
     //   @MessageBody(new ValidationPipe())  createChatDto: CreateMessageDto,
-      @MessageBody()  createChatDto: CreateMessageDto,
+      @MessageBody()  sendMessageDto: SendMessageDto,
       @CurrentUser() user: UserDto
     ) {
-      // const senderId = client.handshake.user._id.toString();
-      // const chat = await this.chatService.createMessage(createChatDto, user);
-
       try {
 
-        this.chatService.createMessage(createChatDto, user).subscribe({
-          next(res) {
-            this.server.emit('new-message', res);
-          },
-          error(err) {
-            console.log('error chat gateway : ', err)   ;
-          },
-        });
-        // this.chatService.createMessage(createChatDto, user).subscribe({         
-        //   error: err =>  console.log('error chat gateway : ', err),
-        //  complete: res => this.server.emit('new-message', res)
-        // })
+        this.chatService.createMessage(sendMessageDto, user).then((res) => {
+              this.server.emit(`${sendMessageDto.chatRoom._id}/new-message`, res);
+          }
+      );
+
       } catch(err){
         console.log('error chat gateway : ', err);
       }
@@ -61,8 +59,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // client.use((socket, next) => wsAuthMiddleware(socket, next));
     }
 
-    @SubscribeMessage('type-message')
-    handleTypeMessage() : string {
+    @SubscribeMessage('typing-message')
+    handleTypingMessage() : string {
 
         console.log('type-message received')
 

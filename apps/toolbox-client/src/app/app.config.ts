@@ -1,11 +1,10 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
+import { providePrimeNG } from 'primeng/config';
+import { routes } from './app.routes';
 
 // const socketConfig: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
 
