@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { AbstractDocument } from "../../abstract.schema";
 import { UserDocument } from "../../users/models";
 import { ChatMessageDocument } from "./chat-message.entity";
+import { DB_CHAT_MESSAGES_DOCUMENT, DB_USERS_DOCUMENT } from "@constants";
 
 // export type RoomDocument = HydratedDocument<Room>;
 
@@ -25,10 +26,10 @@ export class ChatRoomDocument extends AbstractDocument {
         // type: RoomType;
 
         
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: UserDocument.name }], auto: true  })
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: DB_USERS_DOCUMENT }], auto: true  })
     members!: UserDocument[];
     
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, forwardRef: (() => ChatMessageDocument).name }]  })
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: (() => DB_CHAT_MESSAGES_DOCUMENT),  }], auto: true  })
     messages!: ChatMessageDocument[];
 }
 

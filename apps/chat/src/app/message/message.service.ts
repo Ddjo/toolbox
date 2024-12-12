@@ -52,7 +52,14 @@ export class MessageService {
   }
 
   async findAllForChatRoom(chatRoomId: string) {
-    return this.messageRepository.find({ chatRoom: chatRoomId }, {});
+    return this.messageRepository.find(
+      { chatRoom: chatRoomId }, 
+      {}, 
+      [ 
+        {path: 'sender', select: '_id, email'}, 
+        {path: 'chatRoom', select: '_id, name'}
+      ]
+     );
   }
 
   async findAll(roomId: string, getMessageDto: GetMessageDto) {

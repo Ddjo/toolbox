@@ -73,4 +73,8 @@ export class ChatRoomComponent implements OnInit {
     this.chatService.removeMemberFromChatRoom(this.chatRoom(), member)
       .subscribe();
   }
+
+  getMessagesForChatroom() {
+    this.chatService.getMessagesForChatroom(this.chatRoom()).subscribe(console.log);
+  }
  }

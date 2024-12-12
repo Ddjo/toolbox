@@ -1,15 +1,16 @@
-import { Module } from '@nestjs/common';
-import { UsersController } from './user.controller';
-import { UsersService } from './user.service';
-import { UserDocument, UserSchema } from './entities/user.entity';
-import { UserRepository } from './user.repository';
+import { DB_USERS_DOCUMENT } from '@constants';
 import { DatabaseModule, LoggerModule } from '@libs/common';
+import { Module } from '@nestjs/common';
+import { UserSchema } from './entities/user.entity';
+import { UsersController } from './user.controller';
+import { UserRepository } from './user.repository';
+import { UsersService } from './user.service';
 
 @Module({
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([
-      { name: UserDocument.name, schema: UserSchema },
+      { name: DB_USERS_DOCUMENT, schema: UserSchema },
     ]),
     LoggerModule,
   ],

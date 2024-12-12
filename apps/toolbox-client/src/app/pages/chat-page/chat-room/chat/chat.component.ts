@@ -82,5 +82,4 @@ export class ChatComponent implements OnDestroy {
   testChat() {
     this.chatService.emit('test-chat')
   }
-
  }

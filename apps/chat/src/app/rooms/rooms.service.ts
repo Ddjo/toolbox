@@ -33,8 +33,10 @@ export class RoomsService {
             { members: user }, 
             {}, 
             [
-                // {path: 'members', select: '_id, email'}, 
-                {path: 'messages', select: '_id, content, sender, createdAt, updatedAt'}
+                {path: 'members', select: ['_id', 'email']}, 
+                {path: 'messages', select: ['_id', 'content', 'sender', 'createdAt', 'updatedAt'], 
+                    populate: {path: 'sender', select: ['_id', 'email']}
+                },
             ]
         );
     }
@@ -73,7 +75,12 @@ export class RoomsService {
             { _id: updateChatRoomDto._id}, 
             {$set: updateChatRoomDto},
             {_id: 1, name: 1, members: 1}, 
-            [{path: 'members', select: '_id, email'}, {path: 'messages', select: '_id, content, sender, createdAt, updatedAt'}]
+            [
+                {path: 'members', select: ['_id', 'email']}, 
+                {path: 'messages', select: ['_id', 'content', 'sender', 'createdAt', 'updatedAt'], 
+                    populate: {path: 'sender', select: ['_id', 'email']}
+                },
+            ]
         );
     }
 }

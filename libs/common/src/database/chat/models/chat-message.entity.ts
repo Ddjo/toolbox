@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { AbstractDocument } from "../../abstract.schema";
 import { UserDocument } from "../../users/models";
 import { ChatRoomDocument } from "./chat-room.entity";
+import { DB_CHAT_ROOMS_DOCUMENT, DB_USERS_DOCUMENT } from "@constants";
 
 @Schema({
     timestamps: true,
@@ -13,10 +14,10 @@ export class ChatMessageDocument extends AbstractDocument {
     @Prop({ required: true })
     content!: string;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: UserDocument.name })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: DB_USERS_DOCUMENT })
     sender!: UserDocument;
     
-    @Prop({type: mongoose.Schema.Types.ObjectId, forwardRef:(() => ChatRoomDocument).name })
+    @Prop({type: mongoose.Schema.Types.ObjectId, ref:DB_CHAT_ROOMS_DOCUMENT })
     chatRoom!: ChatRoomDocument;
 }
 

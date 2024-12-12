@@ -1,6 +1,6 @@
 
 
-import { AUTH_SERVICE } from '@constants';
+import { AUTH_SERVICE, DB_BOOKS_DOCUMENT } from '@constants';
 import { DatabaseModule, LoggerModule } from '@libs/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -10,15 +10,14 @@ import { BookController } from './books.controller';
 import { BookRepository } from './books.repository';
 import { BooksService } from './books.service';
 import {
-  BookDocument,
-  BookSchema,
+  BookSchema
 } from './entities/book.entity';
 
 @Module({
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([
-      { name: BookDocument.name, schema: BookSchema },
+      { name: DB_BOOKS_DOCUMENT, schema: BookSchema },
     ]),
     LoggerModule,
     ConfigModule.forRoot({
