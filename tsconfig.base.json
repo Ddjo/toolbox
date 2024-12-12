@@ -18,7 +18,6 @@
       "@auth/*": ["apps/auth/*"],
       "@constants": ["libs/constants/index.ts"],
       "@libs/common": ["libs/common/src/index.ts"],
-      "@toolbox-client/*": ["apps/toolbox-client/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

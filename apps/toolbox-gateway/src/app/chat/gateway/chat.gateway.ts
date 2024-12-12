@@ -1,23 +1,34 @@
 import { CurrentUser, UserDto, WsJwtAuthGuard } from '@libs/common';
-import { ArgumentsHost, BadRequestException, Catch, UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, Catch, HttpException, UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BaseWsExceptionFilter, ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Server, Socket } from "socket.io";
 import { ChatService } from '../chat.service';
 import { SendMessageDto } from '../dto/send-message.dto';
 import { CHAT_MESSAGE_SEND_MESSAGE } from '@constants';
 
-@Catch(BadRequestException)
-export class BadRequestTransformationFilter extends BaseWsExceptionFilter {
-  catch(exception: BadRequestException, host: ArgumentsHost) {
-    const properException = new WsException(exception.getResponse());
-    super.catch(properException, host);
+@Catch(WsException, HttpException)
+export class WebsocketExceptionsFilter extends BaseWsExceptionFilter {
+  catch(exception: WsException | HttpException, host: ArgumentsHost) {
+    const client = host.switchToWs().getClient() as WebSocket;
+    const data = host.switchToWs().getData();
+    const error = exception instanceof WsException ? exception.getError() : exception.getResponse();
+    const details = error instanceof Object ? { ...error } : { message: error };
+    console.log('ERRRROOORRRRR')
+    client.send(JSON.stringify({
+      event: "error",
+      data: {
+        id: (client as any).id,
+        rid: data.rid,
+        ...details
+      }
+    }));
   }
 }
 
 // @WebSocketGateway({cors: { origin :  ['http://localhost:4200']}})
 @WebSocketGateway()
-@UseFilters(BadRequestTransformationFilter)
-@UsePipes(new ValidationPipe())
+// @UseFilters(WebsocketExceptionsFilter)
+// @UsePipes(new ValidationPipe({ transform: true }))
 @UseGuards(WsJwtAuthGuard)
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
@@ -44,14 +55,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @CurrentUser() user: UserDto
     ) {
       try {
-
+        console.log('SubscribeMessage(CHAT_MESSAGE_SEND_MESSAGE) send ', sendMessageDto)
         this.chatService.createMessage(sendMessageDto, user).then((res) => {
-              this.server.emit(`${sendMessageDto.chatRoom._id}/new-message`, res);
-          }
+          this.server.emit(`${sendMessageDto.chatRoom._id}/new-message`, res);
+        }
       );
 
       } catch(err){
-        console.log('error chat gateway : ', err);
+        // console.log('error chat gateway : ', err);
       }
     }
   

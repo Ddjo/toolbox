@@ -37,7 +37,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     filterQuery: FilterQuery<TDocument>,
     update: UpdateQuery<TDocument>,
     projection : ProjectionType<TDocument>,
-    populate?: PopulateOptions
+    populate?: PopulateOptions[]
   ) {
     const document = await this.model.findOneAndUpdate(filterQuery, update, {
       lean: true,
@@ -56,9 +56,18 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async find(
     filterQuery: FilterQuery<TDocument>, 
     projection : ProjectionType<TDocument>, 
-    populate?: PopulateOptions
+    populate?: PopulateOptions[]
   ) {
-    return this.model.find(filterQuery, projection, { lean: true }).populate(populate || []);
+
+    console.log('populate : ', JSON.stringify(populate))
+    const query =  this.model.find(filterQuery, projection, { lean: true });
+
+    populate?.forEach(popul => {
+      query.populate(popul);
+    })
+
+    return query;
+
   }
 
   async findOneAndDelete(

@@ -56,6 +56,8 @@ export class ChatRoomComponent implements OnInit {
     ).subscribe(() => this.addMemberControl.setValue(undefined));
 
     this.chatService.getNewMessage(this.chatRoom()).subscribe(message => console.log('new message for chatroom' + this.chatRoom()._id + ' : ', message))
+  
+    this.chatService.connect();
   }
 
 

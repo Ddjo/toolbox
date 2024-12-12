@@ -1,6 +1,7 @@
 import { UserDto } from '@libs/common';
 import { ArrayNotEmpty, IsArray, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 import mongoose from 'mongoose';
+import { MessageDto } from '../../message/dto/message.dto';
 
 export class ChatRoomDto {
 
@@ -15,6 +16,9 @@ export class ChatRoomDto {
     @IsArray()
     @ArrayNotEmpty()
     members: UserDto[];
+
+    @IsArray()
+    messages: MessageDto[];
 
     // @ApiProperty({ required: true, default: RoomType.PERSONAL })
     // @IsEnum(RoomType)

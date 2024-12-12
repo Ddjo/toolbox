@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, OnDestroy, output, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IUser } from '@libs/common';
+import { IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,6 +10,7 @@ import { ChatRoomsStore } from '../../../../../../src/app/core/store/chat/chat-r
 import { UsersStore } from '../../../../../../src/app/core/store/users/users.store';
 import { ChatService } from '../../../../core/services/chat.service';
 import { debounceTime, distinctUntilChanged, exhaustMap, mergeMap, of, Subject, switchMap, tap } from 'rxjs';
+import { ChatMessageComponent } from './chat-message/chat-message.component';
 
 @Component({
     selector: 'app-chat',
@@ -23,7 +24,8 @@ import { debounceTime, distinctUntilChanged, exhaustMap, mergeMap, of, Subject, 
       ReactiveFormsModule,
       ButtonModule,
       CardModule,
-      InputTextModule
+      InputTextModule,
+      ChatMessageComponent
     ]
 })
 export class ChatComponent implements OnDestroy {
@@ -52,7 +54,7 @@ export class ChatComponent implements OnDestroy {
     ).subscribe(() => {
       console.log('user typing')
     }
-    );
+  );
 
     // Émettre les états de "saisie" aux autres utilisateurs
     this.typingSubject.subscribe(isTyping => {

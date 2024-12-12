@@ -1,9 +1,12 @@
 import { Type } from "class-transformer";
 import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
-import { ChatRoomDto } from "./chat-room.dto";
+import { ChatRoomDto } from "../../rooms/dto/chat-room.dto";
 import { SenderDto } from "./sender.dto";
+import { ObjectId } from "mongoose";
 
-export class CreateMessageDto {
+export class MessageDto {
+
+    _id: ObjectId;
 
     @IsNotEmpty()
     @Type(() => ChatRoomDto)

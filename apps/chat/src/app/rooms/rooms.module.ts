@@ -1,20 +1,28 @@
-import { DatabaseModule, UserDocument, UserSchema } from '@libs/common';
+import { ChatMessageDocument, ChatRoomDocument, DatabaseModule, MessageSchema, RoomSchema, UserDocument, UserSchema } from '@libs/common';
 import { Module } from '@nestjs/common';
-import { RoomDocument, RoomSchema } from './entities/room.entity';
 import { RoomsController } from './rooms.controller';
 import { RoomRepository } from './rooms.repository';
 import { RoomsService } from './rooms.service';
-// import { ChatsModule } from 'src/chats/chats.module';
+import { MessageRepository } from '../message/message.repository';
 
 @Module({
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([
-      { name: RoomDocument.name, schema: RoomSchema },
+      { name: ChatMessageDocument.name, schema: MessageSchema },
+      { name: ChatRoomDocument.name, schema: RoomSchema },
       { name: UserDocument.name, schema: UserSchema },
     ]),
+
     ],
   controllers: [RoomsController],
-  providers: [RoomsService, RoomRepository],
+  providers: [
+    RoomsService,
+    RoomRepository,
+    MessageRepository
+  ],
+  exports: [
+    RoomsService,
+  ]
 })
 export class RoomsModule { }

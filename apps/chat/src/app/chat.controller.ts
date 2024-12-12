@@ -1,7 +1,6 @@
-import { ArgumentsHost, Catch, Controller, ExceptionFilter, HttpException, UseFilters, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { ChatService } from './chat.service';
-import { CreateMessageDto } from './message/dto/create-message.dto';
 
 // @Catch(HttpException)
 // export class RpcValidationFilter implements ExceptionFilter {

@@ -4,8 +4,9 @@ import { Socket } from 'ngx-socket-io';
 import { Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ChatRoomsStore } from '../store/chat/chat-room.store';
-import { IChatRoom, IUser } from '@libs/common';
+import { IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { CHAT_MESSAGE_SEND_MESSAGE } from '@constants';
+import { ChatMessagesStore } from '../store/chat/chat-message.store';
 
 export const url = environment.gatewayApiUrl + '/chat';
 
@@ -15,6 +16,8 @@ export const url = environment.gatewayApiUrl + '/chat';
 export class ChatService extends Socket {
 
   readonly chatRoomsStore = inject(ChatRoomsStore);
+  readonly chatMessagesStore = inject(ChatMessagesStore);
+
 
   public constructor(private http: HttpClient, ) {
     super({
@@ -23,11 +26,19 @@ export class ChatService extends Socket {
     });
   }
 
-  getChatRooms() {
+  getChatRoomsForUser() {
     this.chatRoomsStore.setLoading(true);
     return this.http.get<IChatRoom[]>(url).pipe(
       tap(chatRooms =>this.chatRoomsStore.setChatRooms(chatRooms)),
       tap(() => this.chatRoomsStore.setLoading(false))
+    );
+  }
+
+  getMessagesForChatroom(chatRoom: IChatRoom) {
+    this.chatMessagesStore.setLoading(true);
+    return this.http.get<IChatMessage[]>(`${url}/${chatRoom._id}/messages`).pipe(
+      tap(messages =>this.chatMessagesStore.setChatMessages(messages)),
+      tap(() => this.chatMessagesStore.setLoading(false))
     );
   }
 

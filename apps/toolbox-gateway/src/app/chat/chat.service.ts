@@ -1,6 +1,6 @@
 
 
-import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_UPDATE_CHAT_ROOM, CHAT_SERVICE } from '@constants';
+import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_GET_MESSAGES_FOR_CHATROOM, CHAT_ROOM_UPDATE_CHAT_ROOM, CHAT_SERVICE } from '@constants';
 import { UserDto } from '@libs/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -18,6 +18,8 @@ constructor( @Inject(CHAT_SERVICE) private readonly chatClient: ClientProxy,
   }
 
   async createMessage(sendMessageDto: SendMessageDto,  user: UserDto) {
+
+    console.log('gateway :- chatservice - createMessage : ', sendMessageDto)
     try {
       return await lastValueFrom(this.chatClient.send(CHAT_MESSAGE_CREATE_MESSAGE, {...sendMessageDto, user: user}));
     } catch (err) {
@@ -30,19 +32,23 @@ constructor( @Inject(CHAT_SERVICE) private readonly chatClient: ClientProxy,
     return this.chatClient.send('get-all-chat-rooms', {})
   }
 
-  getAllForUser(user: UserDto) {
+  getChatRoomsForUser(user: UserDto) {
     return this.chatClient.send(CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, user)
   }
 
-  create(user: UserDto) {
+  getMessagesForChatRoom(chatRoomId: string) {
+    return this.chatClient.send(CHAT_ROOM_GET_MESSAGES_FOR_CHATROOM, chatRoomId)
+  }
+
+  createChatRoom(user: UserDto) {
     return this.chatClient.send(CHAT_ROOM_CREATE_CHAT_ROOM, user)
   }
 
-  update(_id: string, updateChatRoomDto: UpdateChatRoomDto) {
+  updateChatRoom(_id: string, updateChatRoomDto: UpdateChatRoomDto) {
     return this.chatClient.send(CHAT_ROOM_UPDATE_CHAT_ROOM, {_id, ...updateChatRoomDto})
   }
 
-  remove(_id: string) {
+  removeChatRoom(_id: string) {
     return this.chatClient.send(CHAT_ROOM_DELETE_CHAT_ROOM, {_id})
   }
 

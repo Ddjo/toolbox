@@ -15,28 +15,36 @@ export class ChatController {
   @Get()
   @UseGuards(JwtAuthGuard)
   getChatRoomsForUser(@CurrentUser() user: UserDto) { 
-    return this.chatService.getAllForUser(user);
+    return this.chatService.getChatRoomsForUser(user);
   }
+
+    
+  @Get(':id/messages')
+  @UseGuards(JwtAuthGuard)
+  getMessagesForChatroom(@Param('id') id: string) { 
+    return this.chatService.getMessagesForChatRoom(id);
+  }
+
 
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  create( @CurrentUser() user: UserDto) {
-    return this.chatService.create(user);
+  createChatRoom( @CurrentUser() user: UserDto) {
+    return this.chatService.createChatRoom(user);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() updateChatRoomDto: UpdateChatRoomDto) {
-    return this.chatService.update(id, updateChatRoomDto);
+  updateChatRoom(@Param('id') id: string, @Body() updateChatRoomDto: UpdateChatRoomDto) {
+    return this.chatService.updateChatRoom(id, updateChatRoomDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  remove(@Param('id') id: string) {
-    return this.chatService.remove(id);
+  removeChatRoom(@Param('id') id: string) {
+    return this.chatService.removeChatRoom(id);
   }
 
 }

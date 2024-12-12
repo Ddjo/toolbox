@@ -1,6 +1,8 @@
-import { AbstractDocument, UserDocument } from "@libs/common";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
+import { AbstractDocument } from "../../abstract.schema";
+import { UserDocument } from "../../users/models";
+import { ChatMessageDocument } from "./chat-message.entity";
 
 // export type RoomDocument = HydratedDocument<Room>;
 
@@ -14,19 +16,23 @@ import mongoose, { ObjectId } from "mongoose";
     //     },
     // })
 })
-export class RoomDocument extends AbstractDocument {
+export class ChatRoomDocument extends AbstractDocument {
 
     @Prop()
-    name: string;
+    name!: string;
     
         // @Prop({ enum: RoomType, default: RoomType.PERSONAL })
         // type: RoomType;
 
+        
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: UserDocument.name }], auto: true  })
-    members: UserDocument[];
+    members!: UserDocument[];
+    
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, forwardRef: (() => ChatMessageDocument).name }]  })
+    messages!: ChatMessageDocument[];
 }
 
-export const RoomSchema = SchemaFactory.createForClass(RoomDocument);
+export const RoomSchema = SchemaFactory.createForClass(ChatRoomDocument);
 
 // export class RoomDocument {
 //     _id: Types.ObjectId;

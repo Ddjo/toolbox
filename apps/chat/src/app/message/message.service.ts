@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { InjectConnection } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { RoomRepository } from '../rooms/rooms.repository';
 import { GetMessageDto } from './dto/get-message.dto';
+import { MessageDto } from './dto/message.dto';
 import { MessageRepository } from './message.repository';
 
 
@@ -8,36 +11,63 @@ import { MessageRepository } from './message.repository';
 export class MessageService {
 
 
- constructor(private readonly messageRepository: MessageRepository) {}
+ constructor(
+   private readonly roomRepository: RoomRepository,
+  private readonly messageRepository: MessageRepository,
+  @InjectConnection() private readonly connection: mongoose.Connection
+
+ ) {}
 
 
-  async create(createMessageDto: CreateMessageDto) {
+  async create(messageDto: MessageDto) {
 
-    createMessageDto.sender.password = '';
-    console.log('MessageService creating ', createMessageDto)
+    const transactionSession = await this.connection.startSession();
+    transactionSession.startTransaction();
+
+    try
+    {
+
+      const newMessage = await this.messageRepository.create(messageDto);
+      
+      await this.roomRepository.findOneAndUpdate(
+        { _id: messageDto.chatRoom._id}, 
+        {$set: {
+          ...messageDto.chatRoom,
+          messages : [...messageDto.chatRoom.messages, newMessage]
+        }},
+        {}
+      );
     
-    return await this.messageRepository.create(
-        {
-          ...createMessageDto,
-        chatRoom: {
-          _id: createMessageDto.chatRoom._id,
-          members: createMessageDto.chatRoom.members,
-          name: createMessageDto.chatRoom.name
-        },
-      });
-    
+      transactionSession.commitTransaction();
+      return newMessage;
+    }
+    catch(err)
+    {
+      transactionSession.abortTransaction();
+    }
+    finally
+    {
+      transactionSession.endSession();
+    }    
+  }
+
+  async findAllForChatRoom(chatRoomId: string) {
+    return this.messageRepository.find({ chatRoom: chatRoomId }, {});
   }
 
   async findAll(roomId: string, getMessageDto: GetMessageDto) {
-    const query = {
-      room_id: roomId,
-    };
+    // const query = {
+    //   room_id: roomId,
+    // };
 
-    if (getMessageDto.last_id) {
-      query['_id'] = { $lt: getMessageDto.last_id };
-    }
+    // if (getMessageDto.last_id) {
+    //   query['_id'] = { $lt: getMessageDto.last_id };
+    // }
 
-    return this.messageRepository.find(query, {});
+    // return this.messageRepository.find(query, {});
   }
 
+  async removeAllForChatroom(chatRoomId: string) {
+    return this.messageRepository.findOneAndDelete({ chatRoom: chatRoomId });
+  }
 }

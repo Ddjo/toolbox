@@ -1,10 +1,10 @@
+import { CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_UPDATE_CHAT_ROOM } from '@constants';
 import { UserDto } from '@libs/common';
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { ChatRoomDto } from './dto/chat-room.dto';
 import { RemoveRoomDto } from './dto/remove-room.dto';
 import { RoomsService } from './rooms.service';
-import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
-import { CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_UPDATE_CHAT_ROOM } from '@constants';
 
 @UsePipes(new ValidationPipe())
 @Controller('rooms')
@@ -30,8 +30,8 @@ export class RoomsController {
   }
 
   @MessagePattern(CHAT_ROOM_UPDATE_CHAT_ROOM)
-  async addMemberToChatRoom(@Payload() updateChatRoomDto: UpdateChatRoomDto) {
-    return this.roomsService.update(updateChatRoomDto);  
+  async addMemberToChatRoom(@Payload() chatRoomDto: ChatRoomDto) {
+    return this.roomsService.update(chatRoomDto);  
   }
 
 }

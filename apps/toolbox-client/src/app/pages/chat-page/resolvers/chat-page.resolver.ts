@@ -17,12 +17,14 @@ export class ChatPageResolver implements Resolve<boolean> {
 
     resolve(): Observable<boolean> {
 
-        const getChatRoom$ = !this.chatRoomsStore.loaded() ? this.chatService.getChatRooms().pipe(
-            map(() => true),
-            catchError((err) => {
-             console.log('chatRoomsStore resolver - get getChatRooms - err : ', err);
-             return of(false)}),
-         ) : of(true);
+        const getChatRoomsForUser$ = !this.chatRoomsStore.loaded() ? 
+            this.chatService.getChatRoomsForUser().pipe(
+                map(() => true),
+                catchError((err) => {
+                console.log('chatRoomsStore resolver - get getChatRoomsForUser - err : ', err);
+                return of(false)}),
+            ) 
+            : of(true);
 
         const getUsers$ =  !this.usersStore.loaded() ? this.usersService.getAllUsers().pipe(
             map(() => true),
@@ -31,17 +33,7 @@ export class ChatPageResolver implements Resolve<boolean> {
              return of(false)}),
          ) : of(true);
 
-         return forkJoin([getChatRoom$, getUsers$]).pipe(map(() => true));
+         return forkJoin([getChatRoomsForUser$, getUsers$]).pipe(map(() => true));
 
-        // if (!this.chatRoomsStore.loaded()) {
-        //    return this.chatService.getChatRooms().pipe(
-        //        map(() => true),
-        //        catchError((err) => {
-        //         console.log('chatRoomsStore resolver - get getChatRooms - err : ', err);
-        //         return of(false)}),
-        //     );
-        // } else {
-        //     return of(true);
-        // }
     }
 }

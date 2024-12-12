@@ -9,7 +9,9 @@
         />
     </p-header>
     <div class="flex flex-wrap gap-4 m-3 min-h-full">
-        <app-chat *ngFor="let member of chatRoom().members" 
+        <app-chat 
+        class='max-w-30rem'
+        *ngFor="let member of chatRoom().members" 
         [member]="member" 
         (sendMessage)="sendMessage($event, member)"
         (memberLeavesChat)="memberLeavesChat(member)"
