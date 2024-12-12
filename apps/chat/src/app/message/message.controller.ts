@@ -1,10 +1,10 @@
 import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_ROOM_GET_MESSAGES_FOR_CHATROOM } from '@constants';
-import { ArgumentsHost, Catch, Controller, ExceptionFilter, HttpException, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
-import { MessageService } from './message.service';
-import { MessageDto } from './dto/message.dto';
-import { RoomsService } from '../rooms/rooms.service';
 import { RpcValidationFilter } from '@libs/common';
+import { Controller, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { GetMessagesForChatRoomDto } from './dto/get-messages-for-chat-room.dto';
+import { MessageDto } from './dto/message.dto';
+import { MessageService } from './message.service';
 
 
 @UsePipes(new ValidationPipe())
@@ -25,8 +25,9 @@ export class MessageController {
 
   
   @MessagePattern(CHAT_ROOM_GET_MESSAGES_FOR_CHATROOM)
-  async getMessagesForChatRoom(@Payload() chatRoomId: string) {
-    return this.messageService.findAllForChatRoom(chatRoomId);  
+  async getMessagesForChatRoom(@Payload() getMessagesForChatRoomDto: GetMessagesForChatRoomDto) {
+
+    return this.messageService.findAllForChatRoom(getMessagesForChatRoomDto);  
   }
 
 }

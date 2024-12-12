@@ -5,6 +5,7 @@ import { RoomRepository } from '../rooms/rooms.repository';
 import { GetMessageDto } from './dto/get-message.dto';
 import { MessageDto } from './dto/message.dto';
 import { MessageRepository } from './message.repository';
+import { GetMessagesForChatRoomDto } from './dto/get-messages-for-chat-room.dto';
 
 
 @Injectable()
@@ -51,9 +52,9 @@ export class MessageService {
     }    
   }
 
-  async findAllForChatRoom(chatRoomId: string) {
+  async findAllForChatRoom(getMessagesForChatRoomDto: GetMessagesForChatRoomDto) {
     return this.messageRepository.find(
-      { chatRoom: chatRoomId }, 
+      { chatRoom: getMessagesForChatRoomDto.chatRoomId }, 
       {}, 
       [ 
         {path: 'sender', select: '_id, email'}, 
