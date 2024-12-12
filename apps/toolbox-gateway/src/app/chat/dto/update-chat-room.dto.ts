@@ -17,4 +17,9 @@ export class UpdateChatRoomDto {
     @IsNotEmpty()
     members: string[];
 
+    
+    @ApiProperty()
+    @IsArray()
+    messages: string[];
+
 }

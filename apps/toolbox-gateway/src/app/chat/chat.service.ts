@@ -4,13 +4,15 @@ import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELE
 import { UserDto } from '@libs/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { TCPService } from '../helpers/tcp.service';
 import { SendMessageDto } from './dto/send-message.dto';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 
 @Injectable()
 export class ChatService {
-constructor( @Inject(CHAT_SERVICE) private readonly chatClient: ClientProxy,    
+constructor(
+  @Inject(CHAT_SERVICE) private readonly chatClient: ClientProxy,    
+  private readonly tcpService: TCPService
 ) {}
 
   testChat() {
@@ -18,38 +20,31 @@ constructor( @Inject(CHAT_SERVICE) private readonly chatClient: ClientProxy,
   }
 
   async createMessage(sendMessageDto: SendMessageDto,  user: UserDto) {
-
-    console.log('gateway :- chatservice - createMessage : ', sendMessageDto)
-    try {
-      return await lastValueFrom(this.chatClient.send(CHAT_MESSAGE_CREATE_MESSAGE, {...sendMessageDto, user: user}));
-    } catch (err) {
-      console.log('error toolbox-gateway - ChatService - createMessage : ', err)
-    }
-
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_MESSAGE_CREATE_MESSAGE,  {...sendMessageDto, user: user});
   }
 
-  getAll() {
-    return this.chatClient.send('get-all-chat-rooms', {})
-  }
+  // getAll() {
+  //   return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER,  {});
+  // }
 
   getChatRoomsForUser(user: UserDto) {
-    return this.chatClient.send(CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, user)
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER,  user);
   }
 
   getMessagesForChatRoom(chatRoomId: string) {
-    return this.chatClient.send(CHAT_ROOM_GET_MESSAGES_FOR_CHATROOM, chatRoomId)
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_GET_MESSAGES_FOR_CHATROOM, {chatRoomId});
   }
 
   createChatRoom(user: UserDto) {
-    return this.chatClient.send(CHAT_ROOM_CREATE_CHAT_ROOM, user)
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_CREATE_CHAT_ROOM, user);
   }
 
-  updateChatRoom(_id: string, updateChatRoomDto: UpdateChatRoomDto) {
-    return this.chatClient.send(CHAT_ROOM_UPDATE_CHAT_ROOM, {_id, ...updateChatRoomDto})
+  async updateChatRoom(_id: string, updateChatRoomDto: UpdateChatRoomDto) {
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_UPDATE_CHAT_ROOM,  {_id, ...updateChatRoomDto});
   }
 
   removeChatRoom(_id: string) {
-    return this.chatClient.send(CHAT_ROOM_DELETE_CHAT_ROOM, {_id})
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_DELETE_CHAT_ROOM,  {_id});
   }
 
 }

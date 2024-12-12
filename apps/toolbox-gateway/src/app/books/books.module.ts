@@ -4,9 +4,10 @@ import { BooksController } from "./books.controller";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { AUTH_SERVICE, BOOKS_SERVICE } from "@constants";
 import { ConfigService } from "@nestjs/config";
+import { TCPService } from "../helpers/tcp.service";
 
 @Module({
-    providers: [BooksService],
+    providers: [BooksService, TCPService],
     controllers: [BooksController],
     imports: [ ClientsModule.registerAsync([
         {

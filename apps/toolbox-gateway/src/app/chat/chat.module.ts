@@ -2,12 +2,13 @@ import { AUTH_SERVICE, CHAT_SERVICE } from "@constants";
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { ChatController } from "./chat.controller";
 import { ChatService } from "./chat.service";
 import { ChatGateway } from "./gateway/chat.gateway";
-import { ChatController } from "./chat.controller";
+import { TCPService } from "../helpers/tcp.service";
 
 @Module({
-    providers: [ChatService, ChatGateway],
+    providers: [ChatService, ChatGateway, TCPService],
     controllers: [ChatController],
     imports: [ ClientsModule.registerAsync([
         {
