@@ -1,4 +1,10 @@
-<span>{{message().sender.email}}</span>
-<div class="message-content">
-    {{message().content}}
+<div 
+    *ngIf="displayUserMailInput()"
+    class="sender-email text-xs text-black-alpha-60 mb-1 ml-1" 
+    [ngClass]="isSenderCurrentUserInput() ? 'sent' : 'received'"
+    >
+    {{messageInput().sender.email}} 
+</div>
+<div class="message border-round-sm text-sm" [ngClass]="isSenderCurrentUserInput() ? 'sent' : 'received'">
+    <div class="content">{{messageInput().content}}</div>
 </div>

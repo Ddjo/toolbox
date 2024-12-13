@@ -9,7 +9,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   async create(
     document: Omit<TDocument, '_id'>,
-    populate?: PopulateOptions
+    populate?: PopulateOptions[]
   ): Promise<TDocument> {
     const createdDocument = new this.model({
       ...document,
@@ -21,7 +21,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async findOne(
     filterQuery: FilterQuery<TDocument>, 
     projection : ProjectionType<TDocument>,
-    populate?: PopulateOptions 
+    populate?: PopulateOptions[]
   ) {
     const document = await this.model.findOne(filterQuery, projection, {lean: true}).populate(populate || []);
 
@@ -72,9 +72,15 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   async findOneAndDelete(
     filterQuery: FilterQuery<TDocument>, 
-    populate?: PopulateOptions
+    populate?: PopulateOptions[]
   ) {
     return this.model.findOneAndDelete(filterQuery, { lean: true }).populate(populate || []);
+  }
+
+  async deleteMany (
+    filterQuery: FilterQuery<TDocument>, 
+  ) : Promise<{ acknowledged: boolean, deletedCount: number }>{
+    return this.model.deleteMany(filterQuery);
   }
 
 }

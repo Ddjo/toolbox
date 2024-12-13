@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { IChatMessage } from '@libs/common';
-import { AuthService } from '../../../../../../../src/app/core/services/auth.service';
 
 @Component({
     selector: 'app-chat-message',
@@ -20,7 +19,9 @@ import { AuthService } from '../../../../../../../src/app/core/services/auth.ser
 })
 export class ChatMessageComponent{
 
-  message = input.required<IChatMessage>();
-  isSenderCurrentUser = input.required<boolean>();
+  messageInput = input.required<IChatMessage>();
+  isSenderCurrentUserInput = input.required<boolean>();
+  displayUserMailInput = input.required<boolean>();
+
 
  }

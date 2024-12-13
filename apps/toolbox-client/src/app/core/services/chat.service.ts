@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environments';
 import { Socket } from 'ngx-socket-io';
-import { Observable, tap } from 'rxjs';
+import { catchError, filter, map, Observable, tap, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ChatRoomsStore } from '../store/chat/chat-room.store';
 import { IChatMessage, IChatRoom, IUser } from '@libs/common';
-import { CHAT_MESSAGE_SEND_MESSAGE } from '@constants';
+import { CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
 import { ChatMessagesStore } from '../store/chat/chat-message.store';
 
 export const url = environment.gatewayApiUrl + '/chat';
@@ -24,6 +24,8 @@ export class ChatService extends Socket {
       url: environment.chatWsUrl,
       options: {},
     });
+
+    this.fromEvent('ws-exception').subscribe((err) => console.error(err))
   }
 
   getChatRoomsForUser() {
@@ -84,18 +86,27 @@ export class ChatService extends Socket {
     });
   }
 
-  sendTypingSignal(isTyping: boolean) {
-    console.log('send typing signal')
-    this.emit('typing-message');
-    // this.socket$.next({ event: 'typing', data: { isTyping } });
+  sendTypingSignal(chatRoom: IChatRoom, sender: IUser) {
+    this.emit(CHAT_MESSAGE_TYPING_MESSAGE, {chatRoom, sender});
+  }
+
+  getTypingSignal(chatRoomId: string) {
+    return this.fromEvent<string>(`${chatRoomId}-${CHAT_MESSAGE_TYPING_MESSAGE}`);
   }
 
   sendMessage(chatRoom: IChatRoom, sender: IUser, content: string): void {
     this.emit(CHAT_MESSAGE_SEND_MESSAGE, { chatRoom, sender, content}); 
   }
 
-  getNewMessage(chatRoom: IChatRoom): Observable<string> {
-    return this.fromEvent<string>(`${chatRoom._id}/new-message`);
+  getNewMessage(chatRoomId: string): Observable<IChatMessage> {
+    return this.fromEvent<IChatMessage>(`${chatRoomId}-${CHAT_MESSAGE_SEND_MESSAGE}`).pipe(
+      filter(chatMessage => !!chatMessage),
+      tap((message) => {
+        const chatRoom = this.chatRoomsStore.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId);
+        chatRoom?.messages.push(message);
+        this.chatRoomsStore.updateChatRoom(chatRoom as IChatRoom);
+      }),
+    );
   }
 
 

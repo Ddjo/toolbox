@@ -1,7 +1,7 @@
 import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_ROOM_GET_MESSAGES_FOR_CHATROOM } from '@constants';
 import { RpcValidationFilter } from '@libs/common';
 import { Controller, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { GetMessagesForChatRoomDto } from './dto/get-messages-for-chat-room.dto';
 import { MessageDto } from './dto/message.dto';
 import { MessageService } from './message.service';
@@ -17,9 +17,6 @@ export class MessageController {
 
   @MessagePattern(CHAT_MESSAGE_CREATE_MESSAGE)
   async createMessage(@Payload() messageDto: MessageDto) {
-
-    console.log('  @MessagePattern(CHAT_MESSAGE_CREATE_MESSAGE) : ', messageDto);
-    
     return await this.messageService.create(messageDto);
   }
 

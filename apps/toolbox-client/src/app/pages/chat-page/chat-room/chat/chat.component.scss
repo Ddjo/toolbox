@@ -1,27 +1,89 @@
 :host::ng-deep {
   display: block;
-  .p-card-content {
-    min-height: 8rem;
-    border-radius: 1rem 1rem 0 0;
-    // background-color: var(--p-inputtext-color);
 
-    .typing-message {
+  /* Applique le style minimaliste à toute la page */
+  ::-webkit-scrollbar {
+    width: 8px; /* Largeur de la scrollbar */
+    height: 8px; /* Hauteur de la scrollbar horizontale */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #aaa; /* Couleur de la barre de défilement */
+    border-radius: 4px; /* Coins arrondis */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #888; /* Couleur au survol */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Couleur de l'arrière-plan de la scrollbar */
+    border-radius: 4px; /* Coins arrondis */
+  }
+
+  ::-webkit-scrollbar-track:hover {
+    background: #e0e0e0; /* Couleur au survol */
+  }
+
+  /* Support des scrollbars pour Firefox */
+  * {
+    scrollbar-width: thin; /* Largeur fine */
+    scrollbar-color: #aaa #f0f0f0; /* Couleurs : pouce / arrière-plan */
+  }
+
+
+  .chat-header {
+    font-size: 18px;
+    height: 3rem;
+
+    .user{
       font-size: x-small;
     }
-  }
 
-  .p-card-footer {
-    padding: 0;
-  }
-
-  .user{
-    font-size: x-small;
-  }
-
-  .user-infos{ 
     .p-button {
       height: 1.5rem;
       width: 2rem;
     }
   }
+
+  .chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    height: 16rem;
+    border-radius: 1rem 1rem 0 0;
+
+    .typing-message {
+      min-height: 1rem;
+      font-size: x-small;
+      color:var(--p-primary-contrast-color)
+    }
+  }
+  
+  .chat-input {
+    padding: 0;
+  }
+
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.chat-input button {
+  background-color: #0078d7;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.chat-input button:hover {
+  background-color: #005bb5;
 }

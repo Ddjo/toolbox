@@ -7,6 +7,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { TCPService } from '../helpers/tcp.service';
 import { SendMessageDto } from './dto/send-message.dto';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
+import { Server } from "socket.io";
 
 @Injectable()
 export class ChatService {
@@ -19,8 +20,12 @@ constructor(
     return this.chatClient.send('test-chat', {}); 
   }
 
-  async createMessage(sendMessageDto: SendMessageDto,  user: UserDto) {
-    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_MESSAGE_CREATE_MESSAGE,  {...sendMessageDto, user: user});
+  async createMessage(sendMessageDto: SendMessageDto,  user: UserDto, webSocketServer: Server) {
+    return this.tcpService.sendTCPMessageFromWebSocketRequest(
+      this.chatClient, CHAT_MESSAGE_CREATE_MESSAGE,  
+      {...sendMessageDto, user: user},
+       webSocketServer
+      );
   }
 
   // getAll() {

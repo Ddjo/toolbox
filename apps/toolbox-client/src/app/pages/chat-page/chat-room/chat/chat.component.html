@@ -1,39 +1,56 @@
-<p-card>
-    <!-- <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-        quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
 
-        <span class="typing-message">is typing</span>
-    </p> -->
-    <ng-template pTemplate="footer" class="flex-row align-content-center gap-3">
-        <input 
-            pSize="small" 
-            class="mr-2"
-            pInputText             
-            [formControl]="messageContent"
-            placeholder="Type your message...">
+
+<div class="chat-header flex justify-content-between align-items-center		">
+
+    <span class="user">connected as {{memberInput().email}}</span>
+    <div>
         <p-button 
-            icon="pi pi-send"
-            size="small" 
-            [loading]="isSendingMessage()"
+            *ngIf="currentUser()?.email !== memberInput()?.email" 
+            icon="pi pi-sign-out" 
+            aria-label="Leave" 
             [outlined]="false" 
             [rounded]="false" 
             [text]="true"
-            [disabled]="!messageContent.value"
-            (click)="sendMessage.emit(messageContent.value)"
+            (click)="memberLeavesChatOutput.emit(this.memberInput())" 
+            size="small" 
         />
-        <!-- messageContent.value: {{messageContent.value}} -->
-    </ng-template>
+    </div>
 
-</p-card>
-<div class="flex flex-row justify-content-between gap-6 mt-2 user-infos">
-    <span class="user mt-2">connected as {{member().email}}</span>
+</div>
+
+<div class="chat-messages flex flex-column p-2" #messagesContainer>
+
+    <div class="messages flex flex-column flex-grow-1 gap-1" >
+        <app-chat-message 
+            *ngFor="let message of (filteredMessages$ | async); let  i = index"
+            [isSenderCurrentUserInput]="message.sender._id === memberInput()._id"
+            [messageInput]="message"
+            [displayUserMailInput]="message.displayEmail"
+        />
+    </div>
+        
+    <div  class="typing-message flex align-items-end">
+        <span *ngIf="(typingUsersWithoutCurrentMember().length === 1)">{{typingUsersWithoutCurrentMember()[0]}} is typing...</span>
+        <span *ngIf="(typingUsersWithoutCurrentMember().length > 1)">{{typingUsersWithoutCurrentMember()[0]}} and {{typingUsersWithoutCurrentMember().length - 1}} more are typing... </span>
+    </div>
+    
+</div>
+<div class="chat-input flex flex-row align-items-center">
+
+    <input 
+        pSize="small" 
+        class="mr-2"
+        pInputText             
+        [formControl]="messageContent"
+        placeholder="Type your message..."
+        (keyup.enter)="sendMessage()">
     <p-button 
-        *ngIf="currentUser()?.email !== member()?.email" 
-        icon="pi pi-sign-out" 
-        aria-label="Save" 
-        (click)="memberLeavesChat.emit(this.member())" 
-        [loading]="isLoading()"
+        icon="pi pi-send"
         size="small" 
+        [outlined]="false" 
+        [rounded]="false" 
+        [text]="true"
+        [disabled]="!messageContent.value"
+        (click)="sendMessage()"
     />
 </div>

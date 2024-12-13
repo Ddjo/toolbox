@@ -1,23 +1,31 @@
 :host::ng-deep {
-  display: block;
-  .p-card-content {
-    min-height: 8rem;
-    border-radius: 1rem 1rem 0 0;
-    background-color: var(--p-inputtext-color);
-  }
+    display: block;
 
-  .p-card-footer {
-    padding: 0;
-  }
+    word-break: break-word;
 
-  .user{
-    font-size: x-small;
-  }
-
-  .user-infos{ 
-    .p-button {
-      height: 1.5rem;
-      width: 2rem;
+    .message,.sender-email  {
+        display: flex;
     }
-  }
+
+    .message.sent, .sender-email.sent {
+        justify-content: flex-end;
+    }
+
+    .message .content {
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .message.sent .content {
+        background-color: #0078d7;
+        color: white;
+    }
+
+    .message.received .content {
+        background-color: #e5e5ea;
+        color: #333;
+    }
 }

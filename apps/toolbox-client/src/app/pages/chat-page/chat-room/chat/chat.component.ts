@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, OnDestroy, output, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, output, ViewChild } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
+import { filter, Observable, tap, throttleTime } from 'rxjs';
 import { AuthService } from '../../../../../../src/app/core/services/auth.service';
-import { ChatRoomsStore } from '../../../../../../src/app/core/store/chat/chat-room.store';
-import { UsersStore } from '../../../../../../src/app/core/store/users/users.store';
-import { ChatService } from '../../../../core/services/chat.service';
-import { debounceTime, distinctUntilChanged, exhaustMap, mergeMap, of, Subject, switchMap, tap } from 'rxjs';
+import { typingUserDisplayTimeMs } from '../chat-room.component';
 import { ChatMessageComponent } from './chat-message/chat-message.component';
 
 @Component({
@@ -25,61 +25,73 @@ import { ChatMessageComponent } from './chat-message/chat-message.component';
       ButtonModule,
       CardModule,
       InputTextModule,
-      ChatMessageComponent
+      ChatMessageComponent,
+      TooltipModule
     ]
 })
-export class ChatComponent implements OnDestroy {
-
-  readonly userStore = inject(UsersStore);
-  readonly chatRoomsStore = inject(ChatRoomsStore);
+export class ChatComponent implements AfterViewInit {
+  
+  @ViewChild('messagesContainer', { read: ElementRef }) messagesContainer!: ElementRef;
 
   authService = inject(AuthService);
-  member = input.required<IUser>();
+  memberInput = input.required<IUser>();
+  chatRoomInput = input.required<IChatRoom>();
+  typingUsersInput = input<string[]>([]);
 
-  memberLeavesChat = output<IUser>();
-  sendMessage = output<string | null>();
-  
+  memberLeavesChatOutput = output<IUser>();
+  sendMessageOutput = output<string | null>();
+  typingUserOutput = output<IUser>();
+
   currentUser = this.authService.currentUserSig;
+
+  // Observe messages to display it, flag it with a displayEmail if it's the first one of a serie
+  filteredMessages$: Observable<( IChatMessage & {displayEmail: boolean})[]> = toObservable(computed(()=> {
+    return this.chatRoomInput().messages.map((message, index) => { return {
+      ...message,
+      displayEmail : index === 0 || message.sender._id !== this.chatRoomInput().messages[index - 1].sender._id
+    }})
+  })).pipe(
+    tap(() => {
+      // Scroll only for the user who sent the new message
+      if (this.chatRoomInput().messages[this.chatRoomInput().messages.length - 1].sender._id === this.memberInput()._id) {
+        this.scrollToLastMessage()
+      }
+    })
+  );
+  
+  
+  typingUsersWithoutCurrentMember = computed(() => {
+    return this.typingUsersInput().filter(mail => mail !== this.memberInput().email);
+  })
+
   messageContent = new FormControl<string | null>(null);
 
-  isLoading = signal(false);
-  isSendingMessage = signal(false);
-  private typingSubject = new Subject<boolean>();
-  private typingTimeout?: NodeJS.Timeout;
-
-  constructor(private chatService: ChatService) {
+  constructor(
+  ) {
     this.messageContent.valueChanges.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
+      filter(value => !!value),
+      throttleTime(typingUserDisplayTimeMs)
     ).subscribe(() => {
-      console.log('user typing')
-    }
-  );
-
-    // Émettre les états de "saisie" aux autres utilisateurs
-    this.typingSubject.subscribe(isTyping => {
-      this.chatService.sendTypingSignal(isTyping);
+      this.typingUserOutput.emit(this.memberInput());
     });
   }
-  
-  ngOnDestroy(): void {
-    this.chatService.disconnect();
-  }
-  
-  userIsTyping() {
-    // Émettre "en train de taper"
-    this.typingSubject.next(true);
 
-    // Réinitialiser le timeout pour arrêter l'état "en train de taper"
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
+  ngAfterViewInit(): void {
+    this.scrollToLastMessage();
+  }
+  sendMessage() {
+    this.sendMessageOutput.emit(this.messageContent.value);
+    this.messageContent.setValue(null);  
+  }
+
+  scrollToLastMessage(): void {
+    try {
+      setTimeout(() => {
+        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+      });
+    } catch (err) {
+      console.error('Scroll error:', err);
     }
-    this.typingTimeout = setTimeout(() => {
-      this.typingSubject.next(false);
-    }, 2000); // 2 secondes d'inactivité
   }
 
-  testChat() {
-    this.chatService.emit('test-chat')
-  }
  }

@@ -1,4 +1,4 @@
-import { IChatRoom } from '@libs/common';
+import { IChatMessage, IChatRoom } from '@libs/common';
 import { patchState, signalState, signalStore, type, withMethods, withState } from '@ngrx/signals';
 import {
     addEntity,
@@ -45,6 +45,15 @@ export const ChatRoomsStore = signalStore(
     },
     removeChatRoom(chatRoom: IChatRoom): void {
       patchState(store, removeEntity(chatRoom._id, chatRoomsConfig));
+      patchState(store, {isLoading: false})
+    },
+    addMessageToChatRoom(chatRoom: IChatRoom, message: IChatMessage): void {
+      patchState(store, updateEntity({id: chatRoom._id, 
+        changes:{
+          messages : [...chatRoom.messages, message ]
+        }
+      
+      }, chatRoomsConfig));
       patchState(store, {isLoading: false})
     },
     setLoading(value: boolean): void {

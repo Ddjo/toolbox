@@ -1,5 +1,5 @@
 <p-card class="flex flex-column	min-w-full">
-    <p-header>
+    <div class="chat-room-header">
         <p-button 
             icon="pi pi-trash " 
             [rounded]="true" 
@@ -7,15 +7,20 @@
             size="small" 
             (onClick)="removeChatRoom()"
         />
-    </p-header>
-    <div class="flex flex-wrap gap-4 m-3 min-h-full">
-        <app-chat 
-        class='max-w-30rem'
-        *ngFor="let member of chatRoom().members" 
-        [member]="member" 
-        (sendMessage)="sendMessage($event, member)"
-        (memberLeavesChat)="memberLeavesChat(member)"
-        />
+    </div>
+    <div class="flex flex-column gap-4  m-3 min-h-full">
+        <div class="flex flex-wrap gap-4 ">
+            <app-chat 
+                class='max-w-28rem'
+                *ngFor="let member of chatRoom().members" 
+                [memberInput]="member" 
+                [chatRoomInput]="chatRoom()"
+                [typingUsersInput]="typingUsers()"
+                (sendMessageOutput)="sendMessageEvent($event, member)"
+                (memberLeavesChatOutput)="memberLeavesChatEvent(member)"
+                (typingUserOutput)="typingUserEvent($event)"
+            />
+        </div>
     
         <div class=" gap-3 align-items-center">
             @if (availableUsersToAdd().length) {
@@ -24,7 +29,7 @@
                     [formControl]="addMemberControl"
                     [loading]="chatRoomsStore.isLoading()"
                     optionLabel="email" 
-                    placeholder="Add a participant to the conversation" 
+                    placeholder="Add a participant to the conversation and load his view" 
                     class="w-full md:w-56" 
                 />
             } @else {
@@ -32,6 +37,4 @@
             }
         </div>
     </div>
-
-    <p-button (onClick)="getMessagesForChatroom()">getMessagesForChatroom</p-button>
 </p-card>

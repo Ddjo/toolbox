@@ -24,7 +24,9 @@ export class RoomsService {
                 messages: [],
                 name: ''
             }, 
-            {path: 'members', select: '_id, email'});
+            [
+                {path: 'members', select: ['_id', 'email']}
+            ]);
 
     }
 
@@ -50,7 +52,7 @@ export class RoomsService {
         {
 
             // Remove messages
-            this.messageRepository.findOneAndDelete({ chatRoom: removeRoomDto._id });
+            this.messageRepository.deleteMany({ chatRoom: removeRoomDto });
 
             const result = this.roomRepository.findOneAndDelete({_id: removeRoomDto._id});
         
