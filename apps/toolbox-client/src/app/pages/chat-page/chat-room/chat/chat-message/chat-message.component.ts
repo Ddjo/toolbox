@@ -7,14 +7,13 @@ import { IChatMessage } from '@libs/common';
     templateUrl: './chat-message.component.html',
     styleUrl: './chat-message.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
-      CommonModule,
-      // FormsModule,
-      // ReactiveFormsModule,
-      // ButtonModule,
-      // CardModule,
-      // InputTextModule
+        CommonModule,
+        // FormsModule,
+        // ReactiveFormsModule,
+        // ButtonModule,
+        // CardModule,
+        // InputTextModule
     ]
 })
 export class ChatMessageComponent{

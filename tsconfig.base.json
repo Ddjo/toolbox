@@ -17,7 +17,7 @@
     "paths": {
       "@auth/*": ["apps/auth/*"],
       "@constants": ["libs/constants/index.ts"],
-      "@libs/common": ["libs/common/src/index.ts"],
+      "@libs/common": ["libs/common/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

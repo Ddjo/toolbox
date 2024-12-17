@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
     templateUrl: './chat-page.component.html',
     styleUrl: './chat-page.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CommonModule,
         ButtonModule,

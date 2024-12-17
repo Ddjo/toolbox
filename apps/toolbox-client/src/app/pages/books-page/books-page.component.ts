@@ -6,17 +6,16 @@ import { HeaderComponent } from '../../core/shell/layout/header/header.component
 
 
 @Component({
-  selector: 'app-books-page',
-  templateUrl: './books-page.component.html',
-  styleUrls: ['./books-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    ButtonModule,
-    CommonModule,
-    HeaderComponent,
-    RouterModule,
-  ],
+    selector: 'app-books-page',
+    templateUrl: './books-page.component.html',
+    styleUrls: ['./books-page.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        ButtonModule,
+        CommonModule,
+        HeaderComponent,
+        RouterModule,
+    ]
 })
 export class BooksPageComponent  {
 

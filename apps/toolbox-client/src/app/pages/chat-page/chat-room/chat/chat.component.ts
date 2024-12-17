@@ -17,16 +17,15 @@ import { ChatMessageComponent } from './chat-message/chat-message.component';
     templateUrl: './chat.component.html',
     styleUrl: './chat.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
-      CommonModule,
-      FormsModule,
-      ReactiveFormsModule,
-      ButtonModule,
-      CardModule,
-      InputTextModule,
-      ChatMessageComponent,
-      TooltipModule
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        CardModule,
+        InputTextModule,
+        ChatMessageComponent,
+        TooltipModule
     ]
 })
 export class ChatComponent implements AfterViewInit {

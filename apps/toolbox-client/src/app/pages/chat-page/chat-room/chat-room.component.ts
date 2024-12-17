@@ -20,17 +20,16 @@ export const typingUserDisplayTimeMs = 3000;
     templateUrl: './chat-room.component.html',
     styleUrl: './chat-room.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ButtonModule,
-    CardModule,
-    InputTextModule,
-    ChatComponent,
-    SelectModule
-]
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        CardModule,
+        InputTextModule,
+        ChatComponent,
+        SelectModule
+    ]
 })
 export class ChatRoomComponent implements OnInit {
 

@@ -23,7 +23,6 @@ export interface IGoogleBook  {
 
 @Component({
     selector: 'app-book',
-    standalone: true,
     imports: [
         CommonModule,
         AutoCompleteModule,
@@ -38,7 +37,7 @@ export interface IGoogleBook  {
     ],
     templateUrl: './book.component.html',
     styleUrl: './book.component.scss',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class BookComponent { 
 

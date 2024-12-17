@@ -9,12 +9,11 @@ import { Router, RouterModule } from '@angular/router';
 
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrl: './signup.component.scss',
-  standalone: true,
-  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule, RouterModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-signup',
+    templateUrl: './signup.component.html',
+    styleUrl: './signup.component.scss',
+    imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule, RouterModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupComponent {
   

@@ -8,17 +8,16 @@ import { TableModule } from 'primeng/table';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-library',
-  templateUrl: './library.component.html',
-  styleUrls: ['./library.component.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TableModule,
-    ButtonModule,
-    RouterModule
-  ], 
+    selector: 'app-library',
+    templateUrl: './library.component.html',
+    styleUrls: ['./library.component.scss'],
+    imports: [
+        CommonModule,
+        FormsModule,
+        TableModule,
+        ButtonModule,
+        RouterModule
+    ]
 })
 export class LibraryComponent  {
 

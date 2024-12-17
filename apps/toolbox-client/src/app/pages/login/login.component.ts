@@ -9,12 +9,11 @@ import { ButtonModule } from 'primeng/button';
 
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule, RouterModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-login',
+    imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule, RouterModule],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
   

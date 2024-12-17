@@ -10,17 +10,16 @@ import { MenubarModule } from 'primeng/menubar';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MenubarModule,
-    InputSwitchModule,
-    ButtonModule
-  ]
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss'],
+    imports: [
+        CommonModule,
+        FormsModule,
+        MenubarModule,
+        InputSwitchModule,
+        ButtonModule
+    ]
 })
 export class HeaderComponent {
   
