@@ -8,7 +8,7 @@
     "auth:dev:docker": "nx serve auth --host=0.0.0.0 --watch",
     "books:dev:docker": "nx serve books --host=0.0.0.0 --watch",
     "chat:dev:docker": "nx serve chat --host=0.0.0.0 --watch"
-  },
+    },
   "private": true,
   "dependencies": {
     "@angular/animations": "19.0.4",
@@ -116,7 +116,7 @@
     "prettier": "^2.6.2",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
-    "primeng": "^18.0.0",
+    "primeng": "19.0.0-rc.1",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
