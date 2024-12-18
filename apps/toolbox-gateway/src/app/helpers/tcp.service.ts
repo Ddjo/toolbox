@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { WebSocketServer } from "@nestjs/websockets";
 import { lastValueFrom } from "rxjs";
@@ -16,6 +16,9 @@ export class TCPService {
       return await lastValueFrom(proxy.send(clientMessagePattern, payload));
     } catch (err ) {
       console.log('sendTCPMessageFromHttpRequest : ', err)
+      if (err.code === 'ECONNREFUSED') {
+        throw new HttpException(`${err.code} - ${err.address} - ${err.port}`, HttpStatus.SERVICE_UNAVAILABLE);
+      }
       throw new HttpException(err.message, err.statusCode); 
     }
   }
