@@ -1,6 +1,18 @@
 
 services:
 
+  toolbox-gateway:
+    env_file: 
+      - path: ./docker.env
+        required: true # default
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npm run toolbox-gateway:dev:docker
+    ports:
+      -  ${GATEWAY_PORT}:${GATEWAY_PORT} 
+
+
   # Toolbox client App
   toolbox-client:
     env_file: 
@@ -51,16 +63,6 @@ services:
     depends_on:
       - mongo
 
-  toolbox-gateway:
-    env_file: 
-      - path: ./docker.env
-        required: true # default
-    extends:
-      file: docker-compose.base.yml
-      service: nx-app-base
-    command: npm run toolbox-gateway:dev:docker
-    ports:
-      -  ${GATEWAY_PORT}:${GATEWAY_PORT} 
 
   mongo:
     image: mongo
