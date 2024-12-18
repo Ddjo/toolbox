@@ -6,6 +6,7 @@ import { MessageRepository } from '../message/message.repository';
 import { ChatRoomDto } from './dto/chat-room.dto';
 import { RemoveRoomDto } from './dto/remove-room.dto';
 import { RoomRepository } from './rooms.repository';
+import { GetAllChatRoomsForUserDto } from './dto/get-all-chat-rooms-for-user.dto copy';
 
 @Injectable()
 export class RoomsService {
@@ -30,14 +31,19 @@ export class RoomsService {
 
     }
 
-    async findAllForUser(user: UserDto) {
+    async findAllForUser( getAllChatRoomsForUserDto: GetAllChatRoomsForUserDto) {
         return this.roomRepository.find(
-            { members: user }, 
+            { 
+                members: getAllChatRoomsForUserDto.user 
+            }, 
             {}, 
             [
                 {path: 'members', select: ['_id', 'email']}, 
-                {path: 'messages', select: ['_id', 'content', 'sender', 'createdAt', 'updatedAt'], 
-                    populate: {path: 'sender', select: ['_id', 'email']}
+                {
+                    path: 'messages',
+                    options: { sort: { 'createdAt': -1 }, limit: getAllChatRoomsForUserDto.messagesLimit }, 
+                    select: ['_id', 'content', 'sender', 'createdAt', 'updatedAt'], 
+                        populate: {path: 'sender', select: ['_id', 'email']}
                 },
             ]
         );

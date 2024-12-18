@@ -2,7 +2,7 @@
 // import { SignInDto } from './dto/sign-in.dto';
 
 import { CurrentUser, JwtAuthGuard, UserDto } from "@libs/common";
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ChatService } from "./chat.service";
 import { UpdateChatRoomDto } from "./dto/update-chat-room.dto";
@@ -14,15 +14,22 @@ export class ChatController {
   
   @Get()
   @UseGuards(JwtAuthGuard)
-  getChatRoomsForUser(@CurrentUser() user: UserDto) { 
-    return this.chatService.getChatRoomsForUser(user);
+  getChatRoomsForUser(
+    @CurrentUser() user: UserDto, 
+    @Query('messages-limit')messagesLimit : string
+  ) { 
+    return this.chatService.getChatRoomsForUser(user, +messagesLimit);
   }
 
     
   @Get(':id/messages')
   @UseGuards(JwtAuthGuard)
-  getMessagesForChatroom(@Param('id') id: string) { 
-    return this.chatService.getMessagesForChatRoom(id);
+  findPreviousMessagesForChatRoom(
+    @Param('id') id: string,
+    @Query('skip') skip : string,
+    @Query('messages-limit') messagesLimit : string
+  ) { 
+    return this.chatService.findPreviousMessagesForChatRoom(id, +skip, +messagesLimit);
   }
 
 

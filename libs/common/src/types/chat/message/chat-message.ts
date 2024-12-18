@@ -5,5 +5,7 @@ export interface IChatMessage {
     chatRoom: string;
     sender: Omit<IUser, 'password'>
     content: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 

@@ -19,7 +19,7 @@ export class TCPService {
       if (err.code === 'ECONNREFUSED') {
         throw new HttpException(`${err.code} - ${err.address} - ${err.port}`, HttpStatus.SERVICE_UNAVAILABLE);
       }
-      throw new HttpException(err.message, err.statusCode); 
+      throw new HttpException(`${clientMessagePattern} -  ${err.message}`, err.statusCode); 
     }
   }
 

@@ -14,7 +14,7 @@ export class ChatRoomDto {
     name: string;
 
     @IsArray()
-    @ArrayNotEmpty()
+    // @ArrayNotEmpty()
     members: UserDto[];
 
     @IsArray()

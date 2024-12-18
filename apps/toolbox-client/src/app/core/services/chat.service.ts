@@ -1,12 +1,11 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environments';
-import { Socket } from 'ngx-socket-io';
-import { catchError, filter, map, Observable, tap, throwError } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { ChatRoomsStore } from '../store/chat/chat-room.store';
-import { IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
-import { ChatMessagesStore } from '../store/chat/chat-message.store';
+import { IChatMessage, IChatRoom, IUser } from '@libs/common';
+import { Socket } from 'ngx-socket-io';
+import { filter, Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environments';
+import { ChatRoomsStore } from '../store/chat/chat-room.store';
 
 export const url = environment.gatewayApiUrl + '/chat';
 
@@ -16,7 +15,7 @@ export const url = environment.gatewayApiUrl + '/chat';
 export class ChatService extends Socket {
 
   readonly chatRoomsStore = inject(ChatRoomsStore);
-  readonly chatMessagesStore = inject(ChatMessagesStore);
+  // readonly chatMessagesStore = inject(ChatMessagesStore);
 
 
   public constructor(private http: HttpClient, ) {
@@ -28,19 +27,31 @@ export class ChatService extends Socket {
     this.fromEvent('ws-exception').subscribe((err) => console.error(err))
   }
 
-  getChatRoomsForUser() {
+  getChatRoomsForUser(messagesLimit = environment.chat.messagesToDisplayNumber) {
+    let params = new HttpParams();
+
+    params = params.append('messages-limit', messagesLimit);
+
     this.chatRoomsStore.setLoading(true);
-    return this.http.get<IChatRoom[]>(url).pipe(
+    return this.http.get<IChatRoom[]>(url, { params: params }).pipe(
       tap(chatRooms =>this.chatRoomsStore.setChatRooms(chatRooms)),
       tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 
-  getMessagesForChatroom(chatRoom: IChatRoom) {
-    this.chatMessagesStore.setLoading(true);
-    return this.http.get<IChatMessage[]>(`${url}/${chatRoom._id}/messages`).pipe(
-      tap(messages =>this.chatMessagesStore.setChatMessages(messages)),
-      tap(() => this.chatMessagesStore.setLoading(false))
+  loadPreviousMessagesForChatRoom(chatRoom: IChatRoom, messagesLimit = environment.chat.messagesToDisplayNumber) {
+
+    let params = new HttpParams();
+
+    // Set the messages number already displayed 
+    params = params.append('skip', chatRoom.messages.length);
+    params = params.append('messages-limit', messagesLimit);
+
+    this.chatRoomsStore.setLoading(true);
+
+    return this.http.get<IChatMessage[]>(`${url}/${chatRoom._id}/messages`, { params: params }).pipe(
+      tap(messages =>this.chatRoomsStore.addMessagesToChatRoom(chatRoom, messages)),
+      tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 
@@ -102,8 +113,8 @@ export class ChatService extends Socket {
     return this.fromEvent<IChatMessage>(`${chatRoomId}-${CHAT_MESSAGE_SEND_MESSAGE}`).pipe(
       filter(chatMessage => !!chatMessage),
       tap((message) => {
-        const chatRoom = this.chatRoomsStore.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId);
-        chatRoom?.messages.push(message);
+        const chatRoom = {...this.chatRoomsStore.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId)} as IChatRoom;
+        chatRoom.messages = [...chatRoom.messages, message];
         this.chatRoomsStore.updateChatRoom(chatRoom as IChatRoom);
       }),
     );

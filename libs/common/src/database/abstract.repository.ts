@@ -1,5 +1,5 @@
 import { Logger, NotFoundException } from '@nestjs/common';
-import { FilterQuery, Model, PopulateOption, PopulateOptions, ProjectionType, Types, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, PopulateOption, PopulateOptions, ProjectionType, SortOrder, Types, UpdateQuery } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
@@ -56,19 +56,43 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async find(
     filterQuery: FilterQuery<TDocument>, 
     projection : ProjectionType<TDocument>, 
-    populate?: PopulateOptions[]
+    populate?: PopulateOptions[],
+    sortParam?:Record<string, SortOrder>,
+    limitParam?: number,
+    skipParam?: number
   ) {
 
-    console.log('populate : ', JSON.stringify(populate))
-    const query =  this.model.find(filterQuery, projection, { lean: true });
+    const query =  this.model.find(filterQuery, projection, { lean: true }).sort();
 
     populate?.forEach(popul => {
       query.populate(popul);
     })
 
-    return query;
+  // Construction dynamique de l'objet sortCriteria
+    if (sortParam) {
+      const sortCriteria = Object.entries(sortParam).reduce((criteria, [key, order]) => {
+        (criteria as any)[key] = order === 'desc' ? -1 : 1; // Convertit 'desc' et 'asc' en -1 et 1
+        return criteria;
+      }, {});
 
+      console.log('sortCriteria : ', sortCriteria)
+      query.sort(sortCriteria);
+    }
+
+    if(limitParam) {
+      console.log('limit : ', limitParam)
+      query.limit(limitParam);
+    }
+
+    if(skipParam) {
+      console.log('skipParam : ', skipParam)
+      query.skip(skipParam);
+    }
+
+    return query;
   }
+
+
 
   async findOneAndDelete(
     filterQuery: FilterQuery<TDocument>, 

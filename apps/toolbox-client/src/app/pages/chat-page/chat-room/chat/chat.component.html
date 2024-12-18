@@ -18,23 +18,78 @@
 
 </div>
 
-<div class="chat-messages flex flex-column p-2" #messagesContainer>
+<div class="chat-messages flex flex-column pt-3">
 
-    <div class="messages flex flex-column flex-grow-1 gap-1" >
-        <app-chat-message 
-            *ngFor="let message of (filteredMessages$ | async); let  i = index"
-            [isSenderCurrentUserInput]="message.sender._id === memberInput()._id"
-            [messageInput]="message"
-            [displayUserMailInput]="message.displayEmail"
-        />
-    </div>
-        
-    <div  class="typing-message flex align-items-end">
+    <p-button (onClick)="loadOlderMessages()">load older messages</p-button>
+    <cdk-virtual-scroll-viewport #messagesViewport
+        appendOnly
+        [itemSize]="50"  
+        [minBufferPx]="300"  
+        [maxBufferPx]="500"  
+        class="messages-viewport p-1 gap-1" 
+        (scrolledIndexChange)="messagesViewportScrolling($event)"
+    >
+        <!-- <div *cdkVirtualFor="let message of (filteredMessages$ | async)" class="example-item"> -->
+            <app-chat-message 
+                *cdkVirtualFor="let message of filteredMessages$"
+                [appCdkDynamicHeightDir]="message"
+                [isSenderCurrentUserInput]="message.sender._id === memberInput()._id"
+                [messageInput]="message"
+                [displayUserMailInput]="message.displayEmail"
+            />
+        <!-- </div> -->
+    </cdk-virtual-scroll-viewport>
+
+    <!-- <p-virtualscroller
+        #sc
+        [items]="(filteredMessages$ | async)"
+        [options]="scrollerOptions"
+        [lazy]="false"
+        [scrollHeight]="'18rem'"
+        styleClass="border border-surface"
+        >
+            <ng-template pTemplate="item" let-item let-options="options">
+                <app-chat-message 
+                [isSenderCurrentUserInput]="item.sender._id === memberInput()._id"
+                [messageInput]="item"
+                [displayUserMailInput]="item.displayEmail"
+            />
+            </ng-template>
+    </p-virtualscroller> -->
+
+    <!-- <p-button label="Reset" (click)="reset()" /> -->
+    <!-- <p-virtualscroller
+        #sc
+        [items]="items"
+        [itemSize]="18"
+        [lazy]="false"
+        scrollHeight="200px"
+        styleClass="border border-surface"
+        class="full-height-scroller"
+        [style]="{'width': '200px', 'height': '200px'}">
+            <ng-template pTemplate="item" let-item let-options="options">
+                <div
+                class="flex items-center"
+                [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }"
+                style="height: 18px;">
+                    {{ item }}
+                </div>
+            </ng-template>
+    </p-virtualscroller> -->
+
+    <div  class="typing-message flex align-items-end pl-2 pb-1">
         <span *ngIf="(typingUsersWithoutCurrentMember().length === 1)">{{typingUsersWithoutCurrentMember()[0]}} is typing...</span>
         <span *ngIf="(typingUsersWithoutCurrentMember().length > 1)">{{typingUsersWithoutCurrentMember()[0]}} and {{typingUsersWithoutCurrentMember().length - 1}} more are typing... </span>
     </div>
-    
+        
 </div>
+
+
+<div class="new-messages-tooltip flex align-items-center justify-content-center" *ngIf="unreadMessages > 0">
+     <p-button icon="pi pi-arrow-down" size="small" label="New messages" (onClick)="scrollToLastMessage('smooth')" [badge]="unreadMessages.toString()" />
+</div>
+
+
 <div class="chat-input flex flex-row align-items-center">
 
     <input 
@@ -43,7 +98,9 @@
         pInputText             
         [formControl]="messageContent"
         placeholder="Type your message..."
-        (keyup.enter)="sendMessage()">
+        (keyup.enter)="sendMessage()"
+
+        >
     <p-button 
         icon="pi pi-send"
         size="small" 

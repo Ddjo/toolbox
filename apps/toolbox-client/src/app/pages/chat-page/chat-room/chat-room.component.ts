@@ -13,7 +13,7 @@ import { ChatRoomsStore } from '../../../../../src/app/core/store/chat/chat-room
 import { UsersStore } from '../../../../../src/app/core/store/users/users.store';
 import { ChatComponent } from "./chat/chat.component";
 
-export const typingUserDisplayTimeMs = 3000;
+export const typingUserDisplayTimeMs = 10000;
 
 @Component({
     selector: 'app-chat-room',
@@ -103,8 +103,8 @@ export class ChatRoomComponent implements OnInit {
     this.chatService.sendTypingSignal(this.chatRoom(), typingUser);
   }
 
-  getMessagesForChatroom() {
-    this.chatService.getMessagesForChatroom(this.chatRoom()).subscribe(() => console.log);
+  loadPreviousMessages() {
+    this.chatService.loadPreviousMessagesForChatRoom(this.chatRoom()).subscribe(() => console.log);
   }
 
 

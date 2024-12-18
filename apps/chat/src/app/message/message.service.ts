@@ -3,9 +3,9 @@ import { InjectConnection } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { RoomRepository } from '../rooms/rooms.repository';
 import { GetMessageDto } from './dto/get-message.dto';
-import { GetMessagesForChatRoomDto } from './dto/get-messages-for-chat-room.dto';
 import { MessageDto } from './dto/message.dto';
 import { MessageRepository } from './message.repository';
+import { GetMessagesForChatRoomDto } from './dto/get-messages-for-chat-room.dto';
 
 
 @Injectable()
@@ -62,12 +62,28 @@ export class MessageService {
   async findAllForChatRoom(getMessagesForChatRoomDto: GetMessagesForChatRoomDto) {
     return this.messageRepository.find(
       { chatRoom: getMessagesForChatRoomDto.chatRoomId }, 
-      {}, 
+      { sort: { 'createdAt': -1 }, limit: getMessagesForChatRoomDto.messagesLimit }, 
       [ 
         {path: 'sender', select: ['_id', 'email']}, 
         {path: 'chatRoom', select: ['_id','name']}
       ]
      );
+  }
+
+  async findPreviousMessagesForChatRoom(getMessagesForChatRoomDto: GetMessagesForChatRoomDto) {
+    return this.messageRepository.find(
+      { chatRoom: getMessagesForChatRoomDto.chatRoomId }, 
+      {  }, 
+      [ 
+        {path: 'sender', select: ['_id', 'email']}, 
+        {path: 'chatRoom', select: ['_id','name']}
+      ],
+      { createdAt: 'desc' },
+      getMessagesForChatRoomDto.messagesLimit,
+      getMessagesForChatRoomDto.skip
+     )
+
+    //  sort: { 'createdAt': -1 }, limit: getMessagesForChatRoomDto.messagesLimit
   }
 
   async findAll(roomId: string, getMessageDto: GetMessageDto) {

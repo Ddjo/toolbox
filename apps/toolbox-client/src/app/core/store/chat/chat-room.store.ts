@@ -56,6 +56,15 @@ export const ChatRoomsStore = signalStore(
       }, chatRoomsConfig));
       patchState(store, {isLoading: false})
     },
+    addMessagesToChatRoom(chatRoom: IChatRoom, messages: IChatMessage[]): void {
+      patchState(store, updateEntity({id: chatRoom._id, 
+        changes:{
+          messages : [...chatRoom.messages, ...messages ]
+        }
+      
+      }, chatRoomsConfig));
+      patchState(store, {isLoading: false})
+    },
     setLoading(value: boolean): void {
       patchState(store, {isLoading: value})
     }

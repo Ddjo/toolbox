@@ -2,5 +2,8 @@ export const environment = {
     production: false,
     gatewayApiUrl: '/api',
     authApiUrl: '/auth-api',
-    chatWsUrl: 'ws://localhost:4200/'
+    chatWsUrl: 'ws://localhost:4200/',
+    chat : {
+      messagesToDisplayNumber: 10
+    }
   };

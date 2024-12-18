@@ -3,6 +3,7 @@ import { RpcValidationFilter, UserDto } from '@libs/common';
 import { Controller, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ChatRoomDto } from './dto/chat-room.dto';
+import { GetAllChatRoomsForUserDto } from './dto/get-all-chat-rooms-for-user.dto copy';
 import { RemoveRoomDto } from './dto/remove-room.dto';
 import { RoomsService } from './rooms.service';
 
@@ -16,8 +17,8 @@ export class RoomsController {
   ) { }
 
   @MessagePattern(CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER)
-  async findAllForUser(@Payload() user: UserDto) {
-    return this.roomsService.findAllForUser(user);
+  async findAllForUser(@Payload() getAllChatRoomsForUserDto: GetAllChatRoomsForUserDto) {
+    return this.roomsService.findAllForUser(getAllChatRoomsForUserDto);
   }
 
   @MessagePattern(CHAT_ROOM_CREATE_CHAT_ROOM)
