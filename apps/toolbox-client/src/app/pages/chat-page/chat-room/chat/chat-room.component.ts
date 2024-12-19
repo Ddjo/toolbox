@@ -10,18 +10,18 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { filter, Observable, tap, throttleTime } from 'rxjs';
-import { AuthService } from '../../../../../../src/app/core/services/auth.service';
-import { ChatService } from '../../../../../../src/app/core/services/chat.service';
-import { typingUserDisplayTimeMs } from '../chat-room.component';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ChatService } from '../../../../core/services/chat.service';
+import { typingUserDisplayTimeMs } from '../chat.component';
 import { ChatMessageComponent } from './chat-message/chat-message.component';
 
 @Component({
-    selector: 'app-chat',
-    templateUrl: './chat.component.html',
-    styleUrl: './chat.component.scss',
+    selector: 'app-chat-room',
+    templateUrl: './chat-room.component.html',
+    styleUrl: './chat-room.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-      CommonModule,
+      CommonModule, 
       FormsModule,
       ReactiveFormsModule,
       ButtonModule,
@@ -33,7 +33,7 @@ import { ChatMessageComponent } from './chat-message/chat-message.component';
       ProgressSpinnerModule
     ]
 })
-export class ChatComponent implements AfterViewInit {
+export class ChatRoomComponent implements AfterViewInit {
   
   chatService = inject(ChatService);
   authService = inject(AuthService);

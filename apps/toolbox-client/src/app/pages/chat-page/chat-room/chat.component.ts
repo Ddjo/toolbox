@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
@@ -7,18 +7,17 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { filter, switchMap } from 'rxjs';
-import { AuthService } from '../../../../../src/app/core/services/auth.service';
-import { ChatRoomsStore } from '../../../../../src/app/core/store/chat/chat-room.store';
-import { UsersStore } from '../../../../../src/app/core/store/users/users.store';
+import { AuthService } from '../../../core/services/auth.service';
 import { ChatService } from '../../../core/services/chat.service';
-import { ChatComponent } from "./chat/chat.component";
+import { ChatRoomsStore } from '../../../core/store/chat/chat-room.store';
+import { UsersStore } from '../../../core/store/users/users.store';
 
 export const typingUserDisplayTimeMs = 10000;
 
 @Component({
-    selector: 'app-chat-room',
-    templateUrl: './chat-room.component.html',
-    styleUrl: './chat-room.component.scss',
+    selector: 'app-chat',
+    templateUrl: './chat.component.html',
+    styleUrl: './chat.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
@@ -27,11 +26,10 @@ export const typingUserDisplayTimeMs = 10000;
         ButtonModule,
         CardModule,
         InputTextModule,
-        ChatComponent,
         SelectModule
     ]
 })
-export class ChatRoomComponent implements OnInit {
+export class ChatComponent implements OnInit {
 
   chatRoom = input.required<IChatRoom>();
 
@@ -40,7 +38,7 @@ export class ChatRoomComponent implements OnInit {
   readonly chatService = inject(ChatService);
   readonly authService = inject(AuthService);
   
-  typingUsers = signal<string[]>([]);
+  // typingUsers = signal<string[]>([]);
 
   currentUser = this.authService.currentUserSig;
   addMemberControl = new FormControl();
