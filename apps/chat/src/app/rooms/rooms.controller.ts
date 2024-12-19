@@ -2,10 +2,10 @@ import { CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_A
 import { RpcValidationFilter, UserDto } from '@libs/common';
 import { Controller, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { ChatRoomDto } from './dto/chat-room.dto';
-import { GetAllChatRoomsForUserDto } from './dto/get-all-chat-rooms-for-user.dto copy';
-import { RemoveRoomDto } from './dto/remove-room.dto';
 import { RoomsService } from './rooms.service';
+import { GetAllChatRoomsForUserDto } from './dto/get-all-chat-rooms-for-user.dto';
+import { RemoveChatRoomDto } from './dto/remove-chat-room.dto';
+import { ChatRoomDto } from './dto/chat-room.dto';
 
 @UsePipes(new ValidationPipe())
 @UseFilters(new RpcValidationFilter())
@@ -27,7 +27,7 @@ export class RoomsController {
   }
 
   @MessagePattern(CHAT_ROOM_DELETE_CHAT_ROOM)
-  async remove(@Payload() removeRoomDto: RemoveRoomDto) {
+  async remove(@Payload() removeRoomDto: RemoveChatRoomDto) {
     return this.roomsService.remove(removeRoomDto);  
   }
 

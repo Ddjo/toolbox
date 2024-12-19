@@ -2,9 +2,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsNotEmpty, ValidateNested } from "class-validator";
 import { ChatRoomDto } from "./chat-room.dto";
-import { SenderDto } from "./sender.dto";
+import { UserWithoutPasswordDto } from "./user-without-password.dto";
 
-export class SendMessageDto {
+export class SendChatMessageDto {
 
     @IsNotEmpty()
     @Type(() => ChatRoomDto)
@@ -12,9 +12,9 @@ export class SendMessageDto {
     readonly chatRoom: ChatRoomDto;
 
     @IsNotEmpty()
-    @Type(() => SenderDto)
+    @Type(() => UserWithoutPasswordDto)
     @ValidateNested()
-    readonly sender: SenderDto
+    readonly sender: UserWithoutPasswordDto
 
     @ApiProperty()
     @IsNotEmpty()

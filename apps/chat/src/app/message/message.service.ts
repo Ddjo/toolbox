@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { RoomRepository } from '../rooms/rooms.repository';
-import { GetMessageDto } from './dto/get-message.dto';
-import { MessageDto } from './dto/message.dto';
-import { MessageRepository } from './message.repository';
+import { ChatMessageDto } from './dto/chat-message.dto';
 import { GetMessagesForChatRoomDto } from './dto/get-messages-for-chat-room.dto';
+import { MessageRepository } from './message.repository';
+import { SeenChatMessageDto } from './dto/seen-chat-message.dto';
 
 
 @Injectable()
@@ -20,7 +20,7 @@ export class MessageService {
  ) {}
 
 
-  async create(messageDto: MessageDto) {
+  async create(chatMessageDto: ChatMessageDto) {
 
     const transactionSession = await this.connection.startSession();
     transactionSession.startTransaction();
@@ -28,7 +28,7 @@ export class MessageService {
     try
     {
       const newMessage = await this.messageRepository
-      .create(messageDto,
+      .create( chatMessageDto,
         [
           {path: 'sender', select: ['_id', 'email']}, 
           {path: 'chatRoom', select: ['_id','name']}
@@ -36,7 +36,7 @@ export class MessageService {
       );
 
       await this.roomRepository.findOneAndUpdate(
-        { _id: messageDto.chatRoom._id}, 
+        { _id: chatMessageDto.chatRoom._id}, 
         {
           $push : {
              messages : newMessage
@@ -86,16 +86,18 @@ export class MessageService {
     //  sort: { 'createdAt': -1 }, limit: getMessagesForChatRoomDto.messagesLimit
   }
 
-  async findAll(roomId: string, getMessageDto: GetMessageDto) {
-    // const query = {
-    //   room_id: roomId,
-    // };
-
-    // if (getMessageDto.last_id) {
-    //   query['_id'] = { $lt: getMessageDto.last_id };
-    // }
-
-    // return this.messageRepository.find(query, {});
+  async seenChatMessage(seenChatMessageDto: SeenChatMessageDto) {
+    return await this.messageRepository.findOneAndUpdate(
+      {
+        _id: seenChatMessageDto.chatMessageId
+      },
+      {
+        $push : {
+          seenBy : seenChatMessageDto.seenBy
+       }
+      },
+      {}
+    )
   }
 
   async removeAllForChatroom(chatRoomId: string) {

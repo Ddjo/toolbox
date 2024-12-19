@@ -28,11 +28,19 @@ export const ChatRoomsStore = signalStore(
   withState(chatRoomsState),
   withMethods((store, ) => ({
     setChatRoom(chatRoom: IChatRoom) : void {
-      patchState(store, setEntity(chatRoom, chatRoomsConfig))
+      patchState(store, setEntity({
+        ...chatRoom,
+        messages: [...chatRoom.messages
+          .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())]
+      }, chatRoomsConfig))
       patchState(store, {isLoading: false})
     },
     setChatRooms(chatRooms: IChatRoom[]) : void {
-      patchState(store, setAllEntities(chatRooms, chatRoomsConfig))
+      patchState(store, setAllEntities(chatRooms.map(chatRoom => { return {
+        ...chatRoom,
+        messages: [...chatRoom.messages
+          .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())]
+      } }), chatRoomsConfig))
       patchState(store, {loaded: true, isLoading: false})
     },
     addChatRoom(chatRoom: IChatRoom): void {
@@ -50,7 +58,10 @@ export const ChatRoomsStore = signalStore(
     addMessageToChatRoom(chatRoom: IChatRoom, message: IChatMessage): void {
       patchState(store, updateEntity({id: chatRoom._id, 
         changes:{
-          messages : [...chatRoom.messages, message ]
+          messages : 
+            [...chatRoom.messages, message ]
+            .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())
+
         }
       
       }, chatRoomsConfig));
@@ -59,7 +70,10 @@ export const ChatRoomsStore = signalStore(
     addMessagesToChatRoom(chatRoom: IChatRoom, messages: IChatMessage[]): void {
       patchState(store, updateEntity({id: chatRoom._id, 
         changes:{
-          messages : [...chatRoom.messages, ...messages ]
+          messages : 
+            [...chatRoom.messages, ...messages ]
+            .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())
+
         }
       
       }, chatRoomsConfig));

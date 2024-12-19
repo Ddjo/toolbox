@@ -15,11 +15,7 @@
                 *ngFor="let member of chatRoom().members" 
                 [memberInput]="member" 
                 [chatRoomInput]="chatRoom()"
-                [typingUsersInput]="typingUsers()"
-                (sendMessageOutput)="sendMessageEvent($event, member)"
                 (memberLeavesChatOutput)="memberLeavesChatEvent(member)"
-                (typingUserOutput)="typingUserEvent($event)"
-                (loadPreviousMessagesOuput)="loadPreviousMessages()"
             />
         </div>
     

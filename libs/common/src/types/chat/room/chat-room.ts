@@ -6,6 +6,7 @@ export interface IChatRoom {
 	name : string;
 	members : Omit<IUser, 'password'>[];
     messages : IChatMessage[];
+    totalMessages: number;
 	type: IChatRoomType;
 }
 

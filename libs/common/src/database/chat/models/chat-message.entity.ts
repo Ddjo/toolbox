@@ -17,6 +17,9 @@ export class ChatMessageDocument extends AbstractDocument {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: DB_USERS_DOCUMENT })
     sender!: UserDocument;
     
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: DB_USERS_DOCUMENT }], auto: true  })
+    seenBy!: UserDocument[];
+
     @Prop({type: mongoose.Schema.Types.ObjectId, ref:DB_CHAT_ROOMS_DOCUMENT })
     chatRoom!: ChatRoomDocument;
 }

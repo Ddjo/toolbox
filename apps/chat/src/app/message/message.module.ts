@@ -1,10 +1,10 @@
-import { ChatMessageDocument, ChatRoomDocument, DatabaseModule, MessageSchema, RoomSchema, UserDocument, UserSchema } from '@libs/common';
+import { DB_CHAT_MESSAGES_DOCUMENT, DB_CHAT_ROOMS_DOCUMENT, DB_USERS_DOCUMENT } from '@constants';
+import { DatabaseModule, MessageSchema, RoomSchema, UserSchema } from '@libs/common';
 import { Module } from '@nestjs/common';
+import { RoomRepository } from '../rooms/rooms.repository';
 import { MessageController } from './message.controller';
 import { MessageRepository } from './message.repository';
 import { MessageService } from './message.service';
-import { RoomRepository } from '../rooms/rooms.repository';
-import { DB_CHAT_MESSAGES_DOCUMENT, DB_CHAT_ROOMS_DOCUMENT, DB_USERS_DOCUMENT } from '@constants';
 
 @Module({
   imports: [

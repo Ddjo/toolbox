@@ -1,7 +1,7 @@
 import { IsEmail, IsMongoId, IsNotEmpty } from "class-validator";
 import mongoose from "mongoose";
 
-export class SenderDto {
+export class UserWithoutPasswordDto {
     @IsMongoId()
     @IsNotEmpty()
     _id!: mongoose.Schema.Types.ObjectId;

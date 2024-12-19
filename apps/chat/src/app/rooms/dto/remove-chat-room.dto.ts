@@ -1,6 +1,6 @@
 import { IsMongoId, IsString } from "class-validator";
 
-export class RemoveRoomDto {
+export class RemoveChatRoomDto {
 
     @IsString()
     @IsMongoId()

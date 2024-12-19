@@ -1,10 +1,11 @@
-import { CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
+import { CHAT_MESSAGE_SEEN_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
 import { CurrentUser, UserDto, WebsocketExceptionsFilter, WsJwtAuthGuard } from '@libs/common';
 import { UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from "socket.io";
 import { ChatService } from '../chat.service';
-import { SendMessageDto } from '../dto/send-message.dto';
+import { SeenChatMessageDto } from '../dto/seen-chat-message.dto';
+import { SendChatMessageDto } from '../dto/send-chat-message.dto';
 import { TypingMessageDto } from '../dto/typing-message.dto';
 
 // @WebSocketGateway({cors: { origin :  ['http://localhost:4200']}})
@@ -32,15 +33,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage(CHAT_MESSAGE_SEND_MESSAGE)
     async create(
       @ConnectedSocket() client,
-      @MessageBody()  sendMessageDto: SendMessageDto,
+      @MessageBody()  sendChatMessageDto: SendChatMessageDto,
       @CurrentUser() user: UserDto
     ) {
       try {
-        this.chatService.createMessage(sendMessageDto, user, this.server).then((res) => {
-          this.server.emit(`${sendMessageDto.chatRoom._id}-${CHAT_MESSAGE_SEND_MESSAGE}`, res);
-        }
-      );
-
+        this.chatService.createMessage(sendChatMessageDto, user, this.server).then((res) => {
+          this.server.emit(`${sendChatMessageDto.chatRoom._id}-${CHAT_MESSAGE_SEND_MESSAGE}`, res);
+        });
       } catch(err){
         console.log('error chat gateway : ', err);
       }
@@ -56,6 +55,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     )  {
         this.server.emit(`${typingMessageDto.chatRoom._id}-${CHAT_MESSAGE_TYPING_MESSAGE}`, typingMessageDto.sender.email);
 
+    }
+
+    @SubscribeMessage(CHAT_MESSAGE_SEEN_MESSAGE)
+    handleSeenMessage(
+      @MessageBody()  seenChatMessageDto: SeenChatMessageDto,
+    )  {
+      try {
+        this.chatService.seenChatMessage(seenChatMessageDto).then(() => {
+          this.server.emit(`${CHAT_MESSAGE_SEEN_MESSAGE}-${seenChatMessageDto.chatMessageId}`, seenChatMessageDto.seenBy);
+        });
+      } catch(err){
+        console.log('error chat gateway : ', err);
+      } 
     }
 
 }

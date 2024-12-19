@@ -55,37 +55,35 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   async find(
     filterQuery: FilterQuery<TDocument>, 
-    projection : ProjectionType<TDocument>, 
-    populate?: PopulateOptions[],
+    projectionParam : ProjectionType<TDocument>, 
+    populateParam?: PopulateOptions[],
     sortParam?:Record<string, SortOrder>,
     limitParam?: number,
     skipParam?: number
   ) {
 
-    const query =  this.model.find(filterQuery, projection, { lean: true }).sort();
+    const query =  this.model.find(filterQuery, projectionParam, { lean: true }).sort();
+    
+  // Populate param
+  populateParam?.forEach(popul => {
+    query.populate(popul);
+  });
 
-    populate?.forEach(popul => {
-      query.populate(popul);
-    })
-
-  // Construction dynamique de l'objet sortCriteria
+  // sortParam
     if (sortParam) {
       const sortCriteria = Object.entries(sortParam).reduce((criteria, [key, order]) => {
         (criteria as any)[key] = order === 'desc' ? -1 : 1; // Convertit 'desc' et 'asc' en -1 et 1
         return criteria;
       }, {});
 
-      console.log('sortCriteria : ', sortCriteria)
       query.sort(sortCriteria);
     }
 
     if(limitParam) {
-      console.log('limit : ', limitParam)
       query.limit(limitParam);
     }
 
     if(skipParam) {
-      console.log('skipParam : ', skipParam)
       query.skip(skipParam);
     }
 

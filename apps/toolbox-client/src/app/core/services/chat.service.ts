@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
+import { CHAT_MESSAGE_SEEN_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
 import { IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { Socket } from 'ngx-socket-io';
 import { filter, Observable, tap } from 'rxjs';
@@ -95,6 +95,14 @@ export class ChatService extends Socket {
       ...chatRoom, 
       members : chatRoom.members.filter(member => member._id !== user._id)
     });
+  }
+
+  sendSeenChatMessage(chatMessageId: string, seenBy: IUser) {
+    this.emit(CHAT_MESSAGE_SEEN_MESSAGE, {chatMessageId, seenBy});
+  }
+
+  getSeenChatMessage(chatMessageId: string) {
+    return this.fromEvent<IUser>(`${CHAT_MESSAGE_SEEN_MESSAGE}-${chatMessageId}`);
   }
 
   sendTypingSignal(chatRoom: IChatRoom, sender: IUser) {

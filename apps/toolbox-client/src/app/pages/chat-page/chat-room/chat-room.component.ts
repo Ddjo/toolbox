@@ -8,9 +8,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { filter, switchMap } from 'rxjs';
 import { AuthService } from '../../../../../src/app/core/services/auth.service';
-import { ChatService } from '../../../core/services/chat.service';
 import { ChatRoomsStore } from '../../../../../src/app/core/store/chat/chat-room.store';
 import { UsersStore } from '../../../../../src/app/core/store/users/users.store';
+import { ChatService } from '../../../core/services/chat.service';
 import { ChatComponent } from "./chat/chat.component";
 
 export const typingUserDisplayTimeMs = 10000;
@@ -62,50 +62,15 @@ export class ChatRoomComponent implements OnInit {
       filter(user => user),
       switchMap(user => this.chatService.addMemberToChatRoom(this.chatRoom(), user))
     ).subscribe(() => this.addMemberControl.setValue(undefined));
-
-    // Observe new message socket emission
-    this.chatService.getNewMessage(this.chatRoom()._id).subscribe((message) => {
-      // Remove the user from the typing users list
-      this.typingUsers.set(this.typingUsers().filter(user => user !== message.sender.email));
-    });
-  
-
-    // Observe websocket sending back a user typing message
-    this.chatService.getTypingSignal(this.chatRoom()._id).subscribe((typingUser) => {
-      // Add user to typingUser array
-      this.typingUsers.set([...this.typingUsers(), typingUser]);
-
-      // Remove him after 'typingUserDisplayTimeMs'
-      setTimeout(() => {
-        this.typingUsers.set(this.typingUsers().filter(user => user !== typingUser));
-      }, typingUserDisplayTimeMs);
-    })
-  
   }
 
   removeChatRoom() {
     this.chatService.removeChatRoom(this.chatRoom()._id).subscribe();
   }
 
-  sendMessageEvent(message: string | null, member: IUser) {
-    // // Remove sender from typing users array
-    // this.typingUsers.set(this.typingUsers().filter(user => user !== member.email));
-
-    this.chatService.sendMessage(this.chatRoom(), member, message as string);
-  }
-
   memberLeavesChatEvent(member: IUser) {
     this.chatService.removeMemberFromChatRoom(this.chatRoom(), member)
       .subscribe();
   }
-
-  typingUserEvent(typingUser: IUser) {
-    this.chatService.sendTypingSignal(this.chatRoom(), typingUser);
-  }
-
-  loadPreviousMessages() {
-    this.chatService.loadPreviousMessagesForChatRoom(this.chatRoom()).subscribe(() => console.log);
-  }
-
 
  }
