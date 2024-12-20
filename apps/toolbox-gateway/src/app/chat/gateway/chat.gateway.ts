@@ -1,4 +1,4 @@
-import { CHAT_MESSAGE_SEEN_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
+import { CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT, CHAT_MESSAGE_SEEN_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
 import { CurrentUser, UserDto, WebsocketExceptionsFilter, WsJwtAuthGuard } from '@libs/common';
 import { UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -38,7 +38,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) {
       try {
         this.chatService.createMessage(sendChatMessageDto, user, this.server).then((res) => {
-          this.server.emit(`${sendChatMessageDto.chatRoom._id}-${CHAT_MESSAGE_SEND_MESSAGE}`, res);
+          this.server.emit(`${sendChatMessageDto.chatRoom._id}-${CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT}`, res);
         });
       } catch(err){
         console.log('error chat gateway : ', err);

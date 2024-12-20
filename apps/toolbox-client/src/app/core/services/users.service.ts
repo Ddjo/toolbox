@@ -28,9 +28,12 @@ export class UsersService  {
     return this.http.get<IUser>(`${url}/me`);
   }
 
-  getAllUsers() {
-    return this.http.get<IUser[]>(`${url}`).pipe(
-      tap(users =>this.usersStore.setUsers(users)),
-    );;
+  loadUsersStore() {
+    if (!this.usersStore.loaded()) {
+      this.http.get<IUser[]>(`${url}`).pipe(
+        tap(users =>this.usersStore.setUsers(users)),
+      ).subscribe();
+    }
   }
+
 }

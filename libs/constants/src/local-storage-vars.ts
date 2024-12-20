@@ -1,4 +1,5 @@
 export enum LocalStorageVars {
-accessToken = 'accessToken',
+    accessToken = 'access-token',
+    clientChatRoomsConfigCache = 'client-chat-rooms',
 }
   

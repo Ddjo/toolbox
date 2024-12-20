@@ -1,7 +1,54 @@
+
+
 :host::ng-deep {
-  display: block;
+  --chat-interface-width: 20rem;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  gap: 1rem;
+
+  app-chat-room {
+    max-height: 2.5rem;
+    transition: max-height 0.1s ease-in; 
+
+    &.unfold {
+      max-height: 23rem;
+    }
+  }
   
-  .p-card-body {
-    padding: 0;
+  .chat-interface-container {
+    color: var(--p-button-primary-color);
+    background: var(--p-button-primary-background);
+    width: var(--chat-interface-width);
+    border-radius: 0.4rem 0.4rem 0 0; 
+    max-height: 2.5rem;
+    transition: max-height 0.3s ease-in; 
+    // position: fixed;
+    // bottom: 0;
+    // right: 0;
+
+    .header {
+      p-button.title {
+        width: 100%;
+        button {
+          width: 100%;
+          justify-content: start;
+        }
+      }
+    }
+
+    &.unfold {
+      max-height: 23rem;
+    }
+
+    .content {
+      .user {
+        height: 2.4rem;
+      }
+    }
+
   }
 }

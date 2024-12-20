@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { HeaderComponent } from '../../core/shell/layout/header/header.component';
 
 
 @Component({
@@ -13,7 +12,6 @@ import { HeaderComponent } from '../../core/shell/layout/header/header.component
     imports: [
         ButtonModule,
         CommonModule,
-        HeaderComponent,
         RouterModule,
     ]
 })

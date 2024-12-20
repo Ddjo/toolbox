@@ -3,6 +3,8 @@
   --chat-messages-height: 18rem;
   display: block;
   position: relative;
+  background-color: var(--p-button-secondary-background);
+  border-radius: 1rem 1rem 0 0;
 
   /* Minimalist Scrollbar Styles */
   ::-webkit-scrollbar {
@@ -48,7 +50,7 @@
     }
 
     .p-button {
-      height: 1.5rem;
+      height: 2rem;
       width: 2rem;
     }
   }
@@ -56,7 +58,7 @@
   /* Chat Messages Styles */
   .chat-messages {
     background-color: #f9f9f9;
-    border-radius: 1rem 1rem 0 0;
+    // border-radius: 1rem 1rem 0 0;
     height: var(--chat-messages-height);
 
     p-progress-spinner {

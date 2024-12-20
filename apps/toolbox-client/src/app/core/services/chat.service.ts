@@ -1,13 +1,19 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { CHAT_MESSAGE_SEEN_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE } from '@constants';
+import { computed, inject, Injectable, Signal } from '@angular/core';
+import { CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT, CHAT_MESSAGE_SEEN_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, CHAT_MESSAGE_TYPING_MESSAGE, LocalStorageVars } from '@constants';
 import { IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { Socket } from 'ngx-socket-io';
 import { filter, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environments';
 import { ChatRoomsStore } from '../store/chat/chat-room.store';
+import { LocalStorageService } from './local-storage.service';
 
 export const url = environment.gatewayApiUrl + '/chat';
+export interface IClientChatRoomCache {
+  unfoldedChatInterface : boolean;
+  activeChatRoomsIds: string[], 
+  unfoldedChatRoomsIds: string[]  
+}
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +21,19 @@ export const url = environment.gatewayApiUrl + '/chat';
 export class ChatService extends Socket {
 
   readonly chatRoomsStore = inject(ChatRoomsStore);
-  // readonly chatMessagesStore = inject(ChatMessagesStore);
+  // readonly activeChatsSig: Signal<string[]> = computed(() => {
+  //   return this.localStorageService.getStorageSignal()()[LocalStorageVars.activeChats].split(',') || [];
+  // })
+
+  readonly clientChatRoomsConfigSig: Signal<IClientChatRoomCache> = computed(() => {
+    return this.localStorageService.getStorageSignal()()[LocalStorageVars.clientChatRoomsConfigCache] || {activeChatRoomsIds: [], unfoldedChatRoomsIds: [], unfoldedChatInterface: false };
+  })
 
 
-  public constructor(private http: HttpClient, ) {
+  public constructor(
+    private http: HttpClient, 
+    private localStorageService: LocalStorageService
+  ) {
     super({
       url: environment.chatWsUrl,
       options: {},
@@ -27,16 +42,19 @@ export class ChatService extends Socket {
     this.fromEvent('ws-exception').subscribe((err) => console.error(err))
   }
 
-  getChatRoomsForUser(messagesLimit = environment.chat.messagesToDisplayNumber) {
-    let params = new HttpParams();
+  loadChatRoomsStore(messagesLimit = environment.chat.messagesToDisplayNumber) {
+    if (!this.chatRoomsStore.loaded())  {      
 
-    params = params.append('messages-limit', messagesLimit);
+      let params = new HttpParams();
 
-    this.chatRoomsStore.setLoading(true);
-    return this.http.get<IChatRoom[]>(url, { params: params }).pipe(
-      tap(chatRooms =>this.chatRoomsStore.setChatRooms(chatRooms)),
-      tap(() => this.chatRoomsStore.setLoading(false))
-    );
+      params = params.append('messages-limit', messagesLimit);
+
+      this.chatRoomsStore.setLoading(true);
+      this.http.get<IChatRoom[]>(url, { params: params }).pipe(
+        tap(chatRooms =>this.chatRoomsStore.setChatRooms(chatRooms)),
+        tap(() => this.chatRoomsStore.setLoading(false))
+      ).subscribe();
+    }
   }
 
   loadPreviousMessagesForChatRoom(chatRoom: IChatRoom, messagesLimit = environment.chat.messagesToDisplayNumber) {
@@ -55,9 +73,9 @@ export class ChatService extends Socket {
     );
   }
 
-  createChatRoom(): Observable<IChatRoom> {
+  createChatRoom(withUser: IUser): Observable<IChatRoom> {
     this.chatRoomsStore.setLoading(true);
-    return this.http.post<IChatRoom>(url, {}).pipe(
+    return this.http.post<IChatRoom>(url, withUser).pipe(
       tap(chatRoom =>this.chatRoomsStore.addChatRoom(chatRoom)),
       tap(() => this.chatRoomsStore.setLoading(false))
     );
@@ -75,6 +93,7 @@ export class ChatService extends Socket {
     this.chatRoomsStore.setLoading(true);
     return this.http.delete<IChatRoom>(`${url}/${id}`).pipe(
       tap(chatRoom =>this.chatRoomsStore.removeChatRoom(chatRoom)),
+      tap(chatRoom => this.desactivateChatRoomInStorage(chatRoom._id)),
       tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
@@ -118,7 +137,7 @@ export class ChatService extends Socket {
   }
 
   getNewMessage(chatRoomId: string): Observable<IChatMessage> {
-    return this.fromEvent<IChatMessage>(`${chatRoomId}-${CHAT_MESSAGE_SEND_MESSAGE}`).pipe(
+    return this.fromEvent<IChatMessage>(`${chatRoomId}-${CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT}`).pipe(
       filter(chatMessage => !!chatMessage),
       tap((message) => {
         const chatRoom = {...this.chatRoomsStore.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId)} as IChatRoom;
@@ -128,5 +147,46 @@ export class ChatService extends Socket {
     );
   }
 
+  // getActiveChatRoomsIdFromStorage(): string[] {
+  //   const activeChatRoomsValue = this.localStorageService.get<string>( LocalStorageVars.activeChats);
+
+  //   return activeChatRoomsValue?.split(',').filter(x => !!x) || [];
+  // }
+
+  foldChatInterface() {
+    const clientChatRoomsConfigCache = this.clientChatRoomsConfigSig();
+    clientChatRoomsConfigCache.unfoldedChatInterface = false;
+    this.localStorageService.set(LocalStorageVars.clientChatRoomsConfigCache, clientChatRoomsConfigCache);
+  }
+
+  unfoldChatInterface() {
+    const clientChatRoomsConfigCache = this.clientChatRoomsConfigSig();
+    clientChatRoomsConfigCache.unfoldedChatInterface = true;
+    this.localStorageService.set(LocalStorageVars.clientChatRoomsConfigCache, clientChatRoomsConfigCache);
+  }
+
+  activateChatRoomInStorage(chatRoomId: string) {
+    const clientChatRoomsConfigCache = this.clientChatRoomsConfigSig();
+    clientChatRoomsConfigCache.activeChatRoomsIds =  [...clientChatRoomsConfigCache.activeChatRoomsIds, chatRoomId];
+    this.localStorageService.set(LocalStorageVars.clientChatRoomsConfigCache, clientChatRoomsConfigCache);
+  }
+
+  desactivateChatRoomInStorage(chatRoomId: string) {
+    const clientChatRoomsConfigCache = this.clientChatRoomsConfigSig();
+    clientChatRoomsConfigCache.activeChatRoomsIds =  clientChatRoomsConfigCache.activeChatRoomsIds.filter(x => x!== chatRoomId)
+    this.localStorageService.set(LocalStorageVars.clientChatRoomsConfigCache, clientChatRoomsConfigCache);
+  }
+
+  foldChatRoomInStorage(chatRoomId: string) {
+    const clientChatRoomsConfigCache = this.clientChatRoomsConfigSig();
+    clientChatRoomsConfigCache.unfoldedChatRoomsIds = clientChatRoomsConfigCache.unfoldedChatRoomsIds.filter(x => x!== chatRoomId)
+    this.localStorageService.set(LocalStorageVars.clientChatRoomsConfigCache, clientChatRoomsConfigCache);
+  }
+
+  unfoldChatRoomInStorage(chatRoomId: string) {
+    const clientChatRoomsConfigCache = this.clientChatRoomsConfigSig();
+    clientChatRoomsConfigCache.unfoldedChatRoomsIds =  [...clientChatRoomsConfigCache.unfoldedChatRoomsIds, chatRoomId];
+    this.localStorageService.set(LocalStorageVars.clientChatRoomsConfigCache, clientChatRoomsConfigCache);
+  }
 
 }

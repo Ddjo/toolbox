@@ -2,7 +2,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import Aura from '@primeng/themes/aura';
+import Material from '@primeng/themes/material';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 
@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     providePrimeNG({ 
         theme: {
-            preset: Aura
+            preset: Material
         }
     })
     // importProvidersFrom(SocketIoModule.forRoot(socketConfig))

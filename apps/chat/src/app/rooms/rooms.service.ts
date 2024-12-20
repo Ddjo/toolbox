@@ -1,9 +1,9 @@
-import { UserDto } from '@libs/common';
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { MessageRepository } from '../message/message.repository';
 import { ChatRoomDto } from './dto/chat-room.dto';
+import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { GetAllChatRoomsForUserDto } from './dto/get-all-chat-rooms-for-user.dto';
 import { RemoveChatRoomDto } from './dto/remove-chat-room.dto';
 import { RoomRepository } from './rooms.repository';
@@ -17,11 +17,11 @@ export class RoomsService {
         @InjectConnection() private readonly connection: mongoose.Connection
     ) { }
 
-    async create(user: UserDto) {
+    async create(createChatRoomDto: CreateChatRoomDto) {
 
         return await this.roomRepository.create(
             {
-                members: [user],
+                members: [createChatRoomDto.creator, createChatRoomDto.withUser],
                 messages: [],
                 name: ''
             }, 
@@ -42,7 +42,7 @@ export class RoomsService {
             // Populate the 'members' field to include only _id and email of each member
             { 
                 path: 'members', select: ['_id', 'email'] 
-            }, 
+            },
             // Populate the 'messages' field with the following options:
             {
                 path: 'messages',

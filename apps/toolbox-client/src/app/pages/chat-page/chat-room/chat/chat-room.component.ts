@@ -1,6 +1,6 @@
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, output, signal, viewChild, viewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, HostBinding, inject, input, output, signal, viewChild, viewChildren } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IChatMessage, IChatRoom, IUser } from '@libs/common';
@@ -34,21 +34,28 @@ import { ChatMessageComponent } from './chat-message/chat-message.component';
     ]
 })
 export class ChatRoomComponent implements AfterViewInit {
+
+  @HostBinding('attr.class')
+  get direction() { return this.chatRoomUnfold() ? 'unfold' : 'fold' }
   
   chatService = inject(ChatService);
   authService = inject(AuthService);
 
-  memberInput = input.required<IUser>();
+  // memberInput = input.required<IUser>();
   chatRoomInput = input.required<IChatRoom>();
   memberLeavesChatOutput = output<IUser>();
   // sendMessageOutput = output<string | null>();
   // typingUserOutput = output<IUser>();
   // seenMessageOuput = output<{chatMessageId: string, seenBy: IUser}>();
   // loadPreviousMessagesOuput = output();
+
   
   typingUsers = signal<string[]>([]);  
   messagesViewPortScrollPosition = signal<number | null>(null);
   loadingMessages = signal(false);
+  chatMembersMails = computed(() => this.chatRoomInput().members.filter(member => member._id !== this.currentUser()?._id).map(member => member.email));
+  chatRoomUnfold = computed(() => this.chatService.clientChatRoomsConfigSig().unfoldedChatRoomsIds.includes(this.chatRoomInput()._id));
+
   // messagesRefs = viewChildren("messageElement");
 
   messagesRefs = viewChildren<ChatMessageComponent>("messageElement"); 
@@ -115,7 +122,7 @@ export class ChatRoomComponent implements AfterViewInit {
   
   
   typingUsersWithoutCurrentMember = computed(() => {
-    return this.typingUsers().filter(mail => mail !== this.memberInput().email);
+    return this.typingUsers().filter(mail => mail !== (this.currentUser() as IUser).email);
   })
 
   messageContent = new FormControl<string | null>(null);
@@ -130,7 +137,7 @@ export class ChatRoomComponent implements AfterViewInit {
       filter(value => !!value),
       throttleTime(typingUserDisplayTimeMs)
     ).subscribe(() => {
-      this.chatService.sendTypingSignal(this.chatRoomInput(), this.memberInput());
+      this.chatService.sendTypingSignal(this.chatRoomInput(), this.currentUser() as IUser);
       // this.typingUserOutput.emit(this.memberInput());
     });
 
@@ -157,7 +164,7 @@ export class ChatRoomComponent implements AfterViewInit {
 
   sendMessage() {
     // this.sendMessageOutput.emit(this.messageContent.value);
-    this.chatService.sendMessage(this.chatRoomInput(), this.memberInput(), this.messageContent.value || '');
+    this.chatService.sendMessage(this.chatRoomInput(), this.currentUser() as IUser, this.messageContent.value || '');
     this.messageContent.setValue(null);  
   }
 
@@ -184,7 +191,7 @@ export class ChatRoomComponent implements AfterViewInit {
   }
 
   isCurrentUserSender(): boolean {
-    return this.chatRoomInput().messages[this.chatRoomInput().messages.length - 1]?.sender._id === this.memberInput()._id;
+    return this.chatRoomInput().messages[this.chatRoomInput().messages.length - 1]?.sender._id === (this.currentUser() as IUser)._id;
   }
 
   messagesViewportScrolling(event: any) {
@@ -247,7 +254,7 @@ export class ChatRoomComponent implements AfterViewInit {
       }
     });
 
-    console.log('this.messagesPositions for user '+ this.memberInput().email, this.messagesPositions)
+    console.log('this.messagesPositions for user '+ (this.currentUser() as IUser).email, this.messagesPositions)
   }
 
   checkIfSomeMessagesNew(topOffset: number) {
@@ -267,5 +274,21 @@ export class ChatRoomComponent implements AfterViewInit {
 
   setFirstMessageAsSeen() {
     this.chatService.sendSeenChatMessage( this.chatRoomInput().messages[0]._id, this.currentUser() as IUser);
+  }
+
+  removeChatRoom() {
+    this.chatService.removeChatRoom(this.chatRoomInput()._id).subscribe();
+  }
+
+  desactivateChatRoom() {
+    this.chatService.desactivateChatRoomInStorage(this.chatRoomInput()._id);
+  }
+
+  toggleChatroomFold() {
+    if(this.chatRoomUnfold()) {
+      this.chatService.foldChatRoomInStorage(this.chatRoomInput()._id);
+    } else {
+      this.chatService.unfoldChatRoomInStorage(this.chatRoomInput()._id);
+    }
   }
 }

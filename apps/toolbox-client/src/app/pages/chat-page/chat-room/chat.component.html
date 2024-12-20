@@ -36,6 +36,42 @@
     </div>
 </p-card> -->
 
-<div class="chat-fixed">
-    Chat
+@for (chatRoom of activeChatRooms$ | async; track $index) {
+    <app-chat-room
+        [chatRoomInput]="chatRoom"
+        
+    ></app-chat-room>
+}
+
+
+<div class="chat-interface-container mr-4"  [class.unfold]="unfoldChatInterface()">
+    <div class="header flex align-items-center pl-4 justify-content-between">
+        <p-button class="title" (onClick)="toggleChatInterfaceFold()">
+            Chat   
+        </p-button>
+        <div class="actions-buttons">
+            <!-- <p-button 
+                icon="pi pi-file-edit" 
+            /> -->
+            <p-button 
+                icon="pi {{unfoldChatInterface() ? 'pi-chevron-down' : 'pi-chevron-up'}}" 
+                (onClick)="toggleChatInterfaceFold()"
+            />
+        </div>
+    </div>
+    
+    <div class="content">
+        @for (user of availableUsersToChat(); track $index) {
+            <div class="user flex align-items-center pl-5">
+                <p-button 
+                size="small"
+                (onClick)="chatWithUser(user)"
+                >
+                    {{user.email}}
+                </p-button>
+            </div>
+        }
+    </div>
+    
 </div>
+

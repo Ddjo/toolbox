@@ -1,26 +1,45 @@
 
 
-<div class="chat-header flex justify-content-between align-items-center		">
+<div class="chat-header pl-3 pr-1 flex justify-content-between align-items-center		">
 
-    <span class="user">connected as {{memberInput().email}}</span>
+    <span class="user">{{chatMembersMails()}}</span>
     <div>
         <p-button 
-            *ngIf="currentUser()?.email !== memberInput()?.email" 
+            *ngIf="currentUser()?.email !== currentUser()?.email" 
             icon="pi pi-sign-out" 
             aria-label="Leave" 
             [outlined]="false" 
             [rounded]="false" 
             [text]="true"
-            (click)="memberLeavesChatOutput.emit(this.memberInput())" 
+            (click)="memberLeavesChatOutput.emit(this.currentUser()!)" 
             size="small" 
         />
     </div>
+    <div class="flex flex-row gap-1">
+        <p-button 
+            [text]="true"
+            [outlined]="true"  
+            size="small"
+            icon="pi {{chatRoomUnfold() ? 'pi-chevron-down' : 'pi-chevron-up'}}" 
+            (onClick)="toggleChatroomFold()"
+        />
+        <p-button icon="pi pi-times"
+            [text]="true"
+            [outlined]="true"
+            size="small"  
+            (onClick)="desactivateChatRoom()" 
+        />
+
+        <!-- <p-button icon="pi pi-minus" [rounded]="true" [outlined]="true"  size="small" />
+        <p-button icon="pi pi-times"[rounded]="true" [outlined]="true"  size="small"  (onClick)="desactivateChatRoom()" /> -->
+    </div> 
+     <!-- <p-button icon="pi pi-trash" [rounded]="true" (onClick)="removeChatRoom()" /> -->
 
 </div>
 
 <!-- <p-button (onClick)="loadOlderMessages()">load older messages</p-button> -->
 <!-- <p-button (onClick)="scrollTo9()">scroll to 9</p-button> -->
-<p-button (onClick)="setFirstMessageAsSeen()">set first message as seen</p-button>
+<!-- <p-button (onClick)="setFirstMessageAsSeen()">set first message as seen</p-button> -->
 
 <div class="chat-messages flex flex-column pt-3">
 
@@ -38,7 +57,7 @@
 
         <app-chat-message #messageElement
             *cdkVirtualFor="let message of filteredMessages$"
-            [isSenderCurrentUserInput]="message.sender._id === memberInput()._id"
+            [isSenderCurrentUserInput]="message.sender._id === currentUser()?._id"
             [messageInput]="message"
             [displayUserMailInput]="message.displayEmail"
         />
@@ -61,7 +80,6 @@
 
     <input 
         pSize="small" 
-        class="mr-2"
         pInputText             
         [formControl]="messageContent"
         placeholder="Type your message..."

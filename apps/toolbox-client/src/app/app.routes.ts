@@ -12,9 +12,46 @@ import { ChatPageResolver } from './pages/chat-page/resolvers/chat-page.resolver
 
 export const routes: Routes = [
   { 
-    path: 'home',
+    path: '',
     loadComponent: () => import('./pages/home/home.component').then(x => x.HomeComponent),
     canActivate: [AuthGuard],
+    children: [
+      { 
+        path: 'sandbox',
+        loadComponent: () => import('./pages/sandbox/sandbox.component').then(x => x.SandboxComponent),
+        canActivate: [AuthGuard],
+      },
+      { 
+        path: 'chat',
+        loadComponent: () => import('./pages/chat-page/chat-page.component').then(x => x.ChatPageComponent),
+        canActivate: [AuthGuard],
+        resolve: [ChatPageResolver],
+      },
+      { 
+        path: 'books',
+        loadComponent: () => import('./pages/books-page/books-page.component').then(x => x.BooksPageComponent),
+        canActivate: [AuthGuard],
+        children: [
+          {
+            path: '',
+            component: LibraryComponent,
+            resolve: [LibraryResolver],
+          },
+          {
+            path: 'create',
+            component: BookComponent
+          },
+          {
+            path: 'update/:id',
+            component: BookComponent,
+            resolve: [
+              BookResolver
+            ]
+          },
+        ]
+      },
+      { path: '', redirectTo: 'books', pathMatch: 'full' },
+    ],
   },
   { 
     path: 'login', 
@@ -24,44 +61,11 @@ export const routes: Routes = [
     path: 'signup', 
     component: SignupComponent
   },
-  { 
-    path: 'sandbox',
-    loadComponent: () => import('./pages/sandbox/sandbox.component').then(x => x.SandboxComponent),
-    canActivate: [AuthGuard],
-  },
-  { 
-    path: 'chat',
-    loadComponent: () => import('./pages/chat-page/chat-page.component').then(x => x.ChatPageComponent),
-    canActivate: [AuthGuard],
-    resolve: [ChatPageResolver],
-  },
-  { 
-    path: 'books',
-    loadComponent: () => import('./pages/books-page/books-page.component').then(x => x.BooksPageComponent),
-    canActivate: [AuthGuard],
-    children: [
-      {
-        path: '',
-        component: LibraryComponent,
-        resolve: [LibraryResolver],
-      },
-      {
-        path: 'create',
-        component: BookComponent
-      },
-      {
-        path: 'update/:id',
-        component: BookComponent,
-        resolve: [
-          BookResolver
-        ]
-      },
-    ]
-  },
+
   { 
     path: 'page-not-found',
     component: PageNotFoundComponent
   },
-{ path: '', redirectTo: '/home', pathMatch: 'full' },
+{ path: '', redirectTo: 'books', pathMatch: 'full' },
 { path: '**', redirectTo: '/page-not-found', pathMatch: 'full' },
 ];

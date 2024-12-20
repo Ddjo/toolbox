@@ -1,16 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-import { filter, switchMap } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ChatService } from '../../../core/services/chat.service';
 import { ChatRoomsStore } from '../../../core/store/chat/chat-room.store';
 import { UsersStore } from '../../../core/store/users/users.store';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { UsersService } from '../../../core/services/users.service';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { ChatRoomComponent } from './chat/chat-room.component';
+import { LocalStorageService } from '../../../core/services/local-storage.service';
 
 export const typingUserDisplayTimeMs = 10000;
 
@@ -26,49 +30,66 @@ export const typingUserDisplayTimeMs = 10000;
         ButtonModule,
         CardModule,
         InputTextModule,
-        SelectModule
+        SelectModule,
+        ChatRoomComponent
     ]
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent {
 
-  chatRoom = input.required<IChatRoom>();
-
-  readonly userStore = inject(UsersStore);
+  
+  readonly usersStore = inject(UsersStore);
   readonly chatRoomsStore = inject(ChatRoomsStore);
+  
+  readonly localStorageService = inject(LocalStorageService);
   readonly chatService = inject(ChatService);
   readonly authService = inject(AuthService);
+  readonly usersService = inject(UsersService);
   
-  // typingUsers = signal<string[]>([]);
-
   currentUser = this.authService.currentUserSig;
-  addMemberControl = new FormControl();
+  
+  unfoldChatInterface = computed(() => this.chatService.clientChatRoomsConfigSig().unfoldedChatInterface);
 
-  // Get the available users to add to the chat (the ones that are not already in)
-  availableUsersToAdd = computed(() => {
-    return this.userStore.usersEntities().filter(user => 
-      !this.chatRoom().members.map(member => member._id).includes(user._id)
-      && user._id !== this.currentUser()?._id
+  activeChatRooms$: Observable<IChatRoom[]> = toObservable(computed(()=> {
+    return this.chatRoomsStore.chatRoomsEntities().filter(chatRoom => this.chatService.clientChatRoomsConfigSig().activeChatRoomsIds.includes(chatRoom._id ))
+  }));
+
+  // Users without the current one
+  availableUsersToChat = computed(() => {
+    return this.usersStore.usersEntities().filter(user => user._id !== this.currentUser()?._id
     )
   })
 
-  ngOnInit(): void {
-
-    this.chatService.connect();
-
-    // Adding user to the chat
-    this.addMemberControl.valueChanges.pipe(
-      filter(user => user),
-      switchMap(user => this.chatService.addMemberToChatRoom(this.chatRoom(), user))
-    ).subscribe(() => this.addMemberControl.setValue(undefined));
+  constructor() {
+    this.chatService.loadChatRoomsStore();
+    this.usersService.loadUsersStore();
   }
 
-  removeChatRoom() {
-    this.chatService.removeChatRoom(this.chatRoom()._id).subscribe();
+  chatWithUser(user :IUser) {
+
+    const chatRoom = this.chatRoomsStore.chatRoomsEntities().find(chatRoom => 
+      chatRoom.members.length=== 2
+      && chatRoom.members.map(member => member._id).includes((this.currentUser() as IUser)?._id)
+      && chatRoom.members.map(member => member._id).includes(user._id)
+    );
+    // Check if a chatroom with only the 2 users exists
+    if (chatRoom) {
+      // Activate chatroom
+      this.chatService.activateChatRoomInStorage(chatRoom._id);
+      this.chatService.unfoldChatRoomInStorage(chatRoom._id);
+    } else {
+      // Create chatroom
+      this.chatService.createChatRoom(user).subscribe((res) => {
+        this.chatService.activateChatRoomInStorage(res._id);
+        this.chatService.unfoldChatRoomInStorage(res._id);
+      });
+    }
   }
 
-  memberLeavesChatEvent(member: IUser) {
-    this.chatService.removeMemberFromChatRoom(this.chatRoom(), member)
-      .subscribe();
+  toggleChatInterfaceFold() {
+    if(this.unfoldChatInterface()) {
+      this.chatService.foldChatInterface();
+    } else {
+      this.chatService.unfoldChatInterface();
+    }
   }
-
  }

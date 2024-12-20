@@ -9,6 +9,7 @@ import { TCPService } from '../helpers/tcp.service';
 import { SeenChatMessageDto } from './dto/seen-chat-message.dto';
 import { SendChatMessageDto } from './dto/send-chat-message.dto';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
+import { UserWithoutPasswordDto } from './dto/user-without-password.dto';
 
 @Injectable()
 export class ChatService {
@@ -50,8 +51,12 @@ async testChat() {
     return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_GET_PREVIOUS_MESSAGES_FOR_CHATROOM, {chatRoomId, skip, messagesLimit});
   }
 
-  async createChatRoom(user: UserDto) {
-    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_CREATE_CHAT_ROOM, user);
+  async createChatRoom(user: UserDto, withUser: UserWithoutPasswordDto ) {
+    const users = {
+      creator: user,
+      withUser: withUser
+    }
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_CREATE_CHAT_ROOM, users);
   }
 
   async updateChatRoom(_id: string, updateChatRoomDto: UpdateChatRoomDto) {

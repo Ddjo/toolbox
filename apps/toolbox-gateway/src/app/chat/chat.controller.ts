@@ -6,6 +6,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } f
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ChatService } from "./chat.service";
 import { UpdateChatRoomDto } from "./dto/update-chat-room.dto";
+import { UserWithoutPasswordDto } from "./dto/user-without-password.dto";
 
 @Controller('chat')
 export class ChatController {
@@ -36,8 +37,8 @@ export class ChatController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  createChatRoom( @CurrentUser() user: UserDto) {
-    return this.chatService.createChatRoom(user);
+  createChatRoom( @CurrentUser() user: UserDto, @Body() withUser: UserWithoutPasswordDto) {
+    return this.chatService.createChatRoom(user, withUser);
   }
 
   @Patch(':id')

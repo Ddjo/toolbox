@@ -13,7 +13,6 @@ import { ChatRoomsStore } from '../../core/store/chat/chat-room.store';
     imports: [
         CommonModule,
         ButtonModule,
-        HeaderComponent,
     ]
 })
 export class ChatPageComponent {
@@ -23,7 +22,7 @@ export class ChatPageComponent {
     readonly chatRoomStore = inject(ChatRoomsStore);
     
     createChatRoom() {
-        this.chatService.createChatRoom().subscribe()
+        // this.chatService.createChatRoom().subscribe()
     }
 
  }

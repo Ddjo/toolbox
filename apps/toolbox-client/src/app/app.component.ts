@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const isUserToken = this.localStorageService.getItem(LocalStorageVars.accessToken)?.value != null;
+    const isUserToken = this.localStorageService.get(LocalStorageVars.accessToken) != null;
 
     if (isUserToken) {
       this.usersService.getUser().pipe(

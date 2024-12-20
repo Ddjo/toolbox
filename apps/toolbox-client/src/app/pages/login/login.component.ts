@@ -55,7 +55,7 @@ export class LoginComponent {
       this.authService.login(this.loginForm.getRawValue() as {email: string, password: string})
       .subscribe({
         error: err => this.errorMsg.set(err?.error?.message),
-        complete: () => this.router.navigate(['home'])
+        complete: () => this.router.navigate([''])
       });
     }
   }

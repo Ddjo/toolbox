@@ -23,7 +23,7 @@ export class AuthService  {
     return this.http.post<IUser>(url + '/login', user).pipe(
       tap((user) => this.currentUserSig.set(user)),
       // tap(console.log),
-      tap((res) => this.localStorageService.setItem(LocalStorageVars.accessToken,res.token))
+      tap((res) => this.localStorageService.set(LocalStorageVars.accessToken,res.token))
     );
   }
 
@@ -35,7 +35,7 @@ export class AuthService  {
 
   removeSavedUserInfos() {
     this.currentUserSig.set(undefined);
-    this.localStorageService.removeItem(LocalStorageVars.accessToken);
+    this.localStorageService.remove(LocalStorageVars.accessToken);
   }
 
     /**
@@ -43,9 +43,9 @@ export class AuthService  {
    * @returns user information needed for authentication and authorization. Returns null if no information is found.
    */
     public getAccessInfo(): string | null {
-      const user = this.localStorageService.getItem<string>(LocalStorageVars.accessToken);
+      const user = this.localStorageService.get<string>(LocalStorageVars.accessToken);
       if (user) {
-        return user.getValue();
+        return user;
       }
       return null;
     }

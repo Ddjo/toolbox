@@ -1,97 +1,99 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 
-interface ICache {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: BehaviorSubject<any>;
-}
+import { Injectable, signal, WritableSignal } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', // Makes the service available throughout the app
 })
 export class LocalStorageService {
-  private cache: ICache;
+  // Signal to track the state of local storage
+  private storageSignal: WritableSignal<Record<string, any>>;
+
+  // Flag to check if `localStorage` is available
+  private isBrowser: boolean;
 
   constructor() {
-    // Set defaults here, for example
-    // Get initial state of cookies from previously set values. If nothing is found, set defaults
-    // const cookies = localStorage.getItem(LocalStorageVars.cookiesAccepted);
-    // const acceptedCookies = cookies !== null ? JSON.parse(cookies) : CookieStatus.undefined;
+    // Check if the code is running in the browser
+    this.isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 
-    // set the initial state in the cache
-    this.cache = {
-    };
-
-  }
-
-  get isLocalStorageSupported(): boolean {
-    try {
-      return !!localStorage;
-    } catch(err) {
-      return false;
-    }
-  }
-
-  // Methods
-  /**
-   * Save a given object to local storage.
-   * @example this.localStorageService.setItem<IAuthUser>(LocalStorageVars.authUser, user);
-   * @param key name that the object should be saved under
-   * @param value the object
-   * @returns behavior subject that you can subscribe to and listen for changes
-   */
-  setItem<T>(key: string, value: T): BehaviorSubject<T> {
-    if (this.isLocalStorageSupported) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    if (this.cache[key]) {
-      this.cache[key].next(value);
-      return this.cache[key] as BehaviorSubject<T>;
-    }
-
-    return (this.cache[key] = new BehaviorSubject(value));
+    // Initialize the signal with current local storage data if in the browser
+    this.storageSignal = signal(this.isBrowser ? this.loadAll() : {});
   }
 
   /**
-   * Get a specific object from local storage cache
-   * @example this.localStorageService.getItem<IAuthUser>(LocalStorageVars.authUser).getValue();
-   * @example const authUser$ = this.localStorageService.getItem<IAuthUser>(LocalStorageVars.authUser).getValue(); authUser$.subscribe();
-   * @param key name of the object
-   * @returns behavior subject that you can subscribe to and listen for changes
+   * Loads all key-value pairs from local storage into an object.
+   * Only works in the browser.
    */
-  getItem<T>(key: string): BehaviorSubject<T | null> | null {
-    if (this.cache[key]) {
-      return this.cache[key] as BehaviorSubject<T | null>;
-    }
+  private loadAll(): Record<string, any> {
+    const data: Record<string, any> = {};
+    if (!this.isBrowser) return data; // Return empty if not in browser
 
-    if (this.isLocalStorageSupported) {
-      const item = localStorage.getItem(key);
-      if (item !== null) {
-
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
         try {
-          const value = JSON.parse(item);
-          return (this.cache[key] = new BehaviorSubject<T | null>(value));
+          data[key] = JSON.parse(localStorage.getItem(key) || '');
         } catch (e) {
-          return new BehaviorSubject<T | null>(null);
+          console.warn(`Error parsing key "${key}" from local storage:`, e);
         }
-
-      } else {
-        return new BehaviorSubject<T | null>(null);
       }
     }
-    return null;
+    return data;
   }
 
   /**
-   * Remove a specific object from local storage
-   * @example this.localStorageService.removeItem(LocalStorageVars.authUser);
-   * @param key name of the object
+   * Returns the signal representing the state of local storage.
+   * This allows components to react to changes in real-time.
    */
-  removeItem(key: string): void {
-    if (this.isLocalStorageSupported) {
-      localStorage.removeItem(key);
-    }
-    if (this.cache[key]) this.cache[key].next(undefined);
+  getStorageSignal(): WritableSignal<Record<string, any>> {
+    return this.storageSignal;
+  }
+
+  /**
+   * Retrieves a specific value from local storage.
+   * @param key The key of the item to retrieve.
+   */
+  get<T>(key: string): T | null {
+    if (!this.isBrowser) return null; // Return null if not in browser
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  }
+
+  /**
+   * Adds or updates a key-value pair in local storage.
+   * @param key The key to set.
+   * @param value The value to store, which will be serialized as JSON.
+   */
+  set<T>(key: string, value: T): void {
+    if (!this.isBrowser) return; // Do nothing if not in browser
+    localStorage.setItem(key, JSON.stringify(value));
+    this.updateSignal();
+  }
+
+  /**
+   * Removes a specific key from local storage.
+   * @param key The key to remove.
+   */
+  remove(key: string): void {
+    if (!this.isBrowser) return; // Do nothing if not in browser
+    localStorage.removeItem(key);
+    this.updateSignal();
+  }
+
+  /**
+   * Clears all data from local storage.
+   */
+  clear(): void {
+    if (!this.isBrowser) return; // Do nothing if not in browser
+    localStorage.clear();
+    this.updateSignal();
+  }
+
+  /**
+   * Updates the signal with the latest state of local storage.
+   * This ensures that components using the signal are notified of changes.
+   */
+  private updateSignal(): void {
+    if (!this.isBrowser) return; // Do nothing if not in browser
+    this.storageSignal.set(this.loadAll());
   }
 }
