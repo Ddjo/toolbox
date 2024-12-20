@@ -1,15 +1,16 @@
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, HostBinding, inject, input, output, signal, viewChild, viewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, HostBinding, inject, input, OnDestroy, output, signal, viewChild, viewChildren } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CHAT_MESSAGE_RECEIVE_TYPING_MESSAGE_EVENT } from '@constants';
 import { IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { filter, Observable, tap, throttleTime } from 'rxjs';
+import { filter, Observable, Subject, takeUntil, tap, throttleTime } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ChatService } from '../../../../core/services/chat.service';
 import { typingUserDisplayTimeMs } from '../chat.component';
@@ -33,11 +34,13 @@ import { ChatMessageComponent } from './chat-message/chat-message.component';
       ProgressSpinnerModule
     ]
 })
-export class ChatRoomComponent implements AfterViewInit {
+export class ChatRoomComponent implements AfterViewInit, OnDestroy {
 
   @HostBinding('attr.class')
   get direction() { return this.chatRoomUnfold() ? 'unfold' : 'fold' }
-  
+
+  private destroy$ = new Subject<void>();
+
   chatService = inject(ChatService);
   authService = inject(AuthService);
 
@@ -49,14 +52,16 @@ export class ChatRoomComponent implements AfterViewInit {
   // seenMessageOuput = output<{chatMessageId: string, seenBy: IUser}>();
   // loadPreviousMessagesOuput = output();
 
-  
+  // typingUserEmail$: Observable<string> = this.chatService.fromEvent<string>(`${this.chatRoomInput()?._id}-${CHAT_MESSAGE_RECEIVE_TYPING_MESSAGE_EVENT}`)
+  // .pipe(tap(() => console.log('typing signal receivedS')));
+
+
   typingUsers = signal<string[]>([]);  
   messagesViewPortScrollPosition = signal<number | null>(null);
   loadingMessages = signal(false);
   chatMembersMails = computed(() => this.chatRoomInput().members.filter(member => member._id !== this.currentUser()?._id).map(member => member.email));
   chatRoomUnfold = computed(() => this.chatService.clientChatRoomsConfigSig().unfoldedChatRoomsIds.includes(this.chatRoomInput()._id));
 
-  // messagesRefs = viewChildren("messageElement");
 
   messagesRefs = viewChildren<ChatMessageComponent>("messageElement"); 
   messagesElements = viewChildren('messageElement', { read: ElementRef });
@@ -69,34 +74,21 @@ export class ChatRoomComponent implements AfterViewInit {
   unreadMessages = 0;
   lastMessageIdOnTop: string | null = null;
 
-  private resizeObserver: ResizeObserver | undefined;
 
-  // currentElementsInView: ScrollerScrollIndexChangeEvent = {first: 0, last: 0};
-  // scrollerOptions : ScrollerOptions = {
-  //   showSpacer: false,
-  //   itemSize: 40,
-  //   autoSize: true,
-  //   scrollHeight: '100%',
-  // };
-
-  
-  // Observe messages to display it, flag it with a displayEmail if it's the first one of a serie
-  // filteredMessages$: Observable<( IChatMessage & {displayEmail: boolean, height: number})[]> = toObservable(computed(()=> {
-    
   filteredMessages$: Observable<( IChatMessage & {displayEmail: boolean})[]> = toObservable(computed(()=> {
     return this.chatRoomInput().messages
     .map((message, index) => { 
       return {
         ...message,
         displayEmail : this.displayMailForMessage(index, message),
-        // height:  index === 0 || message.sender._id !== this.chatRoomInput().messages[index - 1].sender._id ? 42.8 : 42.8
       }
     })
   })).pipe(
-    tap(() => {
+    tap((res) => {
+      console.log('this.chatRoomInput().messages xhanged ', res)
       // Scroll only for the user who sent the new message or for the users who are already seeing the last message
       if (!this.isCurrentUserSender() &&  !this.isScrollAtBottom()) {
-        this.unreadMessages++;
+        // this.unreadMessages++;
       } else {
         this.scrollToLastMessage('smooth')
       }
@@ -106,9 +98,6 @@ export class ChatRoomComponent implements AfterViewInit {
 
         // If previous messages just got loaded, scroll to the one that was on top before loading messages
         if(this.lastMessageIdOnTop) {
-          // const offsetToScroll = this.messagesPositions
-          //   .slice(0, this.messagesPositions.findIndex(message => message._id === this.lastMessageIdOnTop))
-          //   .reduce((acc, value) => acc + value.height, 0);
           const offsetToScroll = this.messagesPositions.find(message => message._id === this.lastMessageIdOnTop)?.top;
 
           this.messagesViewport().scrollTo({top: offsetToScroll})
@@ -137,29 +126,52 @@ export class ChatRoomComponent implements AfterViewInit {
       filter(value => !!value),
       throttleTime(typingUserDisplayTimeMs)
     ).subscribe(() => {
+
       this.chatService.sendTypingSignal(this.chatRoomInput(), this.currentUser() as IUser);
       // this.typingUserOutput.emit(this.memberInput());
     });
 
 
-    // Observe new message socket emission
-    this.chatService.getNewMessage(this.chatRoomInput()._id).subscribe((message) => {
-      // Remove the user from the typing users list
-      this.typingUsers.set(this.typingUsers().filter(user => user !== message.sender.email));
-    });
+    // // Observe new message socket emission
+    // this.chatService.getNewMessage(this.chatRoomInput()._id).subscribe((message) => {
+    //   // Remove the user from the typing users list
+    //   this.typingUsers.set(this.typingUsers().filter(user => user !== message.sender.email));
+    // });
   
 
-    // Observe websocket sending back a user typing message
-    this.chatService.getTypingSignal(this.chatRoomInput()._id).subscribe((typingUser) => {
-      // Add user to typingUser array
-      this.typingUsers.set([...this.typingUsers(), typingUser]);
+    // // Observe websocket sending back a user typing message
+    // this.chatService.getTypingSignal(this.chatRoomInput()._id).subscribe((typingUser) => {
 
-      // Remove him after 'typingUserDisplayTimeMs'
-      setTimeout(() => {
-        this.typingUsers.set(this.typingUsers().filter(user => user !== typingUser));
-      }, typingUserDisplayTimeMs);
-    })
+    //   // console.log('get typing signal !!')
+    //   // Add user to typingUser array
+    //   this.typingUsers.set([...this.typingUsers(), typingUser]);
+
+    //   // Remove him after 'typingUserDisplayTimeMs'
+    //   setTimeout(() => {
+    //     this.typingUsers.set(this.typingUsers().filter(user => user !== typingUser));
+    //   }, typingUserDisplayTimeMs);
+    // })
     
+    this.chatService.fromEvent<string>(`${this.chatRoomInput()?._id}-${CHAT_MESSAGE_RECEIVE_TYPING_MESSAGE_EVENT}`)
+    .pipe(
+      takeUntil(this.destroy$),
+    )
+    .subscribe((typingUser) => {
+        // Add user to typingUser array
+        this.typingUsers.set([...this.typingUsers(), typingUser]);
+  
+        // Remove him after 'typingUserDisplayTimeMs'
+        setTimeout(() => {
+          this.typingUsers.set(this.typingUsers().filter(user => user !== typingUser));
+        }, typingUserDisplayTimeMs);
+      });
+
+  }
+
+  ngOnDestroy(): void {
+    // Emit a value to complete all subscriptions using `takeUntil`
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   sendMessage() {
@@ -234,7 +246,7 @@ export class ChatRoomComponent implements AfterViewInit {
 
   loadOlderMessages(){
     this.lastMessageIdOnTop = this.chatRoomInput().messages[0]._id;
-    this.chatService.loadPreviousMessagesForChatRoom(this.chatRoomInput());
+    this.chatService.loadPreviousMessagesForChatRoom(this.chatRoomInput()).subscribe();
     // this.loadPreviousMessagesOuput.emit();
   }
 
@@ -254,7 +266,7 @@ export class ChatRoomComponent implements AfterViewInit {
       }
     });
 
-    console.log('this.messagesPositions for user '+ (this.currentUser() as IUser).email, this.messagesPositions)
+    // console.log('this.messagesPositions for user '+ (this.currentUser() as IUser).email, this.messagesPositions)
   }
 
   checkIfSomeMessagesNew(topOffset: number) {

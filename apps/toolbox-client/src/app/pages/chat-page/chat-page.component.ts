@@ -18,11 +18,5 @@ import { ChatRoomsStore } from '../../core/store/chat/chat-room.store';
 export class ChatPageComponent {
 
 
-    readonly chatService = inject(ChatService);
-    readonly chatRoomStore = inject(ChatRoomsStore);
-    
-    createChatRoom() {
-        // this.chatService.createChatRoom().subscribe()
-    }
 
  }

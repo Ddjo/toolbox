@@ -46,7 +46,13 @@
     height: 3rem;
 
     .user {
-      font-size: x-small;
+      .name {
+        font-size: smaller;
+      }
+      .typing{
+        font-size: x-small;
+        min-height: 1rem;
+      }
     }
 
     .p-button {

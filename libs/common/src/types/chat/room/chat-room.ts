@@ -7,7 +7,7 @@ export interface IChatRoom {
 	members : Omit<IUser, 'password'>[];
     messages : IChatMessage[];
     totalMessages: number;
-	type: IChatRoomType;
+	// type: IChatRoomType;
 }
 
 export enum IChatRoomType {

@@ -1,6 +1,6 @@
 
 
-import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_MESSAGE_SEEN_MESSAGE, CHAT_ROOM_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_GET_PREVIOUS_MESSAGES_FOR_CHATROOM, CHAT_ROOM_UPDATE_CHAT_ROOM, CHAT_SERVICE } from '@constants';
+import { CHAT_MESSAGE_CREATE_MESSAGE, CHAT_MESSAGE_SEEN_MESSAGE, CHAT_ROOM_GET_OR_CREATE_CHAT_ROOM, CHAT_ROOM_DELETE_CHAT_ROOM, CHAT_ROOM_GET_ALL_CHAT_ROOMS_FOR_USER, CHAT_ROOM_GET_PREVIOUS_MESSAGES_FOR_CHATROOM, CHAT_ROOM_UPDATE_CHAT_ROOM, CHAT_SERVICE } from '@constants';
 import { UserDto } from '@libs/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -51,12 +51,12 @@ async testChat() {
     return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_GET_PREVIOUS_MESSAGES_FOR_CHATROOM, {chatRoomId, skip, messagesLimit});
   }
 
-  async createChatRoom(user: UserDto, withUser: UserWithoutPasswordDto ) {
+  async startChatWithUser(user: UserDto, withUser: UserWithoutPasswordDto ) {
     const users = {
       creator: user,
       withUser: withUser
     }
-    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_CREATE_CHAT_ROOM, users);
+    return this.tcpService.sendTCPMessageFromHttpRequest(this.chatClient, CHAT_ROOM_GET_OR_CREATE_CHAT_ROOM, users);
   }
 
   async updateChatRoom(_id: string, updateChatRoomDto: UpdateChatRoomDto) {

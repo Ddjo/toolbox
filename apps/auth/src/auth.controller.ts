@@ -23,7 +23,8 @@ export class AuthController {
     const token = await this.authService.login(user, response);
  
     const res = {
-      email: user.email ,
+      _id: user._id,
+      email: user.email,
       token: token.token
     }
 

@@ -31,6 +31,34 @@ export class RoomsService {
 
     }
 
+    async getOrCreate(createChatRoomDto: CreateChatRoomDto) {
+
+        try {
+            const chatRoom = await this.roomRepository.findOne(
+                { 
+                    members: { 
+                        $all: [createChatRoomDto.withUser, createChatRoomDto.creator]
+                    } 
+                },
+                {}
+            )
+
+            return chatRoom;
+        } catch(err) {
+
+            return await this.roomRepository.create(
+            {
+                members: [createChatRoomDto.creator, createChatRoomDto.withUser],
+                messages: [],
+                name: ''
+            }, 
+            [
+                {path: 'members', select: ['_id', 'email']}
+            ]);
+        }
+    }
+    
+
     async findAllForUser( getAllChatRoomsForUserDto: GetAllChatRoomsForUserDto) {
        // Fetch chat rooms for a specific user
         const chatRooms = await this.roomRepository.find(

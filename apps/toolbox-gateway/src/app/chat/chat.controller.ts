@@ -37,8 +37,8 @@ export class ChatController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  createChatRoom( @CurrentUser() user: UserDto, @Body() withUser: UserWithoutPasswordDto) {
-    return this.chatService.createChatRoom(user, withUser);
+  startChatWithUser( @CurrentUser() user: UserDto, @Body() withUser: UserWithoutPasswordDto) {
+    return this.chatService.startChatWithUser(user, withUser);
   }
 
   @Patch(':id')
