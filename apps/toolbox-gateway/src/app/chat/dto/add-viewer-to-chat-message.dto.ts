@@ -1,18 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsMongoId, IsNotEmpty, ValidateNested } from "class-validator";
-import { UserWithoutPasswordDto } from "./user-without-password.dto";
+import { ChatMessageViewDto } from "./chat-message-view.dto";
 
-export class SeenChatMessageDto {
-
+export class AddViewerToChatMessageDto
+ {
     @ApiProperty()
     @IsNotEmpty()
     @IsMongoId()
     readonly chatMessageId: string;
     
     @IsNotEmpty()
-    @Type(() =>  UserWithoutPasswordDto)
+    @Type(() =>  ChatMessageViewDto)
     @ValidateNested()
-    readonly seenBy: UserWithoutPasswordDto;
+    readonly view: ChatMessageViewDto;
 }
 

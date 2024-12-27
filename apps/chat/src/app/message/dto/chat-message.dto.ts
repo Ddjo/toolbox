@@ -1,8 +1,8 @@
-import { UserDto } from "@libs/common";
 import { Type } from "class-transformer";
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { ObjectId } from "mongoose";
 import { ChatRoomDto } from "../../rooms/dto/chat-room.dto";
+import { ChatMessageViewDto } from "./chat-message-view.dto";
 import { UserWithoutPasswordDto } from "./user-without-password.dto";
 
 export class ChatMessageDto {
@@ -23,6 +23,9 @@ export class ChatMessageDto {
     @ValidateNested()
     readonly sender: UserWithoutPasswordDto
 
-    @IsArray()
-    seenBy:  UserDto[];
+    @IsNotEmpty()
+    @Type(() => ChatMessageViewDto)
+    @ValidateNested()
+    views:  ChatMessageViewDto[];
 }
+

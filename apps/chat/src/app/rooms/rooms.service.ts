@@ -32,7 +32,6 @@ export class RoomsService {
     }
 
     async getOrCreate(createChatRoomDto: CreateChatRoomDto) {
-
         try {
             const chatRoom = await this.roomRepository.findOne(
                 { 
@@ -56,8 +55,7 @@ export class RoomsService {
                 {path: 'members', select: ['_id', 'email']}
             ]);
         }
-    }
-    
+    }  
 
     async findAllForUser( getAllChatRoomsForUserDto: GetAllChatRoomsForUserDto) {
        // Fetch chat rooms for a specific user
@@ -78,14 +76,19 @@ export class RoomsService {
                     sort: { 'createdAt': -1 }, // Sort messages by createdAt in descending order (newest first)
                     limit: getAllChatRoomsForUserDto.messagesLimit // Limit the number of messages per chat room
                 }, 
-                select: ['_id', 'content', 'sender', 'seenBy', 'createdAt', 'updatedAt'], // Select specific fields from each message
+                select: ['_id', 'content', 'sender', 'views', 'chatRoomId', 'createdAt', 'updatedAt'], // Select specific fields from each message
                 populate: [
                     { 
                         path: 'sender', // Populate the sender of each message
                         select: ['_id', 'email'] // Include only _id and email for the sender
                     }, {
-                        path: 'seenBy', // Populate the sender of each message
-                        select: ['_id', 'email'] // Include only _id and email for the sender
+                        path: 'views', // Populate the views of each message,
+                        populate: [
+                            {
+                                path: 'user',
+                                select: ['_id', 'email']
+                            }
+                        ]
                     }
                 ]
             },
@@ -110,7 +113,6 @@ export class RoomsService {
         
         // Return the enriched results with totalMessages
         return resultsWithTotalMessages;
-        
     }
 
     async remove(removeRoomDto: RemoveChatRoomDto) {
@@ -149,10 +151,17 @@ export class RoomsService {
             {_id: 1, name: 1, members: 1}, 
             [
                 {path: 'members', select: ['_id', 'email']}, 
-                {path: 'messages', select: ['_id', 'content', 'sender', 'createdAt', 'seenBy', 'updatedAt'], 
+                {path: 'messages', select: ['_id', 'content', 'sender', 'chatRoomId', 'createdAt', 'views', 'updatedAt'], 
                     populate: [
                         {path: 'sender', select: ['_id', 'email']}, 
-                        {path: 'seenBy', select: ['_id', 'email']},],
+                        {
+                            path: 'views', 
+                            populate : [
+                                {
+                                    path: 'user',
+                                    select: ['_id', 'email']},],
+                                }
+                            ]
                     
                 },
             ]

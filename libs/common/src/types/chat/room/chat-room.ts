@@ -4,10 +4,11 @@ import { IChatMessage } from "../message";
 export interface IChatRoom {
     _id: string;
 	name : string;
-	members : Omit<IUser, 'password'>[];
+	members : Pick<IUser, '_id' |'email'>[];
     messages : IChatMessage[];
     totalMessages: number;
-	// type: IChatRoomType;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export enum IChatRoomType {

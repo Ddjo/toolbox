@@ -1,45 +1,7 @@
-<!-- <p-card class="flex flex-column	min-w-full">
-    <div class="chat-room-header">
-        <p-button 
-            icon="pi pi-trash " 
-            [rounded]="true" 
-            [text]="true"
-            size="small" 
-            (onClick)="removeChatRoom()"
-        />
-    </div>
-    <div class="flex flex-column gap-4  m-3 min-h-full">
-        <div class="flex flex-wrap gap-4 ">
-            <app-chat 
-                class='max-w-28rem'
-                *ngFor="let member of chatRoom().members" 
-                [memberInput]="member" 
-                [chatRoomInput]="chatRoom()"
-                (memberLeavesChatOutput)="memberLeavesChatEvent(member)"
-            />
-        </div>
-    
-        <div class=" gap-3 align-items-center">
-            @if (availableUsersToAdd().length) {
-                <p-select 
-                    [options]="availableUsersToAdd()"
-                    [formControl]="addMemberControl"
-                    [loading]="chatRoomsStore.isLoading()"
-                    optionLabel="email" 
-                    placeholder="Add a participant to the conversation and load his view" 
-                    class="w-full md:w-56" 
-                />
-            } @else {
-                <span>No user to add. You can logout and create another user to test the chat feature.</span>
-            }
-        </div>
-    </div>
-</p-card> -->
 
 @for (chatRoom of activeChatRooms$ | async; track $index) {
     <app-chat-room
         [chatRoomInput]="chatRoom"
-        
     ></app-chat-room>
 }
 
@@ -50,9 +12,6 @@
             Chat   
         </p-button>
         <div class="actions-buttons">
-            <!-- <p-button 
-                icon="pi pi-file-edit" 
-            /> -->
             <p-button 
                 icon="pi {{unfoldChatInterface() ? 'pi-chevron-down' : 'pi-chevron-up'}}" 
                 (onClick)="toggleChatInterfaceFold()"

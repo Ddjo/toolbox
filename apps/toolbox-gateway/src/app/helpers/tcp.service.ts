@@ -11,9 +11,9 @@ export class TCPService {
   @WebSocketServer()
   server: Server;
 
-  async sendTCPMessageFromHttpRequest(proxy: ClientProxy, clientMessagePattern: string, payload: object) {
+  async sendTCPMessageFromHttpRequest<T>(proxy: ClientProxy, clientMessagePattern: string, payload: object) {
     try {
-      return await lastValueFrom(proxy.send(clientMessagePattern, payload));
+      return await lastValueFrom<T>(proxy.send(clientMessagePattern, payload));
     } catch (err ) {
       console.log('sendTCPMessageFromHttpRequest : ', err)
       if (err.code === 'ECONNREFUSED') {

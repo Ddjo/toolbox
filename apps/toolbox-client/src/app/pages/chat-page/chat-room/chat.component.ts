@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT } from '@constants';
 import { IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -12,11 +11,11 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ChatService } from '../../../core/services/chat.service';
 import { UsersService } from '../../../core/services/users.service';
-import { ChatRoomsStore } from '../../../core/store/chat/chat-room.store';
+import { ChatRoomsStore, IChatRoomEntity } from '../../../core/store/chat/chat-room.store';
 import { UsersStore } from '../../../core/store/users/users.store';
 import { ChatRoomComponent } from './chat/chat-room.component';
+import { CHAT_ROOM_NEW_CHAT_FOR_USER_EVENT } from '@constants';
 
-export const typingUserDisplayTimeMs = 2000;
 
 @Component({
     selector: 'app-chat',
@@ -47,7 +46,7 @@ export class ChatComponent implements OnDestroy {
   
   unfoldChatInterface = computed(() => this.chatService.clientChatRoomsConfigSig().unfoldedChatInterface);
 
-  activeChatRooms$: Observable<IChatRoom[]> = toObservable(computed(()=> {
+  activeChatRooms$: Observable<IChatRoomEntity[]> = toObservable(computed(()=> {
     return this.chatRoomsStore.chatRoomsEntities().filter(chatRoom => this.chatService.clientChatRoomsConfigSig().activeChatRoomsIds.includes(chatRoom._id ))
   }));
 
@@ -62,14 +61,15 @@ export class ChatComponent implements OnDestroy {
     this.chatService.loadChatRoomsStore();
     this.usersService.loadUsersStore();
     
-    // Observe new messages. Receive a IChatRoom with the new message, update the store
-    this.chatService.fromEvent<IChatRoom>(`${CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT}-${this.authService.currentUserSig()?._id}`)
+    console.log(`subscribe ${this.authService.currentUserSig()?._id}-${CHAT_ROOM_NEW_CHAT_FOR_USER_EVENT}`)
+    // Observe new chats creations for user. Receive a IChatRoom object, update the store
+    this.chatService.fromEvent<IChatRoom>(`${this.authService.currentUserSig()?._id}-${CHAT_ROOM_NEW_CHAT_FOR_USER_EVENT}`)
     .pipe(
       takeUntil(this.destroy$),
     )
-    .subscribe((chatRoomWithMessage) => {
-      this.chatService.updateChatRoomInStore(chatRoomWithMessage);
-      this.chatService.activateChatRoomInStorage(chatRoomWithMessage._id);
+    .subscribe((chatRoom) => {
+      this.chatService.subscribeToChatRoomUpdates(chatRoom._id);
+      this.chatService.updateChatRoomInStore(chatRoom);
     });
   }
 
@@ -77,7 +77,7 @@ export class ChatComponent implements OnDestroy {
     // Emit a value to complete all subscriptions using `takeUntil`
     this.destroy$.next();
     this.destroy$.complete();
-    // this.chatService.ngOnDestroy();
+    this.chatService.ngOnDestroy();
   }
 
   chatWithUser(user :IUser) {

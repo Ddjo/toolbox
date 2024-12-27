@@ -1,13 +1,14 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { computed, effect, inject, Injectable, OnDestroy, Signal } from '@angular/core';
-import { CHAT_MESSAGE_EMIT_TYPING_MESSAGE, CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT, CHAT_MESSAGE_SEEN_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, LocalStorageVars } from '@constants';
-import { IChatMessage, IChatRoom, IUser } from '@libs/common';
+import { computed, inject, Injectable, OnDestroy, Signal } from '@angular/core';
+import { CHAT_MESSAGE_EMIT_SET_MESSAGE_AS_VIEWED, CHAT_MESSAGE_EMIT_TYPING_MESSAGE, CHAT_MESSAGE_EMIT_UNTYPING_MESSAGE, CHAT_MESSAGE_SEND_MESSAGE, CHAT_ROOM_UPDATE_EVENT, ChatRoomUpdateType, LocalStorageVars } from '@constants';
+import { ChatRoomUpdateEvent, IChatMessage, IChatRoom, IUser } from '@libs/common';
 import { Socket } from 'ngx-socket-io';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
 import { environment } from '../../../environments/environments';
 import { ChatRoomsStore } from '../store/chat/chat-room.store';
 import { AuthService } from './auth.service';
 import { LocalStorageService } from './local-storage.service';
+
 
 export const url = environment.gatewayApiUrl + '/chat';
 export interface IClientChatRoomCache {
@@ -16,6 +17,8 @@ export interface IClientChatRoomCache {
   unfoldedChatRoomsIds: string[]  
 }
 
+export const typingUserDisplayTimeMs = 4000;
+
 @Injectable({
   providedIn: 'any',
 })
@@ -23,9 +26,7 @@ export class ChatService extends Socket implements OnDestroy {
 
   readonly chatRoomsStore = inject(ChatRoomsStore);
   readonly localStorageService = inject(LocalStorageService);
-  // readonly activeChatsSig: Signal<string[]> = computed(() => {
-  //   return this.localStorageService.getStorageSignal()()[LocalStorageVars.activeChats].split(',') || [];
-  // })
+  private destroy$ = new Subject<void>();
 
   readonly clientChatRoomsConfigSig: Signal<IClientChatRoomCache> = computed(() => {
     return this.localStorageService.getStorageSignal()()[LocalStorageVars.clientChatRoomsConfigCache] || {activeChatRoomsIds: [], unfoldedChatRoomsIds: [], unfoldedChatInterface: false };
@@ -45,40 +46,69 @@ export class ChatService extends Socket implements OnDestroy {
     });
 
     this.fromEvent('ws-exception').subscribe((err) => console.error(err));
-
-    // effect(() => {
-    //   console.log('listening to ', `${CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT}-${this.authService.currentUserSig()?._id}`)
-    //   // this.fromEvent<IChatMessage>(`${CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT}-${this.authService.currentUserSig()?._id}`).pipe(
-    //   this.fromEvent<IChatMessage>(`test`).pipe(
-    //     // filter(chatMessage => !!chatMessage),
-    //     tap((message) => {
-    //       console.log(' new message  !!!', message)
-    //       // const chatRoom = {...this.chatRoomsStore.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId)} as IChatRoom;
-    //       // chatRoom.messages = [...chatRoom.messages, message];
-    //       // this.chatRoomsStore.updateChatRoom(chatRoom as IChatRoom);
-    //     }),
-    //   );
-    // });
-    
   }
 
   ngOnDestroy(): void {
-      console.log('service chat destroyed')
+    console.log('service chat destroyed')
+    // Emit a value to complete all subscriptions using `takeUntil`
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  subscribeToChatRoomUpdates(chatRoomId: string ){
+    console.log(`subscribe to ${chatRoomId}-${CHAT_ROOM_UPDATE_EVENT}`);
+
+    this.fromEvent<ChatRoomUpdateEvent>(`${chatRoomId}-${CHAT_ROOM_UPDATE_EVENT}`)
+    .pipe(
+      takeUntil(this.destroy$),
+    )
+    .subscribe((chatRoomUpdateEvent: ChatRoomUpdateEvent) => {
+
+      const chatRoom = this.chatRoomsStore.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId) as IChatRoom;
+
+      switch (chatRoomUpdateEvent.updateType) {
+
+          case ChatRoomUpdateType.UserTyping: 
+          // Add user to typingUser array
+          this.chatRoomsStore.addTypingUser(chatRoom, chatRoomUpdateEvent.payload.userEmail)
+
+          // Remove him after 'typingUserDisplayTimeMs'
+          setTimeout(() => {
+            this.checkTypingUserInStore(chatRoomId, chatRoomUpdateEvent.payload.userEmail);  
+          }, typingUserDisplayTimeMs);
+        break;
+
+        case ChatRoomUpdateType.UserUntyping: 
+         console.log('untyping')
+          // remove user from typingUser array
+          this.chatRoomsStore.removeTypingUser(chatRoomId, chatRoomUpdateEvent.payload.userEmail)
+        break;
+
+        case ChatRoomUpdateType.NewMessage: 
+          this.chatRoomsStore.addMessageToChatRoom(chatRoomId, chatRoomUpdateEvent.payload);
+          this.activateChatRoomInStorage(chatRoomId)
+        break;
+
+        case ChatRoomUpdateType.SeenMessage:
+          this.chatRoomsStore.updateChatMessageInChatRoom(chatRoom, chatRoomUpdateEvent.payload);
+        break;
+      }
+    }); 
   }
 
   loadChatRoomsStore(messagesLimit = environment.chat.messagesToDisplayNumber) {
-    if (!this.chatRoomsStore.loaded())  {      
+    let params = new HttpParams();
 
-      let params = new HttpParams();
+    params = params.append('messages-limit', messagesLimit);
 
-      params = params.append('messages-limit', messagesLimit);
-
-      this.chatRoomsStore.setLoading(true);
-      this.http.get<IChatRoom[]>(url, { params: params }).pipe(
-        tap(chatRooms =>this.chatRoomsStore.setChatRooms(chatRooms)),
-        tap(() => this.chatRoomsStore.setLoading(false))
-      ).subscribe();
-    }
+    this.chatRoomsStore.setLoading(true);
+    this.http.get<IChatRoom[]>(url, { params: params }).pipe(
+      tap(chatRooms =>{
+        this.chatRoomsStore.setChatRooms(chatRooms.map(chatRoom => {return {...chatRoom, typingUsers: []}}));
+        chatRooms.forEach(chatRoom => this.subscribeToChatRoomUpdates(chatRoom._id));
+      }),
+      tap(() => this.chatRoomsStore.setLoading(false))
+    ).subscribe();
   }
 
   loadPreviousMessagesForChatRoom(chatRoom: IChatRoom, messagesLimit = environment.chat.messagesToDisplayNumber) {
@@ -100,7 +130,7 @@ export class ChatService extends Socket implements OnDestroy {
   startChatWithUser(withUser: IUser): Observable<IChatRoom> {
     this.chatRoomsStore.setLoading(true);
     return this.http.post<IChatRoom>(url, withUser).pipe(
-      tap(chatRoom =>this.chatRoomsStore.addChatRoom(chatRoom)),
+      tap(chatRoom =>this.chatRoomsStore.addChatRoom({...chatRoom})),
       tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
@@ -143,39 +173,32 @@ export class ChatService extends Socket implements OnDestroy {
     });
   }
 
-  sendSeenChatMessage(chatMessageId: string, seenBy: IUser) {
-    this.emit(CHAT_MESSAGE_SEEN_MESSAGE, {chatMessageId, seenBy});
-  }
-
-  getSeenChatMessage(chatMessageId: string) {
-    return this.fromEvent<IUser>(`${CHAT_MESSAGE_SEEN_MESSAGE}-${chatMessageId}`);
+  setMessageAsViewed(chatMessageId: string, viewedBy: IUser) {
+    this.emit(CHAT_MESSAGE_EMIT_SET_MESSAGE_AS_VIEWED, {chatMessageId, view: {user: viewedBy, viewedAt: new Date()}});
   }
 
   sendTypingSignal(chatRoom: IChatRoom, sender: IUser) {
     this.emit(CHAT_MESSAGE_EMIT_TYPING_MESSAGE, {chatRoom, sender});
   }
 
-  sendMessage(chatRoom: IChatRoom, sender: IUser, content: string): void {
-    this.emit(CHAT_MESSAGE_SEND_MESSAGE, { chatRoom, sender, content}); 
+  sendUnTypingSignal(chatRoom: IChatRoom, sender: IUser) {
+    this.emit(CHAT_MESSAGE_EMIT_UNTYPING_MESSAGE, {chatRoom, sender});
   }
 
-  // getNewMessage(chatRoomId: string): Observable<IChatMessage> {
-  //   return this.fromEvent<IChatMessage>(`${CHAT_MESSAGE_RECEIVE_MESSAGE_EVENT}-${}`).pipe(
-  //     filter(chatMessage => !!chatMessage),
-  //     tap((message) => {
-  //       console.log(' new message  !!!')
-  //       const chatRoom = {...this.chatRoomsStore.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId)} as IChatRoom;
-  //       chatRoom.messages = [...chatRoom.messages, message];
-  //       this.chatRoomsStore.updateChatRoom(chatRoom as IChatRoom);
-  //     }),
-  //   );
-  // }
+  checkTypingUserInStore(chatRoomId: string, userEmail: string) {
 
-  // getActiveChatRoomsIdFromStorage(): string[] {
-  //   const activeChatRoomsValue = this.localStorageService.get<string>( LocalStorageVars.activeChats);
+    const startTypingAtTimeStamp = this.chatRoomsStore.chatRoomsEntities()
+      .find(chatRoom => chatRoom._id === chatRoomId)?.typingUsers
+      .find(typingUser => typingUser.userMail === userEmail)?.startTypingAtTimeStamp as number; 
+      
+      if (Date.now() - startTypingAtTimeStamp > typingUserDisplayTimeMs) 
+        this.chatRoomsStore.removeTypingUser(chatRoomId, userEmail)
+  }
 
-  //   return activeChatRoomsValue?.split(',').filter(x => !!x) || [];
-  // }
+  sendMessage(chatRoom: IChatRoom, sender: IUser, content: string): void {
+    this.emit(CHAT_MESSAGE_SEND_MESSAGE, { chatRoom, sender, content}); 
+    this.sendUnTypingSignal(chatRoom, sender);
+  }
 
   foldChatInterface() {
     const clientChatRoomsConfigCache = this.clientChatRoomsConfigSig();

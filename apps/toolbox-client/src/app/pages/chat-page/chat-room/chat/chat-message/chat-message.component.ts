@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnDestroy } from '@angular/core';
 import { IChatMessage } from '@libs/common';
-import { ChatService } from '../../../../../../../src/app/core/services/chat.service';
 import { AvatarModule } from 'primeng/avatar';
+import { Subject } from 'rxjs';
+import { ChatService } from '../../../../../../../src/app/core/services/chat.service';
 
 @Component({
     selector: 'app-chat-message',
@@ -14,17 +15,18 @@ import { AvatarModule } from 'primeng/avatar';
         AvatarModule
     ]
 })
-export class ChatMessageComponent implements OnInit {
-  chatService = inject(ChatService);
+export class ChatMessageComponent implements OnDestroy {
+    chatService = inject(ChatService);
 
-  messageInput = input.required<IChatMessage>();
-  isSenderCurrentUserInput = input.required<boolean>();
-  displayUserMailInput = input.required<boolean>();
+    private destroy$ = new Subject<void>();
 
-    ngOnInit(): void {
-        // Observe websocket to get the seen message notifs
-        this.chatService.getSeenChatMessage(this.messageInput()._id).subscribe((seenBy) => {
-            console.log('message seen by ', seenBy.email)
-        })
+    messageInput = input.required<IChatMessage>();
+    isSenderCurrentUserInput = input.required<boolean>();
+    displayUserMailInput = input.required<boolean>();
+
+    ngOnDestroy(): void {
+        // Emit a value to complete all subscriptions using `takeUntil`
+        this.destroy$.next();
+        this.destroy$.complete();
     }
  }

@@ -22,12 +22,6 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       { 
-        path: 'chat',
-        loadComponent: () => import('./pages/chat-page/chat-page.component').then(x => x.ChatPageComponent),
-        canActivate: [AuthGuard],
-        resolve: [ChatPageResolver],
-      },
-      { 
         path: 'books',
         loadComponent: () => import('./pages/books-page/books-page.component').then(x => x.BooksPageComponent),
         canActivate: [AuthGuard],

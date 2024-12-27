@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { RoomRepository } from '../rooms/rooms.repository';
-import { ChatMessageDto } from './dto/chat-message.dto';
+import { AddViewerToChatMessageDto } from './dto/add-viewer-to-chat-message.dto';
+import { CreateChatMessageDto } from './dto/create-chat-message.dto';
 import { GetMessagesForChatRoomDto } from './dto/get-messages-for-chat-room.dto';
 import { MessageRepository } from './message.repository';
-import { SeenChatMessageDto } from './dto/seen-chat-message.dto';
 
 
 @Injectable()
@@ -20,7 +20,7 @@ export class MessageService {
  ) {}
 
 
-  async create(chatMessageDto: ChatMessageDto) {
+  async create(createChatMessageDto: CreateChatMessageDto) {
 
     const transactionSession = await this.connection.startSession();
     transactionSession.startTransaction();
@@ -28,15 +28,28 @@ export class MessageService {
     try
     {
       const newMessage = await this.messageRepository
-      .create( chatMessageDto,
+      .create( {
+        ...createChatMessageDto,
+        chatRoomId: createChatMessageDto.chatRoomId,
+        views: [{user: createChatMessageDto.sender, viewedAt: new Date()}]
+      },
         [
           {path: 'sender', select: ['_id', 'email']}, 
-          {path: 'chatRoom', select: ['_id','name']}
+          {
+            path: 'views', 
+            select: ['user', 'viewedAt'],
+            populate : [
+              {
+                path: 'user',
+                select: ['_id', 'email']
+              },
+            ],
+          }
         ]
       );
 
       await this.roomRepository.findOneAndUpdate(
-        { _id: chatMessageDto.chatRoom._id}, 
+        { _id: createChatMessageDto.chatRoomId}, 
         {
           $push : {
              messages : newMessage
@@ -65,7 +78,16 @@ export class MessageService {
       { sort: { 'createdAt': -1 }, limit: getMessagesForChatRoomDto.messagesLimit }, 
       [ 
         {path: 'sender', select: ['_id', 'email']}, 
-        {path: 'chatRoom', select: ['_id','name']}
+        {
+          path: 'views', 
+          select: ['user', 'viewedAt'],
+          populate : [
+            {
+              path: 'user',
+              select: ['_id', 'email']
+            },
+          ],
+        }
       ]
      );
   }
@@ -76,7 +98,16 @@ export class MessageService {
       {  }, 
       [ 
         {path: 'sender', select: ['_id', 'email']}, 
-        {path: 'chatRoom', select: ['_id','name']}
+        {
+          path: 'views', 
+          select: ['user', 'viewedAt'],
+          populate : [
+            {
+              path: 'user',
+              select: ['_id', 'email']
+            },
+          ],
+        }
       ],
       { createdAt: 'desc' },
       getMessagesForChatRoomDto.messagesLimit,
@@ -86,18 +117,31 @@ export class MessageService {
     //  sort: { 'createdAt': -1 }, limit: getMessagesForChatRoomDto.messagesLimit
   }
 
-  async seenChatMessage(seenChatMessageDto: SeenChatMessageDto) {
+  async addViewerToChatMessage(addViewerToChatMessageDto: AddViewerToChatMessageDto) {
     return await this.messageRepository.findOneAndUpdate(
       {
-        _id: seenChatMessageDto.chatMessageId
+        _id: addViewerToChatMessageDto.chatMessageId
       },
       {
         $push : {
-          seenBy : seenChatMessageDto.seenBy
+          views : addViewerToChatMessageDto.view
        }
       },
-      {}
-    )
+      {},
+      [ 
+        {path: 'sender', select: ['_id', 'email']}, 
+        {
+          path: 'views', 
+          select: ['user', 'viewedAt'],
+          populate : [
+            {
+              path: 'user',
+              select: ['_id', 'email']
+            },
+          ],
+        }
+      ],
+    );
   }
 
   async removeAllForChatroom(chatRoomId: string) {

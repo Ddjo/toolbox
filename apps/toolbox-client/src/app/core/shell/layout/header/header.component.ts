@@ -30,9 +30,6 @@ export class HeaderComponent {
     {
       label: "Books crud",
       routerLink : ['/books']
-    }, {
-    label: "Chat",
-    routerLink : '/chat'
   }, {
     label: "Sandbox",
     routerLink : '/sandbox'

@@ -16,12 +16,21 @@ export class ChatMessageDocument extends AbstractDocument {
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: DB_USERS_DOCUMENT })
     sender!: UserDocument;
-    
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: DB_USERS_DOCUMENT }], auto: true  })
-    seenBy!: UserDocument[];
+
+    @Prop({
+        type: [
+          {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: DB_USERS_DOCUMENT },
+            viewedAt: { type: Date },
+          },
+        ],
+        default: [],
+      })
+    views!: { user: UserDocument; viewedAt: Date }[];
 
     @Prop({type: mongoose.Schema.Types.ObjectId, ref:DB_CHAT_ROOMS_DOCUMENT })
-    chatRoom!: ChatRoomDocument;
+    chatRoomId!: mongoose.Schema.Types.ObjectId;
+
 }
 
 export const MessageSchema = SchemaFactory.createForClass(ChatMessageDocument);
