@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, OnDestroy } from '@angular/core';
 import { IChatMessage } from '@libs/common';
 import { AvatarModule } from 'primeng/avatar';
 import { Subject } from 'rxjs';
-import { ChatService } from '../../../../../../../src/app/core/services/chat.service';
 
 @Component({
     selector: 'app-chat-message',
@@ -16,8 +15,6 @@ import { ChatService } from '../../../../../../../src/app/core/services/chat.ser
     ]
 })
 export class ChatMessageComponent implements OnDestroy {
-    chatService = inject(ChatService);
-
     private destroy$ = new Subject<void>();
 
     messageInput = input.required<IChatMessage>();

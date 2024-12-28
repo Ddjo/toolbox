@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { HeaderComponent } from '../../core/shell/layout/header/header.component';
-import { ChatComponent } from '../chat-page/chat-room/chat.component';
 import { RouterModule } from '@angular/router';
+import { ChatComponent } from '../../shared/chat/chat.component';
 
 @Component({
     selector: 'app-home',

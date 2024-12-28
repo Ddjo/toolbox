@@ -1,6 +1,6 @@
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, ElementRef, HostBinding, inject, input, OnDestroy, output, signal, viewChild, viewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, ElementRef, HostBinding, inject, input, OnDestroy, signal, viewChild, viewChildren } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IChatMessage, IUser } from '@libs/common';
 import { BadgeModule } from 'primeng/badge';
@@ -10,10 +10,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { filter, Subject } from 'rxjs';
-import { IChatRoomEntity } from '../../../../../app/core/store/chat/chat-room.store';
-import { VisibilityObserverDirective } from '../../../../core/directives/visibility-observer.directive';
-import { AuthService } from '../../../../core/services/auth.service';
-import { ChatService } from '../../../../core/services/chat.service';
+import { VisibilityObserverDirective } from '../../../core/directives/visibility-observer.directive';
+import { AuthService } from '../../../core/services/auth.service';
+import { ChatService } from '../../../core/services/chat.service';
+import { IChatRoomEntity } from '../../../core/store/chat/chat-room.store';
 import { ChatMessageComponent } from './chat-message/chat-message.component';
 
 export interface IChatMessageDisplayed extends IChatMessage {

@@ -1,14 +1,13 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 
+import { BookComponent } from './pages/books-page/book/book.component';
+import { BookResolver } from './pages/books-page/book/resolvers/book.resolver';
+import { LibraryComponent } from './pages/books-page/library/library.component';
+import { LibraryResolver } from './pages/books-page/library/resolvers/library.resolver';
 import { LoginComponent } from './pages/login/login.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { SignupComponent } from './pages/signup/signup.component';
-import { LibraryComponent } from './pages/books-page/library/library.component';
-import { LibraryResolver } from './pages/books-page/library/resolvers/library.resolver';
-import { BookComponent } from './pages/books-page/book/book.component';
-import { BookResolver } from './pages/books-page/book/resolvers/book.resolver';
-import { ChatPageResolver } from './pages/chat-page/resolvers/chat-page.resolver';
 
 export const routes: Routes = [
   { 
