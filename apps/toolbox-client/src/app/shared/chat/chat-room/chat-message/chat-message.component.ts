@@ -59,7 +59,7 @@ export class ChatMessageComponent implements AfterViewInit, OnDestroy {
             // console.log('too big ',this.messageInput().content )
           this.isLongMessage.set(true);
           this.isExpanded.set(false);
-          this.truncatedMessage = this.messageInput().content.slice(0, 150); // Truncate at 150 chars or adjust
+          this.truncatedMessage = this.messageInput().content.slice(0, 160); // Truncate at 150 chars or adjust
         }
         document.body.removeChild(dummyElement);
     }
