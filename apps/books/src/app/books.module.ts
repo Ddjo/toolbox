@@ -6,7 +6,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as Joi from 'joi';
-import { BookController } from './books.controller';
+import { BooksController } from './books.controller';
 import { BookRepository } from './books.repository';
 import { BooksService } from './books.service';
 import {
@@ -41,7 +41,7 @@ import {
       },
     ]),
   ],
-  controllers: [BookController],
+  controllers: [BooksController],
   providers: [BooksService, BookRepository],
 })
 export class BooksModule {}

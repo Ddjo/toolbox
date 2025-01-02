@@ -9,7 +9,7 @@ import { UpdateBookDto } from './dto/update-book.dto';
 
 @UsePipes(new ValidationPipe())
 @Controller()
-export class BookController {
+export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @MessagePattern(BOOKS_GET_ALL_BOOKS)
