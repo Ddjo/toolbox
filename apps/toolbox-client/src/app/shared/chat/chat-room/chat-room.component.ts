@@ -1,94 +1,110 @@
+// Import Angular modules and components
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, ElementRef, HostBinding, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+// Import application-specific interfaces
 import { IChatMessage, IUser } from '@libs/common';
+
+// Import UI components from PrimeNG
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+
+// Import RxJS utilities
 import { filter, Subject } from 'rxjs';
+
+// Import directives and services from the application
 import { VisibilityObserverDirective } from '../../../core/directives/visibility-observer.directive';
 import { AuthService } from '../../../core/services/auth.service';
 import { ChatService } from '../../../core/services/chat.service';
-import { ChatRoomsStore, IChatRoomEntity } from '../../../core/store/chat/chat-room.store';
+import { IChatRoomEntity } from '../../../core/store/chat/chat-room.store';
+
+// Import child component
 import { ChatMessageComponent } from './chat-message/chat-message.component';
 
+// Extended chat message interface for display logic
 export interface IChatMessageDisplayed extends IChatMessage {
   displayEmail: boolean;
   viewed: boolean;
 }
 
 @Component({
-    selector: 'app-chat-room',
-    templateUrl: './chat-room.component.html',
-    styleUrl: './chat-room.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-      CommonModule, 
-      FormsModule,
-      ReactiveFormsModule,
-      ButtonModule,
-      CardModule,
-      InputTextModule,
-      ChatMessageComponent,
-      MessageModule,
-      ScrollingModule,
-      ProgressSpinnerModule,
-      BadgeModule,
-      VisibilityObserverDirective
-    ]
+  selector: 'app-chat-room',
+  templateUrl: './chat-room.component.html',
+  styleUrl: './chat-room.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule, 
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    CardModule,
+    InputTextModule,
+    ChatMessageComponent,
+    MessageModule,
+    ScrollingModule,
+    ProgressSpinnerModule,
+    BadgeModule,
+    VisibilityObserverDirective
+  ]
 })
 export class ChatRoomComponent implements AfterViewInit, OnDestroy {
 
+  // Bind CSS class to the component's host element based on chat room state
   @HostBinding('attr.class')
   get direction() { return this.chatRoomUnfold() ? 'unfold' : 'fold' }
 
-  private destroy$ = new Subject<void>();
+  private destroy$ = new Subject<void>(); // Used to clean up subscriptions
 
+  // Inject required services
   chatService = inject(ChatService);
   authService = inject(AuthService);
-  chatRoomsStore = inject(ChatRoomsStore);
 
+  // Input property for the chat room entity
   chatRoomInput = input.required<IChatRoomEntity>();
-  chatRoomId = input.required<string>();
 
-  filteredMessages: IChatMessageDisplayed[] = [];
+  filteredMessages: IChatMessageDisplayed[] = []; // Messages displayed in the chat room
 
+  typingUsers: string[] = []; // List of users currently typing
+  loadingMessages = signal(false); // Whether older messages are loading
+  showLoader = signal(false); // Whether to show the loader
+  chatMembersMails = ''; // List of emails of other chat members
+  unviewedMessages = signal(0); // Count of unviewed messages
 
-  typingUsers: string[] = [];  
-  loadingMessages = false;
-  chatMembersMails = '';
-  unviewedMessages = signal(0);
-
+  // Computed property to determine if the chat room is unfolded
   chatRoomUnfold = computed(() => this.chatService.clientChatRoomsConfigSig().unfoldedChatRoomsIds.includes(this.chatRoomInput()._id));
 
+  // References to specific DOM elements in the template
   messageInput = viewChild<ElementRef>('messageInput');
-
   messagesViewport = viewChild.required<CdkVirtualScrollViewport>('messagesViewport');
-  
-  currentUser = this.authService.currentUserSig;
 
+  currentUser = this.authService.currentUserSig; // Current user signal
 
-  lastMessageIdOnTop: string | null = null;
+  lastMessageIdOnTop: string | null = null; // ID of the last message displayed at the top
 
-  messageContent = new FormControl<string | null>(null);
+  messageContent = new FormControl<string | null>(null); // Form control for message input
 
   constructor() {
+    // React to changes in the chat room input
     effect(() => {
       const chatRoom = this.chatRoomInput();
 
-      // ----------- Chat members mails
+      // Generate email list of other chat members
       this.chatMembersMails = this.chatRoomInput().members
         .filter(member => member._id !== this.currentUser()?._id)
-        .map(member =>member.email).join(',');
+        .map(member => member.email).join(',');
 
-      // ----------- Typing users 
-      this.typingUsers =chatRoom.typingUsers.filter(typingUser => typingUser.userMail !== (this.currentUser() as IUser).email).map(typingUser => typingUser.userMail);
+      // Update typing users
+      this.typingUsers = chatRoom.typingUsers
+        .filter(typingUser => typingUser.userMail !== (this.currentUser() as IUser).email)
+        .map(typingUser => typingUser.userMail);
 
-      // ----------- If new message and user already seeing the last message, scroll to the bottom
+      // Scroll to the bottom if new messages arrive
       if (this.filteredMessages.length !== chatRoom.messages.length) {
         if (this.isScrollAtBottom() || this.isCurrentUserSender()) 
           setTimeout(() => {   
@@ -96,30 +112,40 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
           });
       }
 
-      this.filteredMessages = chatRoom.messages.map((message, index) => {
-        return {
+      // Transform messages for display
+      this.filteredMessages = chatRoom.messages.map((message, index) => ({
         ...message,
-        displayEmail : this.displayMailForMessage(index, message),
+        displayEmail: this.displayMailForMessage(index, message),
         viewed: !!message.views.find(view => view.user._id === this.currentUser()?._id)
-      }});
-
+      }));
 
       setTimeout(() => {
-        this.checkUnseenMessages();
-      }, 100);
+        // Scroll adjustments when older messages are loaded
+        if (this.lastMessageIdOnTop) {
+          if (this.filteredMessages.length === this.chatRoomInput().totalMessages) {
+            this.scrollToTop('instant');
+          } else {
+            const lastMessageOnTopIndex = this.filteredMessages.map(msg => msg._id).indexOf(this.lastMessageIdOnTop);
+            this.messagesViewport().scrollToIndex(lastMessageOnTopIndex + 1);
+            this.lastMessageIdOnTop = null;
+            this.showLoader.set(false);
+          }
+        }
 
-    })
+        this.checkUnseenMessages(); // Check for unseen messages
+      }, 100);
+    });
   }
 
   ngAfterViewInit(): void {
-    // Typing user notif output
+    // React to typing in the message input field
     this.messageContent.valueChanges.pipe(
-      filter(value => !!value),
-      // throttleTime(typingUserDisplayTimeMs / 2)
+      filter(value => !!value)
     ).subscribe(() => {
       this.chatService.sendTypingSignal(this.chatRoomInput(), this.currentUser() as IUser);
     });
-    
+
+    // Focus on the message input and scroll to the bottom initially
     setTimeout(() => {
       this.focusOnMessageInput(); 
       this.scrollToLastMessage('instant');
@@ -127,10 +153,11 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Emit a value to complete all subscriptions using `takeUntil`
+    // Clean up subscriptions to avoid memory leaks
     this.destroy$.next();
     this.destroy$.complete();
   }
+
 
   focusOnMessageInput() {
     this.messageInput()?.nativeElement.focus();
@@ -138,7 +165,7 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
 
   checkUnseenMessages() {
     // Find messages without views matching the current user
-    this.unviewedMessages.set(this.chatRoomInput().messages.filter(message => {
+    this.unviewedMessages.set(this.filteredMessages.filter(message => {
       return !message.views.some(view => view.user._id === this.currentUser()?._id);
     }).length);
   }
@@ -158,6 +185,10 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
     return message.sender._id !== this.chatRoomInput().messages[index - 1].sender._id
   }
 
+  scrollToTop(scrollBehaviour : ScrollBehavior): void {
+    this.messagesViewport().scrollToIndex(0, scrollBehaviour);
+  }
+
   scrollToLastMessage(scrollBehaviour : ScrollBehavior): void {
     const contentSize =  Math.round(this.messagesViewport().measureRenderedContentSize());
 
@@ -173,6 +204,25 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
 
   isCurrentUserSender(): boolean {
     return this.chatRoomInput().messages[this.chatRoomInput().messages.length - 1]?.sender._id === (this.currentUser() as IUser)._id;
+  }
+
+  scrollingIndexChanged(index: number) {
+
+    // --------
+    // Check if scroll is on the top to eventually get older messages
+    if (index === 0 && 
+      (this.chatRoomInput().messages.length < this.chatRoomInput().totalMessages) // If all the messages aren't loaded already
+    ) {
+      this.showLoader.set(true);
+      // Check if after the timeout, the scroll index is still 0
+      setTimeout(() => { 
+        if (this.messagesViewport().measureScrollOffset() === 0) { 
+          this.loadOlderMessages();
+        } else {
+          this.showLoader.set(false);
+        }
+      }, 2000);
+    }
   }
 
   isScrollAtBottom() {
@@ -193,8 +243,15 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
   }
 
   loadOlderMessages(){
-    this.lastMessageIdOnTop = this.chatRoomInput().messages[0]._id;
-    this.chatService.loadPreviousMessagesForChatRoom(this.chatRoomInput()).subscribe();
+   if(!this.loadingMessages()){
+      this.scrollToTop('instant');
+      this.lastMessageIdOnTop = this.filteredMessages[0]._id;
+      this.loadingMessages.set(true);
+      this.chatService.loadPreviousMessagesForChatRoom(this.chatRoomInput()).subscribe(() => {
+        this.loadingMessages.set(false);
+        this.showLoader.set(false);
+      });
+    }
   }
 
   removeChatRoom() {

@@ -148,13 +148,15 @@ export const ChatRoomsStore = signalStore(
         (room) => room._id === chatRoomId
       ) as IChatRoomEntity;
 
+      const newMessagesArray = sortMessages([...chatRoom.messages, ...messages]);
+
       patchState(
         store,
         updateEntity(
           {
             id: chatRoomId,
             changes: {
-              messages: [...chatRoom.messages, ...messages],
+              messages: newMessagesArray,
             },
           },
           chatRoomsConfig

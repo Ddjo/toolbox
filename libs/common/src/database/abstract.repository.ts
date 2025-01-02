@@ -63,13 +63,13 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   ) {
 
     const query =  this.model.find(filterQuery, projectionParam, { lean: true }).sort();
-    
-  // Populate param
-  populateParam?.forEach(popul => {
-    query.populate(popul);
-  });
+      
+    // Populate param
+    populateParam?.forEach(popul => {
+      query.populate(popul);
+    });
 
-  // sortParam
+    // sortParam
     if (sortParam) {
       const sortCriteria = Object.entries(sortParam).reduce((criteria, [key, order]) => {
         (criteria as any)[key] = order === 'desc' ? -1 : 1; // Convertit 'desc' et 'asc' en -1 et 1

@@ -2,19 +2,19 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CHAT_ROOM_NEW_CHAT_FOR_USER_EVENT } from '@constants';
 import { IChatRoom, IUser } from '@libs/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { Observable, Subject, takeUntil } from 'rxjs';
-import { CHAT_ROOM_NEW_CHAT_FOR_USER_EVENT } from '@constants';
-import { ChatRoomComponent } from './chat-room/chat-room.component';
-import { UsersStore } from '../../core/store/users/users.store';
-import { ChatRoomsStore, IChatRoomEntity } from '../../core/store/chat/chat-room.store';
-import { ChatService } from '../../core/services/chat.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ChatService } from '../../core/services/chat.service';
 import { UsersService } from '../../core/services/users.service';
+import { ChatRoomsStore, IChatRoomEntity } from '../../core/store/chat/chat-room.store';
+import { UsersStore } from '../../core/store/users/users.store';
+import { ChatRoomComponent } from './chat-room/chat-room.component';
 
 
 @Component({
@@ -61,7 +61,6 @@ export class ChatComponent implements OnDestroy {
     this.chatService.loadChatRoomsStore();
     this.usersService.loadUsersStore();
     
-    console.log(`subscribe ${this.authService.currentUserSig()?._id}-${CHAT_ROOM_NEW_CHAT_FOR_USER_EVENT}`)
     // Observe new chats creations for user. Receive a IChatRoom object, update the store
     this.chatService.fromEvent<IChatRoom>(`${this.authService.currentUserSig()?._id}-${CHAT_ROOM_NEW_CHAT_FOR_USER_EVENT}`)
     .pipe(

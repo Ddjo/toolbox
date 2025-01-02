@@ -52,8 +52,10 @@
         [maxBufferPx]="1000" 
         [itemSize]="40"
         class="messages-viewport p-1 gap-1" 
+        (scrolledIndexChange)="scrollingIndexChanged($event)"
         >
-        <div class="flex align-items-center justify-content-center" *ngIf="loadingMessages">
+
+        <div class="flex align-items-center justify-content-center" *ngIf="showLoader()">
             <p-progress-spinner  ariaLabel="loading" />
         </div>
 

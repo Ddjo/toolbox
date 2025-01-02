@@ -11,6 +11,19 @@ import { MessageRepository } from './message.repository';
 @Injectable()
 export class MessageService {
 
+  basePopulation =         [
+    {path: 'sender', select: ['_id', 'email']}, 
+    {
+      path: 'views', 
+      select: ['user', 'viewedAt'],
+      populate : [
+        {
+          path: 'user',
+          select: ['_id', 'email']
+        },
+      ],
+    }
+  ];
 
  constructor(
    private readonly roomRepository: RoomRepository,
@@ -33,19 +46,7 @@ export class MessageService {
         chatRoomId: createChatMessageDto.chatRoomId,
         views: [{user: createChatMessageDto.sender, viewedAt: new Date()}]
       },
-        [
-          {path: 'sender', select: ['_id', 'email']}, 
-          {
-            path: 'views', 
-            select: ['user', 'viewedAt'],
-            populate : [
-              {
-                path: 'user',
-                select: ['_id', 'email']
-              },
-            ],
-          }
-        ]
+      this.basePopulation
       );
 
       await this.roomRepository.findOneAndUpdate(
@@ -74,41 +75,17 @@ export class MessageService {
 
   async findAllForChatRoom(getMessagesForChatRoomDto: GetMessagesForChatRoomDto) {
     return this.messageRepository.find(
-      { chatRoom: getMessagesForChatRoomDto.chatRoomId }, 
+      { chatRoomId: getMessagesForChatRoomDto.chatRoomId }, 
       { sort: { 'createdAt': -1 }, limit: getMessagesForChatRoomDto.messagesLimit }, 
-      [ 
-        {path: 'sender', select: ['_id', 'email']}, 
-        {
-          path: 'views', 
-          select: ['user', 'viewedAt'],
-          populate : [
-            {
-              path: 'user',
-              select: ['_id', 'email']
-            },
-          ],
-        }
-      ]
+      this.basePopulation
      );
   }
 
   async findPreviousMessagesForChatRoom(getMessagesForChatRoomDto: GetMessagesForChatRoomDto) {
     return this.messageRepository.find(
-      { chatRoom: getMessagesForChatRoomDto.chatRoomId }, 
+      { chatRoomId: getMessagesForChatRoomDto.chatRoomId }, 
       {  }, 
-      [ 
-        {path: 'sender', select: ['_id', 'email']}, 
-        {
-          path: 'views', 
-          select: ['user', 'viewedAt'],
-          populate : [
-            {
-              path: 'user',
-              select: ['_id', 'email']
-            },
-          ],
-        }
-      ],
+      this.basePopulation,
       { createdAt: 'desc' },
       getMessagesForChatRoomDto.messagesLimit,
       getMessagesForChatRoomDto.skip
@@ -128,19 +105,7 @@ export class MessageService {
        }
       },
       {},
-      [ 
-        {path: 'sender', select: ['_id', 'email']}, 
-        {
-          path: 'views', 
-          select: ['user', 'viewedAt'],
-          populate : [
-            {
-              path: 'user',
-              select: ['_id', 'email']
-            },
-          ],
-        }
-      ],
+      this.basePopulation
     );
   }
 
