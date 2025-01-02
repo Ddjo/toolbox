@@ -70,7 +70,7 @@ export class ChatService extends Socket implements OnDestroy {
 
           case ChatRoomUpdateType.UserTyping: 
           // Add user to typingUser array
-          this.chatRoomsStore.addTypingUser(chatRoom, chatRoomUpdateEvent.payload.userEmail)
+          this.chatRoomsStore.addTypingUser(chatRoom._id, chatRoomUpdateEvent.payload.userEmail)
 
           // Remove him after 'typingUserDisplayTimeMs'
           setTimeout(() => {
@@ -90,7 +90,7 @@ export class ChatService extends Socket implements OnDestroy {
         break;
 
         case ChatRoomUpdateType.SeenMessage:
-          this.chatRoomsStore.updateChatMessageInChatRoom(chatRoom, chatRoomUpdateEvent.payload);
+          this.chatRoomsStore.updateChatMessageInChatRoom(chatRoom._id, chatRoomUpdateEvent.payload);
         break;
       }
     }); 
@@ -101,13 +101,13 @@ export class ChatService extends Socket implements OnDestroy {
 
     params = params.append('messages-limit', messagesLimit);
 
-    this.chatRoomsStore.setLoading(true);
+    // this.chatRoomsStore.setLoading(true);
     this.http.get<IChatRoom[]>(url, { params: params }).pipe(
       tap(chatRooms =>{
         this.chatRoomsStore.setChatRooms(chatRooms.map(chatRoom => {return {...chatRoom, typingUsers: []}}));
         chatRooms.forEach(chatRoom => this.subscribeToChatRoomUpdates(chatRoom._id));
       }),
-      tap(() => this.chatRoomsStore.setLoading(false))
+      // tap(() => this.chatRoomsStore.setLoading(false))
     ).subscribe();
   }
 
@@ -119,27 +119,27 @@ export class ChatService extends Socket implements OnDestroy {
     params = params.append('skip', chatRoom.messages.length);
     params = params.append('messages-limit', messagesLimit);
 
-    this.chatRoomsStore.setLoading(true);
+    // this.chatRoomsStore.setLoading(true);
 
     return this.http.get<IChatMessage[]>(`${url}/${chatRoom._id}/messages`, { params: params }).pipe(
-      tap(messages =>this.chatRoomsStore.addMessagesToChatRoom(chatRoom, messages)),
-      tap(() => this.chatRoomsStore.setLoading(false))
+      tap(messages =>this.chatRoomsStore.addMessagesToChatRoom(chatRoom._id, messages)),
+      // tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 
   startChatWithUser(withUser: IUser): Observable<IChatRoom> {
-    this.chatRoomsStore.setLoading(true);
+    // this.chatRoomsStore.setLoading(true);
     return this.http.post<IChatRoom>(url, withUser).pipe(
       tap(chatRoom =>this.chatRoomsStore.addChatRoom({...chatRoom})),
-      tap(() => this.chatRoomsStore.setLoading(false))
+      // tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
   
   updateChatRoom(chatRoom: IChatRoom): Observable<IChatRoom> {
-    this.chatRoomsStore.setLoading(true);
+    // this.chatRoomsStore.setLoading(true);
     return this.http.patch<IChatRoom>(`${url}/${chatRoom._id}`, chatRoom).pipe(
       tap(chatRoom =>this.updateChatRoomInStore(chatRoom)),
-      tap(() => this.chatRoomsStore.setLoading(false))
+      // tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 
@@ -148,11 +148,11 @@ export class ChatService extends Socket implements OnDestroy {
   }
 
   removeChatRoom(id: string): Observable<IChatRoom> {
-    this.chatRoomsStore.setLoading(true);
+    // this.chatRoomsStore.setLoading(true);
     return this.http.delete<IChatRoom>(`${url}/${id}`).pipe(
-      tap(chatRoom =>this.chatRoomsStore.removeChatRoom(chatRoom)),
+      tap(chatRoom =>this.chatRoomsStore.removeChatRoom(chatRoom._id)),
       tap(chatRoom => this.desactivateChatRoomInStorage(chatRoom._id)),
-      tap(() => this.chatRoomsStore.setLoading(false))
+      // tap(() => this.chatRoomsStore.setLoading(false))
     );
   }
 

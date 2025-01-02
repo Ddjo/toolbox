@@ -13,7 +13,7 @@
     }
 
     .message .content {
-        max-width: 70%;
+        max-width: 180px;
         padding: 10px;
         border-radius: 10px;
         font-size: 14px;
@@ -29,4 +29,25 @@
         background-color: #e5e5ea;
         color: #333;
     }
+
+
+
+    .message-container {
+        position: relative;
+      }
+      
+      .message {
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      
+      .expand-btn {
+        background: none;
+        border: none;
+        color: blue;
+        cursor: pointer;
+        padding: 0;
+        margin: 5px 0;
+        text-align: left;
+      }
 }

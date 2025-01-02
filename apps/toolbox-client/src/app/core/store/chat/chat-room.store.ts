@@ -1,6 +1,13 @@
 import { withDevtools } from '@angular-architects/ngrx-toolkit';
 import { IChatMessage, IChatRoom } from '@libs/common';
-import { patchState, signalState, signalStore, type, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalState,
+  signalStore,
+  type,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import {
   addEntity,
   entityConfig,
@@ -8,13 +15,19 @@ import {
   setAllEntities,
   setEntity,
   updateEntity,
-  withEntities
+  withEntities,
 } from '@ngrx/signals/entities';
 
-export interface IChatRoomEntity extends IChatRoom {
-  typingUsers : {userMail: string, startTypingAtTimeStamp: number}[]
+export interface ITypingUser {
+  userMail: string;
+  startTypingAtTimeStamp: number;
 }
 
+export interface IChatRoomEntity extends IChatRoom {
+  typingUsers: ITypingUser[];
+}
+
+// Entity Configuration
 const chatRoomsConfig = entityConfig({
   entity: type<IChatRoomEntity>(),
   collection: 'chatRooms',
@@ -24,83 +37,177 @@ const chatRoomsConfig = entityConfig({
 const chatRoomsState = signalState({
   loaded: false,
   isLoading: false,
-  error: ''
+  error: '',
 });
+
+function sortMessages(messages: IChatMessage[]): IChatMessage[] {
+  return messages.sort(
+    (msg1, msg2) =>
+      new Date(msg1.createdAt).getTime() - new Date(msg2.createdAt).getTime()
+  );
+}
+
+function updateTypingUsers(
+  currentTypingUsers: ITypingUser[],
+  typingUserMail: string
+): ITypingUser[] {
+  return [
+    ...currentTypingUsers.filter((user) => user.userMail !== typingUserMail),
+    { userMail: typingUserMail, startTypingAtTimeStamp: Date.now() },
+  ];
+}
 
 export const ChatRoomsStore = signalStore(
   { providedIn: 'root' },
   withDevtools('chatRooms'),
   withEntities(chatRoomsConfig),
   withState(chatRoomsState),
-  withMethods((store, ) => ({
-    setChatRoom(chatRoom: IChatRoom) : void {
-      patchState(store, setEntity({
-        ...chatRoom,
-        typingUsers: [] as any,
-        messages: [...chatRoom.messages
-          .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())],
-      }, chatRoomsConfig))
-      patchState(store, {isLoading: false})
+  withMethods((store) => ({
+    // Set a single chat room
+    setChatRoom(chatRoom: IChatRoom): void {
+      patchState(
+        store,
+        setEntity(
+          {
+            ...chatRoom,
+            typingUsers: [] as ITypingUser[],
+            messages: sortMessages(chatRoom.messages),
+          },
+          chatRoomsConfig
+        )
+      );
+      patchState(store, { isLoading: false });
     },
-    setChatRooms(chatRooms: IChatRoom[]) : void {
-      patchState(store, setAllEntities(chatRooms.map(chatRoom => { return {
-        ...chatRoom,
-        typingUsers: [] as any,
-        messages: [...chatRoom.messages
-          .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())]
-      } }), chatRoomsConfig))
-      patchState(store, {loaded: true, isLoading: false})
-    },
-    addChatRoom(chatRoom: IChatRoom): void {
-      patchState(store, addEntity({...chatRoom,typingUsers: [] as any,}, chatRoomsConfig));
-      patchState(store, {isLoading: false})
-    },
-    updateChatRoom(chatRoom: IChatRoom): void {
-      patchState(store, updateEntity({id: chatRoom._id, changes:chatRoom}, chatRoomsConfig));
-      patchState(store, {isLoading: false})
-    },
-    removeChatRoom(chatRoom: IChatRoom): void {
-      patchState(store, removeEntity(chatRoom._id, chatRoomsConfig));
-      patchState(store, {isLoading: false})
-    },
-    addMessageToChatRoom(chatRoomId: string, message: IChatMessage): void {
-      patchState(store, updateEntity({id: chatRoomId, 
-        changes:{
-          messages : 
-            [...(store.chatRoomsEntities().find(chatRoom => chatRoom._id === chatRoomId) as IChatRoomEntity).messages, message ]
-            .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())
-        }
-      }, chatRoomsConfig));
-      patchState(store, {isLoading: false})
-    },
-    addMessagesToChatRoom(chatRoom: IChatRoom, messages: IChatMessage[]): void {
-      patchState(store, updateEntity({id: chatRoom._id, 
-        changes:{
-          messages : 
-            [...chatRoom.messages, ...messages ]
-            .sort((message1, message2) => new Date(message1.createdAt).getTime() -  new Date(message2.createdAt).getTime())
 
-        }
-      }, chatRoomsConfig));
-      patchState(store, {isLoading: false})
+    // Set multiple chat rooms
+    setChatRooms(chatRooms: IChatRoom[]): void {
+      const entities = chatRooms.map((chatRoom) => ({
+        ...chatRoom,
+        typingUsers: [] as ITypingUser[],
+        messages: sortMessages(chatRoom.messages),
+      }));
+
+      patchState(store, setAllEntities(entities, chatRoomsConfig));
+      patchState(store, { loaded: true, isLoading: false });
     },
-    updateChatMessageInChatRoom(chatRoom: IChatRoom, chatMessage: IChatMessage) {
+
+    // Add a new chat room
+    addChatRoom(chatRoom: IChatRoom): void {
+      patchState(
+        store,
+        addEntity(
+          { ...chatRoom, typingUsers: [] as ITypingUser[] },
+          chatRoomsConfig
+        )
+      );
+      patchState(store, { isLoading: false });
+    },
+
+    // Update a chat room
+    updateChatRoom(chatRoom: IChatRoom): void {
+      patchState(
+        store,
+        updateEntity(
+          { id: chatRoom._id, changes: chatRoom },
+          chatRoomsConfig
+        )
+      );
+      patchState(store, { isLoading: false });
+    },
+
+    // Remove a chat room
+    removeChatRoom(chatRoomId: string): void {
+      patchState(store, removeEntity(chatRoomId, chatRoomsConfig));
+      patchState(store, { isLoading: false });
+    },
+
+    // Add a message to a chat room
+    addMessageToChatRoom(chatRoomId: string, message: IChatMessage): void {
+      const chatRoom = store.chatRoomsEntities().find(
+        (room) => room._id === chatRoomId
+      ) as IChatRoomEntity;
+
       patchState(
         store,
         updateEntity(
           {
-            id: chatMessage.chatRoomId,
+            id: chatRoomId,
+            changes: {
+              messages: [...chatRoom.messages, message],
+            },
+          },
+          chatRoomsConfig
+        )
+      );
+      patchState(store, { isLoading: false });
+    },
+
+    // Add multiple messages to a chat room
+    addMessagesToChatRoom(chatRoomId: string, messages: IChatMessage[]): void {
+      const chatRoom = store.chatRoomsEntities().find(
+        (room) => room._id === chatRoomId
+      ) as IChatRoomEntity;
+
+      patchState(
+        store,
+        updateEntity(
+          {
+            id: chatRoomId,
+            changes: {
+              messages: [...chatRoom.messages, ...messages],
+            },
+          },
+          chatRoomsConfig
+        )
+      );
+      patchState(store, { isLoading: false });
+    },
+
+    // Update a specific chat message in a chat room
+    updateChatMessageInChatRoom(chatRoomId: string, chatMessage: IChatMessage): void {
+      const chatRoom = store.chatRoomsEntities().find(
+        (room) => room._id === chatRoomId
+      ) as IChatRoomEntity;
+
+      patchState(
+        store,
+        updateEntity(
+          {
+            id: chatRoomId,
             changes: {
               messages: [
-                // Filter out the old message
-                ...chatRoom.messages
-                  .filter(existingMessage => existingMessage._id !== chatMessage._id),
-                // Add the updated message
+                ...chatRoom.messages.filter(
+                  (msg) => msg._id !== chatMessage._id
+                ),
                 chatMessage,
               ].sort(
-                (message1, message2) =>
-                  new Date(message1.createdAt).getTime() -
-                  new Date(message2.createdAt).getTime()
+                (msg1, msg2) =>
+                  new Date(msg1.createdAt).getTime() -
+                  new Date(msg2.createdAt).getTime()
+              ),
+            },
+          },
+          chatRoomsConfig
+        )
+      );
+      patchState(store, { isLoading: false });
+    },
+
+    addTypingUser(chatRoomId: string, typingUserMail: string): void {
+      const chatRoom = store.chatRoomsEntities().find(
+        (room) => room._id === chatRoomId
+      ) as IChatRoomEntity;
+    
+      // Modify typingUsers only
+      patchState(
+        store,
+        updateEntity(
+          {
+            id: chatRoomId,
+            changes: {
+              typingUsers: updateTypingUsers(
+                chatRoom.typingUsers,
+                typingUserMail
               ),
             },
           },
@@ -110,33 +217,33 @@ export const ChatRoomsStore = signalStore(
     
       patchState(store, { isLoading: false });
     },
-    addTypingUser(chatRoom: IChatRoom, typingUserMail: string): void {
-      patchState(store, updateEntity(
-        {
-          id: chatRoom._id, 
-          changes:{
-            typingUsers: [...(store.chatRoomsEntities()
-              .find(chatRoom => chatRoom._id === chatRoom._id) as IChatRoomEntity).typingUsers
-              .filter(typingUser => typingUser.userMail !== typingUserMail) ,
-              {userMail: typingUserMail, startTypingAtTimeStamp: Date.now()} ]
-          }
-        }, chatRoomsConfig));
-      patchState(store, {isLoading: false})
-    },
-    removeTypingUser(chatRoomId: string, typingUserMail: string): void {
-      patchState(store, updateEntity(
-        {
-          id: chatRoomId, 
-          changes:{
-            typingUsers: [...(store.chatRoomsEntities()
-              .find(chatRoom => chatRoom._id === chatRoomId) as IChatRoomEntity).typingUsers
-              .filter(typingUser => typingUser.userMail !== typingUserMail) ]
-          }
-        }, chatRoomsConfig));
-      patchState(store, {isLoading: false})
-    },    setLoading(value: boolean): void {
-      patchState(store, {isLoading: value})
-    }
-  }))
-);
 
+      // You can also implement a method for removing a typing user
+    removeTypingUser(chatRoomId: string, typingUserMail: string): void {
+      const chatRoom = store.chatRoomsEntities().find(
+        (room) => room._id === chatRoomId
+      ) as IChatRoomEntity;
+
+      patchState(
+        store,
+        updateEntity(
+          {
+            id: chatRoomId,
+            changes: {
+              typingUsers: chatRoom.typingUsers.filter(
+                (user) => user.userMail !== typingUserMail
+              ),
+            },
+          },
+          chatRoomsConfig
+        )
+      );
+
+      patchState(store, { isLoading: false });
+    },
+    
+  }))
+
+  
+  
+);

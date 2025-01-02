@@ -1,6 +1,6 @@
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, ElementRef, HostBinding, inject, input, OnDestroy, signal, viewChild, viewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, ElementRef, HostBinding, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IChatMessage, IUser } from '@libs/common';
 import { BadgeModule } from 'primeng/badge';
@@ -13,7 +13,7 @@ import { filter, Subject } from 'rxjs';
 import { VisibilityObserverDirective } from '../../../core/directives/visibility-observer.directive';
 import { AuthService } from '../../../core/services/auth.service';
 import { ChatService } from '../../../core/services/chat.service';
-import { IChatRoomEntity } from '../../../core/store/chat/chat-room.store';
+import { ChatRoomsStore, IChatRoomEntity } from '../../../core/store/chat/chat-room.store';
 import { ChatMessageComponent } from './chat-message/chat-message.component';
 
 export interface IChatMessageDisplayed extends IChatMessage {
@@ -50,25 +50,25 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
 
   chatService = inject(ChatService);
   authService = inject(AuthService);
+  chatRoomsStore = inject(ChatRoomsStore);
 
   chatRoomInput = input.required<IChatRoomEntity>();
+  chatRoomId = input.required<string>();
+
+  filteredMessages: IChatMessageDisplayed[] = [];
 
 
   typingUsers: string[] = [];  
   loadingMessages = false;
   chatMembersMails = '';
-  filteredMessages: IChatMessageDisplayed[] = [];
   unviewedMessages = signal(0);
 
   chatRoomUnfold = computed(() => this.chatService.clientChatRoomsConfigSig().unfoldedChatRoomsIds.includes(this.chatRoomInput()._id));
 
   messageInput = viewChild<ElementRef>('messageInput');
-  messagesRefs = viewChildren<ChatMessageComponent>("messageElement"); 
-  messagesElements = viewChildren('messageElement', { read: ElementRef });
-  messagesPositions: {_id:string , height: number, top: number, isNew: boolean}[] = []; 
 
   messagesViewport = viewChild.required<CdkVirtualScrollViewport>('messagesViewport');
-
+  
   currentUser = this.authService.currentUserSig;
 
 
@@ -122,7 +122,7 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
     
     setTimeout(() => {
       this.focusOnMessageInput(); 
-      this.scrollToLastMessage('instant')
+      this.scrollToLastMessage('instant');
     });
   }
 
@@ -159,9 +159,11 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
   }
 
   scrollToLastMessage(scrollBehaviour : ScrollBehavior): void {
+    const contentSize =  Math.round(this.messagesViewport().measureRenderedContentSize());
+
     try {
       setTimeout(() => {
-        this.messagesViewport().scrollToIndex(this.chatRoomInput().messages.length, scrollBehaviour);
+        this.messagesViewport().scrollToIndex(contentSize, scrollBehaviour);
       });
 
     } catch (err) {
@@ -212,7 +214,7 @@ export class ChatRoomComponent implements AfterViewInit, OnDestroy {
   }
 
   messageVisibilityChangedEvent(message: IChatMessageDisplayed, visibility: boolean) {
-    if (!!visibility && !message.views.some(view => view.user._id === this.currentUser()?._id)) {
+    if (visibility && !message.views.some(view => view.user._id === this.currentUser()?._id)) {
       this.chatService.setMessageAsViewed(message._id, this.currentUser() as IUser);
     }
     

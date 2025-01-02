@@ -57,15 +57,15 @@
             <p-progress-spinner  ariaLabel="loading" />
         </div>
 
-        <app-chat-message #messageElement
+        @for (message of filteredMessages; track $index) {
+            <app-chat-message
             appVisibilityObserver
-            *cdkVirtualFor="let message of filteredMessages"
             [visibilityObsoptions]="{ threshold: 1.0 }"
-            [isSenderCurrentUserInput]="message.sender._id === currentUser()?._id"
+            [maxHeight]="100"
             [messageInput]="message"
-            [displayUserMailInput]="message.displayEmail"
             (visibilityChange)="messageVisibilityChangedEvent(message, $event)"
         />
+        }
     </cdk-virtual-scroll-viewport>
 </div>
 

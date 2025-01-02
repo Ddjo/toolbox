@@ -1,10 +1,27 @@
 <div 
-    *ngIf="displayUserMailInput()"
+    *ngIf="displayUserMailInput"
     class="sender-email text-xs text-black-alpha-60 mb-1 ml-1" 
-    [ngClass]="isSenderCurrentUserInput() ? 'sent' : 'received'"
+    [ngClass]="isSenderCurrentUserInput ? 'sent' : 'received'"
     >
     {{messageInput().sender.email}} 
 </div>
-<div class="message border-round-sm text-sm" [ngClass]="isSenderCurrentUserInput() ? 'sent' : 'received'">
-    <div class="content">{{messageInput().content}}</div>
+
+<div 
+    class="message border-round-sm text-sm" 
+    [ngClass]="{ 
+        'expanded': isExpanded, 
+        'sent': isSenderCurrentUserInput, 
+        'received': !isSenderCurrentUserInput 
+        }"
+    [style.maxHeight]="isExpanded() ? 'none' : maxHeight">
+    <div class="content flex flex-column">        
+        <div>
+            {{ isExpanded() ? messageInput().content : truncatedMessage }}
+            <span *ngIf="!isExpanded()">...</span>
+        </div>
+        <button *ngIf="isLongMessage()" class="expand-btn text-xs mt-2" id='{{messageInput().content.slice(0, 4)}}' (click)="toggleExpand()">
+            {{ isExpanded() ? 'Show Less' : 'Read More' }}  </button>
+    </div>
+    <span style="color: black;">
+    </span>
 </div>

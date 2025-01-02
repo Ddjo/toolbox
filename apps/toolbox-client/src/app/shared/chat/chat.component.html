@@ -2,6 +2,7 @@
 @for (chatRoom of activeChatRooms$ | async; track $index) {
     <app-chat-room
         [chatRoomInput]="chatRoom"
+        [chatRoomId]="chatRoom._id"
     ></app-chat-room>
 }
 
