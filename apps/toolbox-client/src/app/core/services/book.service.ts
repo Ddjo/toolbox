@@ -59,8 +59,4 @@ export class BooksService  {
       tap(book =>this.booksStore.removeBook(book)),
     );
   }
-
-  testBooks() {
-    return this.http.get(`${url}/test-books`);
-  }
 }

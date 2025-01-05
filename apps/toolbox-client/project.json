@@ -102,7 +102,11 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/toolbox-client/jest.config.ts"
+        "NODE_NO_WARNINGS": "1",
+        "jestConfig": "apps/toolbox-client/jest.config.ts",
+        "codeCoverage": true,
+        "coverageReporters": ["clover", "json", "lcov", "text", "text-summary"],
+        "testResultsProcessor": "jest-sonar-reporter"        
       }
     },
     "serve-static": {

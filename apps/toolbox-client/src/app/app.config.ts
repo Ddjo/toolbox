@@ -5,11 +5,13 @@ import { provideRouter } from '@angular/router';
 import Material from '@primeng/themes/material';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 // const socketConfig: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
 
 export const appConfig: ApplicationConfig = {  
   providers: [
+    provideClientHydration(withEventReplay()),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withFetch()),

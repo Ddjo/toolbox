@@ -6,7 +6,6 @@ import { Socket } from 'ngx-socket-io';
 import { Observable, Subject, takeUntil, tap } from 'rxjs';
 import { environment } from '../../../environments/environments';
 import { ChatRoomsStore } from '../store/chat/chat-room.store';
-import { AuthService } from './auth.service';
 import { LocalStorageService } from './local-storage.service';
 
 
@@ -17,12 +16,12 @@ export interface IClientChatRoomCache {
   unfoldedChatRoomsIds: string[]  
 }
 
-export const typingUserDisplayTimeMs = 4000;
 
 @Injectable({
   providedIn: 'any',
 })
 export class ChatService extends Socket implements OnDestroy {
+  typingUserDisplayTimeMs = 4000;
 
   readonly chatRoomsStore = inject(ChatRoomsStore);
   readonly localStorageService = inject(LocalStorageService);
@@ -37,8 +36,6 @@ export class ChatService extends Socket implements OnDestroy {
 
   public constructor(
     private http: HttpClient, 
-    // private localStorageService: LocalStorageService,
-    private authService: AuthService
   ) {
     super({
       url: environment.chatWsUrl,
@@ -49,15 +46,12 @@ export class ChatService extends Socket implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('service chat destroyed')
     // Emit a value to complete all subscriptions using `takeUntil`
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   subscribeToChatRoomUpdates(chatRoomId: string ){
-    console.log(`subscribe to ${chatRoomId}-${CHAT_ROOM_UPDATE_EVENT}`);
-
     this.fromEvent<ChatRoomUpdateEvent>(`${chatRoomId}-${CHAT_ROOM_UPDATE_EVENT}`)
     .pipe(
       takeUntil(this.destroy$),
@@ -75,11 +69,10 @@ export class ChatService extends Socket implements OnDestroy {
           // Remove him after 'typingUserDisplayTimeMs'
           setTimeout(() => {
             this.checkTypingUserInStore(chatRoomId, chatRoomUpdateEvent.payload.userEmail);  
-          }, typingUserDisplayTimeMs);
+          }, this.typingUserDisplayTimeMs);
         break;
 
         case ChatRoomUpdateType.UserUntyping: 
-         console.log('untyping')
           // remove user from typingUser array
           this.chatRoomsStore.removeTypingUser(chatRoomId, chatRoomUpdateEvent.payload.userEmail)
         break;
@@ -191,7 +184,7 @@ export class ChatService extends Socket implements OnDestroy {
       .find(chatRoom => chatRoom._id === chatRoomId)?.typingUsers
       .find(typingUser => typingUser.userMail === userEmail)?.startTypingAtTimeStamp as number; 
       
-      if (Date.now() - startTypingAtTimeStamp > typingUserDisplayTimeMs) 
+      if (Date.now() - startTypingAtTimeStamp > this.typingUserDisplayTimeMs) 
         this.chatRoomsStore.removeTypingUser(chatRoomId, userEmail)
   }
 

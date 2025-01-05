@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\jocel\OneDrive\Documents\Travail\toolbox\apps\toolbox-client\src\app\core\services\local-storage.service.spec.ts">
+    <testCase name="LocalStorageService should be created" duration="34"/>
+    <testCase name="LocalStorageService should initialize with localStorage data if available" duration="9"/>
+    <testCase name="LocalStorageService should get an item from localStorage" duration="5"/>
+    <testCase name="LocalStorageService should return null if trying to get a non-existent key" duration="5"/>
+    <testCase name="LocalStorageService should set an item in localStorage" duration="3"/>
+    <testCase name="LocalStorageService should remove an item from localStorage" duration="2"/>
+    <testCase name="LocalStorageService should clear all items from localStorage" duration="4"/>
+    <testCase name="LocalStorageService should update the signal when localStorage changes" duration="5"/>
+    <testCase name="LocalStorageService should not interact with localStorage if not in browser" duration="8"/>
+  </file>
+  <file path="C:\Users\jocel\OneDrive\Documents\Travail\toolbox\apps\toolbox-client\src\app\app.component.spec.ts">
+    <testCase name="AppComponent should render title" duration="85"/>
+  </file>
+  <file path="C:\Users\jocel\OneDrive\Documents\Travail\toolbox\apps\toolbox-client\src\app\core\services\auth.service.spec.ts">
+    <testCase name="AuthService should be created" duration="28"/>
+    <testCase name="AuthService should login" duration="15"/>
+    <testCase name="AuthService should logout" duration="12"/>
+    <testCase name="AuthService should get no user infos in local storage" duration="6"/>
+    <testCase name="AuthService should return user from getAccessInfo" duration="4"/>
+  </file>
+  <file path="C:\Users\jocel\OneDrive\Documents\Travail\toolbox\apps\toolbox-client\src\app\core\services\books.service.spec.ts">
+    <testCase name="BooksService should be created" duration="36"/>
+    <testCase name="BooksService should get books from google API" duration="15"/>
+    <testCase name="BooksService should get user books" duration="7"/>
+    <testCase name="BooksService should get book" duration="3"/>
+    <testCase name="BooksService should create book" duration="11"/>
+    <testCase name="BooksService should update book" duration="5"/>
+    <testCase name="BooksService should remove book" duration="5"/>
+  </file>
+  <file path="C:\Users\jocel\OneDrive\Documents\Travail\toolbox\apps\toolbox-client\src\app\core\services\user.service.spec.ts">
+    <testCase name="UserService should be created" duration="35"/>
+    <testCase name="UserService should get the user" duration="12"/>
+    <testCase name="UserService should create the user" duration="13"/>
+    <testCase name="UserService should load the users list in the store" duration="4"/>
+  </file>
+  <file path="C:\Users\jocel\OneDrive\Documents\Travail\toolbox\apps\toolbox-client\src\app\core\services\chat.service.spec.ts">
+    <testCase name="ChatService should be created" duration="36"/>
+    <testCase name="ChatService should handle NewMessage event correctly" duration="7"/>
+    <testCase name="ChatService should handle user typing event correctly" duration="5"/>
+    <testCase name="ChatService should handle user untyping event correctly" duration="4"/>
+    <testCase name="ChatService should handle seen message event correctly" duration="3"/>
+  </file>
+</testExecutions>
