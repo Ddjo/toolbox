@@ -1,0 +1,176 @@
+:host::ng-deep {
+    .p-card-body {
+        padding: 0 0 1rem 0;
+    }
+    
+    .neck {
+        max-width: 1000px;
+        display: flex;
+        position: relative;
+        // z-index: 1;
+        
+        .sillet {
+            width: 30px;
+            // height: 204px;
+            // transform: translate(-2px, -2px);
+            // border-radius: 2px;
+            border-right: 4px solid silver;
+            
+            .base-note {
+                height: 24px;
+            }
+        }
+        
+        .fret-numbers{
+            min-height: 16px;
+            transform: translateY(-25px);
+        }
+        
+        .fret {
+    
+            &.fret-0 {
+                width: 9.20%;
+                min-width: 60px;
+            }
+            &.fret-1 {
+                width: 8.70%;
+                min-width: 57px;
+            }
+            &.fret-2 {
+                width: 8.23%;
+                min-width: 54px;
+            }
+            &.fret-3 {
+                width: 7.78%;
+                min-width: 51px;
+            }
+            &.fret-4 {
+                width: 7.36%;
+                min-width: 48px;
+            }
+            &.fret-5 {
+                width: 6.95%;
+                min-width: 46px;
+            }
+            &.fret-6 {
+                width: 6.57%;
+                min-width: 44px;
+            }
+            &.fret-7 {
+                width: 6.21%;
+                min-width: 42px;
+            }
+            &.fret-8 {
+                width: 5.87%;
+                min-width: 40px;
+            }
+            &.fret-9 {
+                width: 5.54%;
+                min-width: 38px;
+            }
+            &.fret-10 {
+                width: 5.23%;
+                min-width: 36px;
+            }
+            &.fret-11 {
+                width: 4.94%;
+                min-width: 35px;
+            }
+            &.fret-12 {
+                width: 4.66%;
+                min-width: 33px;
+            }
+            &.fret-13 {
+                width: 4.40%;
+                min-width: 32px;
+            }
+            &.fret-14 {
+                width: 4.15%;
+                min-width: 30px;
+            }
+            &.fret-15 {
+                width: 3.91%;
+                min-width: 29px;
+            }
+            &.fret-16 {
+                width: 3.68%;
+                min-width: 28px;
+            }
+            &.fret-17 {
+                width: 3.46%;
+                min-width: 27px;
+            }
+            &.fret-18 {
+                width: 3.26%;
+                min-width: 26px;
+            }
+            &.fret-19 {
+                width: 3.06%;
+                min-width: 25px;
+            }
+            
+    
+            .string{
+                background-color: black;
+                display: flex;
+                width: -webkit-fill-available;
+    
+                &.string-0 {
+                    height: 1px;
+                }
+                &.string-1 {
+                    height: 1.2px;            
+                }
+                &.string-2 {
+                    height: 1.4px;      
+                }
+                &.string-3 {
+                    height: 1.6px;      
+                }
+                &.string-4 {
+                    height: 1.8px;      
+                }
+                &.string-5 {
+                    height: 2px;      
+                }
+            }
+    
+            .note {
+                background-color: burlywood;
+                box-shadow: -1px 4px 5px grey;
+                border-right: 2px solid silver;
+                height: 24px;
+    
+                p-badge {
+                    z-index: 1;
+                    position: relative;
+                    font-size: x-small;
+                }
+            }
+            
+    
+            .fret-number{
+                background: var(--p-menubar-background);
+            }
+        }
+    
+    }
+    
+    .corps {
+        background-color: burlywood;
+        border-top-left-radius: 500px;
+        border-bottom-left-radius: 500px;
+        height: 90%;
+        width: 21%;
+        position: absolute;
+        right: 0;
+    }
+    
+    .scale-filter {
+    
+        p-select {
+            height: 40px;
+            min-width: 80px;
+        }
+    }
+}

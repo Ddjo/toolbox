@@ -1,0 +1,30 @@
+
+
+@for (scale of scales(); track $index) {
+
+    <app-neck 
+        [scale]="scale"
+        (removeScaleEvent)="removeScale($event)"
+    />
+}
+
+<div class="add-scale-button flex flex-column gap-2  align-items-center justify-content-center">
+    <p-button 
+        label="Add an empty scale" 
+        icon="pi pi-plus-circle" 
+        iconPos="top"  
+        (onClick)="addScale()" 
+    />
+
+    Suggestions :
+    <div class="suggestion flex flex-wrap gap-1">
+        @for (suggestion of scalesSuggestions; track $index) {
+            <p-button 
+            label="{{suggestion.note + ' ' + suggestion.scale}}" 
+            [raised]="true" 
+            (onClick)="addScale(suggestion.note, suggestion.scale)"
+            />
+        }
+    </div>
+
+</div>

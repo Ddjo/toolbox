@@ -33,6 +33,10 @@ export class HeaderComponent {
   }, {
     label: "Sandbox",
     routerLink : '/sandbox'
+  },
+  {
+    label: "Music",
+    routerLink : '/music'
   }];
 
   constructor(

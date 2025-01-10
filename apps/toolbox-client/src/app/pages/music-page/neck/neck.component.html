@@ -1,0 +1,122 @@
+<p-card>
+
+    <div class="scale-filter flex gap-2 align-items-center" [formGroup]="scaleForm">
+    
+        <p-floatlabel variant="on">
+            <p-select 
+                formControlName="startFret" 
+                id="startFret"
+                [options]="availableStartFrets"
+                placeholder="Start fret" 
+                size="small"
+                (onClear)="scaleForm.controls.startFret.setValue(baseStartFret)"
+            />
+            <label for="startFret">First fret</label>
+        </p-floatlabel>
+    
+        <p-floatlabel variant="on">
+            <p-select 
+                formControlName="endFret" 
+                id="endFret"
+                [options]="availableEndFrets"
+                placeholder="End fret" 
+                size="small"
+                (onClear)="scaleForm.controls.endFret.setValue(baseEndFret)"
+            />
+            <label for="endFret">Last fret</label>
+        </p-floatlabel>
+    
+        <p-floatlabel variant="on">
+            <p-select 
+                formControlName="note" 
+                [options]="notes"
+                id="note"
+                size="small"        />
+            <label for="note">Note</label>
+        </p-floatlabel>
+    
+        <p-floatlabel variant="on">
+            <p-select 
+                formControlName="scale" 
+                id="scale"
+                [options]="groupedScales"
+                [group]="true"
+                size="small"
+                optionLabel="value.name"
+                optionValue="value.id"
+            />
+            <label for="scale">Scale</label>
+        </p-floatlabel>
+    
+        <!-- <label for="scale">Scale</label> -->
+    
+        <p-checkbox 
+            id="isBass"
+            formControlName="isBass"  
+            size="small"  
+            [binary]="true" 
+        />
+        <label for="isBass">Basse</label>
+    
+        <div class="ml-auto flex">
+
+            <p-overlaybadge severity="info"  *ngIf="scaleForm.dirty">
+                <p-button 
+                    icon="pi pi-save" 
+                    size="small" 
+                    *ngIf="scaleForm.dirty"
+                    [rounded]="true" [text]="true" 
+                    (onClick)="saveScale()"
+                />
+            </p-overlaybadge>
+            
+            <p-button 
+                icon="pi pi-trash" 
+                size="small" 
+                [rounded]="true" [text]="true" severity="primary" 
+                (onClick)="removeScaleEvent.emit(scale()._id)"
+            />
+        </div>
+    </div>
+    
+    
+    <div class="neck flex">
+        <div class="sillet w-2rem mt-4 flex flex-column align-items-center  " *ngIf="scaleForm.value.startFret === 0">
+            @for (string of displayedStrings; track string; let  stringIndex = $index) {     
+                <div class="base-note">
+                    <p-badge 
+                        [value]="string.base" 
+                        *ngIf="notesToDisplay.includes(string.base)"
+                        [severity]=" this.scaleForm.value.note === string.base ? 'secondary' : 'contrast'"
+                        badgeSize="small"
+                    />
+                </div>
+            } 
+        </div>
+        @for (fret of filteredFretList; track fret; let  fretIndex = $index) {    
+            
+            <div class="fret fret-{{fretIndex}} flex flex-column align-items-center ">
+                <div class="fret-number mb-2 h-1rem ">
+                    <span  *ngIf="fretNumberToDisplay.includes(fret + 1)">
+                        {{fret + 1}}
+                    </span>
+                </div>
+                @for (string of displayedStrings; track string; let  stringIndex = $index) {     
+                    <div class="note w-full flex align-items-center">
+                        <div class="string string-{{stringIndex}}"> </div>
+                        <p-badge 
+                            value="{{string.notes[fret]}}" 
+                            *ngIf="notesToDisplay.includes(string.notes[fret])"
+                            [severity]=" this.scaleForm.value.note === string.notes[fret] ? 'secondary' : 'contrast'"
+                            badgeSize="small"
+                        />
+                        <div class="string string-{{stringIndex}}"> </div>
+                    </div>
+                }
+    
+            </div>
+        }    
+    </div>
+    
+
+</p-card>    

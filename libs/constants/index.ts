@@ -5,3 +5,4 @@ export * from './src/microservices-messages';
 export * from './src/websocket-messages';
 export * from './src/db-documents';
 export * from './src/chat-events';
+export * from './src/music';

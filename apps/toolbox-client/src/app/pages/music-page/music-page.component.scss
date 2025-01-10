@@ -1,0 +1,14 @@
+:host::ng-deep {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    
+    app-neck {
+        flex: 0 1 calc(50% - 1rem) !important;
+    }
+
+    .add-scale-button {
+        flex: 0 1 calc(50% - 1rem) !important;
+        height: 224px;
+    }
+}

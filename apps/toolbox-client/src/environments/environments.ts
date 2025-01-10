@@ -5,5 +5,9 @@ export const environment = {
     chatWsUrl: 'ws://localhost:4200/',
     chat : {
       messagesToDisplayNumber: 10
+    },
+    music : {   
+      baseStartFret: 0,
+      baseEndFret:12
     }
   };

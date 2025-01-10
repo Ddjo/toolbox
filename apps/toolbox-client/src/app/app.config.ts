@@ -1,11 +1,11 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import Material from '@primeng/themes/material';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 // const socketConfig: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
 
@@ -15,7 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withFetch()),
-    provideAnimations(),
+    // provideAnimations(),
+    provideAnimationsAsync(),
     providePrimeNG({ 
         theme: {
             preset: Material

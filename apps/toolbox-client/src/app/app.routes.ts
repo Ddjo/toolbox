@@ -21,6 +21,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       { 
+        path: 'music',
+        loadComponent: () => import('./pages/music-page/music-page.component').then(x => x.MusicPageComponent),
+        canActivate: [AuthGuard],
+      },
+      { 
         path: 'books',
         loadComponent: () => import('./pages/books-page/books-page.component').then(x => x.BooksPageComponent),
         canActivate: [AuthGuard],
